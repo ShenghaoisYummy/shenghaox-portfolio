@@ -201,8 +201,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Pusher for real-time infrastructure
 - Tailwind CSS for the utility-first approach
 - All contributors and users of this project
-# shenghaox-portfilio
-# shenghaox-portfilio
-# shenghaox-portfilio
-# shenghaox-portfilio
-# shenghaox-portfilio
