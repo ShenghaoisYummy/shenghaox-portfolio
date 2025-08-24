@@ -40,19 +40,19 @@ export default function Works() {
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(
     null
   );
-  // 添加图片弹窗状态
+  // Add image modal state
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{
     title: string;
     image: string;
   }>({ title: "", image: "" });
 
-  // 添加抽屉状态
+  // Add drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const works = worksData;
 
-  // 监听滚动事件，更新当前section
+  // Listen to scroll events, update current section
   useEffect(() => {
     if (!scrollContainer) return;
 
@@ -67,7 +67,7 @@ export default function Works() {
     return () => scrollContainer.removeEventListener("scroll", handleScroll);
   }, [scrollContainer]);
 
-  // 滚动到指定section
+  // Scroll to specified section
   const scrollToSection = (index: number) => {
     if (!scrollContainer) return;
     scrollContainer.scrollTo({
@@ -76,27 +76,27 @@ export default function Works() {
     });
   };
 
-  // 总页数（包括联系页面）
+  // Total pages (including contact page)
   const totalSections = works.length + 1;
 
-  // 打开图片弹窗
+  // Open image modal
   const openImageModal = (imageInfo: { title: string; image: string }) => {
     setSelectedImage(imageInfo);
     setIsImageModalOpen(true);
   };
 
-  // 关闭图片弹窗
+  // Close image modal
   const closeImageModal = () => {
     setIsImageModalOpen(false);
   };
 
-  // 打开详情抽屉
+  // Open detail drawer
   const openDrawer = (work: Work) => {
     setSelectedWork(work);
     setIsDrawerOpen(true);
   };
 
-  // 关闭详情抽屉
+  // Close detail drawer
   const closeDrawer = () => {
     setIsDrawerOpen(false);
     setSelectedWork(null);
@@ -104,12 +104,12 @@ export default function Works() {
 
   const [isQQModalOpen, setIsQQModalOpen] = useState(false);
 
-  // QQ按钮点击事件
+  // QQ button click event
   const handleQQClick = () => {
     setIsQQModalOpen(true);
   };
 
-  // 关闭QQ弹窗
+  // Close QQ modal
   const closeQQModal = () => {
     setIsQQModalOpen(false);
   };
@@ -117,11 +117,11 @@ export default function Works() {
   return (
     <>
       <Head>
-        <title>作品集 - wuxian&apos;s web</title>
-        <meta name="description" content="wuxian的作品集展示页面" />
+        <title>Portfolio - austin&apos;s web</title>
+        <meta name="description" content="austin's portfolio showcase page" />
       </Head>
 
-      {/* 图片弹窗 */}
+      {/* Image modal */}
       <ImageModal
         isOpen={isImageModalOpen}
         onClose={closeImageModal}
@@ -135,27 +135,27 @@ export default function Works() {
       <ImageModal
         isOpen={isQQModalOpen}
         onClose={closeQQModal}
-        title="QQ联系方式"
+        title="QQ Contact Information"
         images={["/images/qq.jpg"]}
         enableDanmaku={false}
         imageWidth={300}
         imageHeight={300}
       />
 
-      {/* 详情抽屉 */}
+      {/* Detail drawer */}
       {isDrawerOpen && (
         <div className="fixed inset-0 z-11 flex items-end">
-          {/* 背景遮罩 */}
+          {/* Background overlay */}
           <div
             className="absolute inset-0 bg-[rgba(0,0,0,0.5)] backdrop-blur-sm"
             onClick={closeDrawer}
           />
 
-          {/* 抽屉内容 */}
+          {/* Drawer content */}
           <div
             className={`relative w-full h-[90vh] bg-[rgba(0,0,0,0.5)] rounded-t-3xl pb-[100px]`}
           >
-            {/* 抽屉头部 */}
+            {/* Drawer header */}
             <div className="flex items-center justify-between p-4 md:p-6 border-b border-[rgba(255,255,255,0.1)]">
               <h2 className="text-xl md:text-2xl font-bold text-white">
                 {selectedWork?.title}
@@ -168,11 +168,11 @@ export default function Works() {
               </button>
             </div>
 
-            {/* 抽屉内容区域 */}
+            {/* Drawer content area */}
             <div className="p-4 md:p-6 h-full overflow-y-auto custom-scrollbar">
               {selectedWork && (
                 <div className="space-y-6">
-                  {/* 项目图片 */}
+                  {/* Project image */}
                   <div className="relative rounded-xl overflow-hidden flex justify-center">
                     <Image
                       src={selectedWork.image}
@@ -184,20 +184,20 @@ export default function Works() {
                     />
                   </div>
 
-                  {/* 项目描述 */}
+                  {/* Project description */}
                   <div className="space-y-4">
                     <h3 className="text-lg md:text-xl font-semibold text-white">
-                      项目描述
+                      Project Description
                     </h3>
                     <p className="text-[rgba(255,255,255,0.8)] leading-relaxed text-sm md:text-base">
                       {selectedWork.description}
                     </p>
                   </div>
 
-                  {/* 技术栈 */}
+                  {/* Tech stack */}
                   <div className="space-y-4">
                     <h3 className="text-lg md:text-xl font-semibold text-white">
-                      技术栈
+                      Tech Stack
                     </h3>
                     <div className="flex flex-wrap gap-2 md:gap-3">
                       {selectedWork.tech.map((tech: string, index: number) => (
@@ -211,10 +211,10 @@ export default function Works() {
                     </div>
                   </div>
 
-                  {/* 主要特性 */}
+                  {/* Main features */}
                   <div className="space-y-4">
                     <h3 className="text-lg md:text-xl font-semibold text-white">
-                      主要特性
+                      Main Features
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       {selectedWork.features.map(
@@ -233,10 +233,10 @@ export default function Works() {
                     </div>
                   </div>
 
-                  {/* 主要功能 */}
+                  {/* Main functions */}
                   <div className="space-y-4">
                     <h3 className="text-lg md:text-xl font-semibold text-white">
-                      主要功能
+                      Main Functions
                     </h3>
                     {selectedWork.desc ? (
                       <div>
@@ -251,14 +251,14 @@ export default function Works() {
                       {selectedWork.function?.map(
                         (func: WorkFunction, index: number) => (
                           <div key={index} className="space-y-3">
-                            {/* 功能名称 */}
+                            {/* Function name */}
                             <h4 className="text-sm md:text-base font-medium text-white">
                               {func.name}
                             </h4>
 
-                            {/* 媒体展示区域 - 单行显示 */}
+                            {/* Media display area - single row display */}
                             <div className="flex gap-2 md:gap-4 overflow-x-auto pb-2">
-                              {/* 图片1 */}
+                              {/* Image 1 */}
                               {func.img1 && (
                                 <div className="flex-shrink-0">
                                   {func.img1.endsWith(".mp4") ? (
@@ -268,12 +268,13 @@ export default function Works() {
                                       className="w-64 md:w-84 h-auto rounded-lg"
                                       preload="metadata"
                                     >
-                                      您的浏览器不支持视频播放。
+                                      Your browser does not support video
+                                      playback.
                                     </video>
                                   ) : (
                                     <Image
                                       src={func.img1}
-                                      alt={`${func.name} - 图片1`}
+                                      alt={`${func.name} - Image 1`}
                                       width={0}
                                       height={0}
                                       sizes="100vw"
@@ -283,7 +284,7 @@ export default function Works() {
                                         if (func.img1) {
                                           openImageModal({
                                             image: func.img1,
-                                            title: `${func.name} - 图片1`,
+                                            title: `${func.name} - Image 1`,
                                           });
                                         }
                                       }}
@@ -292,7 +293,7 @@ export default function Works() {
                                 </div>
                               )}
 
-                              {/* 图片2 */}
+                              {/* Image 2 */}
                               {func.img2 && (
                                 <div className="flex-shrink-0">
                                   {func.img2.endsWith(".mp4") ? (
@@ -302,12 +303,13 @@ export default function Works() {
                                       className="w-64 md:w-84 h-auto rounded-lg"
                                       preload="metadata"
                                     >
-                                      您的浏览器不支持视频播放。
+                                      Your browser does not support video
+                                      playback.
                                     </video>
                                   ) : (
                                     <Image
                                       src={func.img2}
-                                      alt={`${func.name} - 图片2`}
+                                      alt={`${func.name} - Image 2`}
                                       width={0}
                                       height={0}
                                       sizes="100vw"
@@ -316,7 +318,7 @@ export default function Works() {
                                         if (func.img2) {
                                           openImageModal({
                                             image: func.img2,
-                                            title: `${func.name} - 图片2`,
+                                            title: `${func.name} - Image 2`,
                                           });
                                         }
                                       }}
@@ -325,7 +327,7 @@ export default function Works() {
                                 </div>
                               )}
 
-                              {/* 图片3 */}
+                              {/* Image 3 */}
                               {func.img3 && (
                                 <div className="flex-shrink-0">
                                   {func.img3.endsWith(".mp4") ? (
@@ -335,12 +337,13 @@ export default function Works() {
                                       className="w-64 md:w-84 h-auto rounded-lg"
                                       preload="metadata"
                                     >
-                                      您的浏览器不支持视频播放。
+                                      Your browser does not support video
+                                      playback.
                                     </video>
                                   ) : (
                                     <Image
                                       src={func.img3}
-                                      alt={`${func.name} - 图片3`}
+                                      alt={`${func.name} - Image 3`}
                                       width={0}
                                       height={0}
                                       sizes="100vw"
@@ -349,7 +352,7 @@ export default function Works() {
                                         if (func.img3) {
                                           openImageModal({
                                             image: func.img3,
-                                            title: `${func.name} - 图片3`,
+                                            title: `${func.name} - Image 3`,
                                           });
                                         }
                                       }}
@@ -371,7 +374,7 @@ export default function Works() {
       )}
 
       <div className="relative">
-        {/* 返回首页按钮 */}
+        {/* Back to homepage button */}
         <div className="fixed top-2 md:top-4 left-2 md:left-4 z-10 font-[family-name:var(--font-geist-sans)]">
           <Link
             href="/"
@@ -384,11 +387,11 @@ export default function Works() {
               color="#fff"
               className="md:w-5 md:h-5"
             />
-            <span className="text-xs md:text-sm">返回首页</span>
+            <span className="text-xs md:text-sm">Back to Home</span>
           </Link>
         </div>
 
-        {/* 右侧导航指示器 */}
+        {/* Right navigation indicator */}
         <div className="fixed right-4 md:right-8 top-1/2 transform -translate-y-1/2 z-10 flex flex-col gap-2 md:gap-3">
           {Array.from({ length: totalSections }).map((_, index) => (
             <button
@@ -399,12 +402,14 @@ export default function Works() {
                   ? "bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] scale-125"
                   : "bg-[rgba(255,255,255,0.5)] hover:bg-[rgba(255,255,255,0.8)]"
               }`}
-              title={index < works.length ? `项目 ${index + 1}` : "联系我"}
+              title={
+                index < works.length ? `Project ${index + 1}` : "Contact Me"
+              }
             />
           ))}
         </div>
 
-        {/* 全屏滚动容器 */}
+        {/* Full screen scroll container */}
         <div
           ref={setScrollContainer}
           className={`${geistSans.className} ${geistMono.className} font-[family-name:var(--font-geist-sans)] custom-scrollbar`}
@@ -414,7 +419,7 @@ export default function Works() {
             height: "100vh",
           }}
         >
-          {/* 项目展示区域 */}
+          {/* Project showcase area */}
           {works.map((work, index) => (
             <section
               key={index}
@@ -422,7 +427,7 @@ export default function Works() {
               style={{ scrollSnapAlign: "start" }}
             >
               <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center">
-                {/* 项目信息 */}
+                {/* Project information */}
                 <div
                   className={`space-y-4 md:space-y-6 ${
                     index % 2 === 1 ? "lg:order-2" : ""
@@ -430,7 +435,7 @@ export default function Works() {
                 >
                   <div className="space-y-3 md:space-y-4">
                     <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
-                      项目 {index + 1} / {works.length}
+                      Project {index + 1} / {works.length}
                     </div>
                     <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#fff] text-shadow-sm">
                       {work.title.split(" ").map((word, wordIndex) => (
@@ -453,10 +458,10 @@ export default function Works() {
                     </p>
                   </div>
 
-                  {/* 技术栈 */}
+                  {/* Tech stack */}
                   <div className="space-y-2 md:space-y-3">
                     <h3 className="text-base md:text-lg font-semibold text-[#fff]">
-                      技术栈
+                      Tech Stack
                     </h3>
                     <div className="flex flex-wrap gap-2 md:gap-3">
                       {work.tech.map((tech, techIndex) => (
@@ -470,10 +475,10 @@ export default function Works() {
                     </div>
                   </div>
 
-                  {/* 特性 */}
+                  {/* Features */}
                   <div className="space-y-2 md:space-y-3">
                     <h3 className="text-base md:text-lg font-semibold text-[#fff]">
-                      主要特性
+                      Main Features
                     </h3>
                     <div className="grid grid-cols-2 gap-2">
                       {work.features.map((feature, featureIndex) => (
@@ -488,7 +493,7 @@ export default function Works() {
                     </div>
                   </div>
 
-                  {!work.title.includes("wuxian") ? (
+                  {!work.title.includes("austin") ? (
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
                       {/* 查看详情按钮 */}
                       <button
@@ -502,11 +507,11 @@ export default function Works() {
                           color="#fff"
                           className="md:w-[18px] md:h-[18px]"
                         />
-                        查看详情
+                        View Details
                       </button>
 
-                      {/* 原有的项目链接按钮 */}
-                      {!work.title.includes("wuxian") && work.link !== "#" && (
+                      {/* Original project link button */}
+                      {!work.title.includes("austin") && work.link !== "#" && (
                         <>
                           <button
                             onClick={() => window.open(work.link, "_blank")}
@@ -519,12 +524,12 @@ export default function Works() {
                               color="#fff"
                               className="md:w-[18px] md:h-[18px]"
                             />
-                            查看项目
+                            View Project
                           </button>
                         </>
                       )}
 
-                      {!work.title.includes("wuxian") && work.download_url && (
+                      {!work.title.includes("austin") && work.download_url && (
                         <>
                           <button
                             onClick={() =>
@@ -539,7 +544,7 @@ export default function Works() {
                               color="#fff"
                               className="md:w-[18px] md:h-[18px]"
                             />
-                            前往下载
+                            Go to Download
                           </button>
                         </>
                       )}
@@ -549,7 +554,7 @@ export default function Works() {
                   )}
                 </div>
 
-                {/* 项目图片 */}
+                {/* Project image */}
                 <div
                   className={`relative order-first lg:order-none ${
                     index % 2 === 1 ? "lg:order-1" : ""
@@ -568,7 +573,7 @@ export default function Works() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
                   </div>
 
-                  {/* 装饰元素 */}
+                  {/* Decorative elements */}
                   <div className="absolute -top-2 md:-top-4 -right-2 md:-right-4 w-16 md:w-24 h-16 md:h-24 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full opacity-20 blur-xl" />
                   <div className="absolute -bottom-2 md:-bottom-4 -left-2 md:-left-4 w-20 md:w-32 h-20 md:h-32 bg-gradient-to-br from-[#3d85a9] to-[#1b2c55] rounded-full opacity-20 blur-xl" />
                 </div>
@@ -576,7 +581,7 @@ export default function Works() {
             </section>
           ))}
 
-          {/* 联系页面 */}
+          {/* Contact page */}
           <section
             className="h-screen flex items-center justify-center px-4 md:px-8"
             style={{ scrollSnapAlign: "start" }}
@@ -584,20 +589,21 @@ export default function Works() {
             <div className="text-center max-w-2xl mx-auto space-y-6 md:space-y-8">
               <div className="space-y-3 md:space-y-4">
                 <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#fff] text-shadow-sm">
-                  感兴趣的
+                  Interested in
                   <span className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent">
-                    项目？
+                    Projects?
                   </span>
                 </h2>
                 <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed">
-                  如果您对我的作品感兴趣，或者有合作意向，欢迎联系我！
+                  If you are interested in my work or have collaboration
+                  intentions, feel free to contact me!
                 </p>
               </div>
 
               <div className="flex justify-center gap-4 md:gap-6">
                 <button
                   onClick={() =>
-                    window.open("https://github.com/996wuxian", "_blank")
+                    window.open("https://github.com/996austin", "_blank")
                   }
                   className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-xl p-2 md:p-3 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-[rgba(255,255,255,0.2)] group"
                 >
@@ -631,7 +637,7 @@ export default function Works() {
           className="fixed bottom-4 md:bottom-8 right-4 md:right-8 z-10"
         >
           <button className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[6px] md:p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-1 md:gap-2 text-white backdrop-blur-sm">
-            <span className="text-xs md:text-sm">文章</span>
+            <span className="text-xs md:text-sm">Articles</span>
             <SvgIcon
               name="right"
               width={16}

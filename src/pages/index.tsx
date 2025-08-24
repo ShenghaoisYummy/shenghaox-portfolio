@@ -28,7 +28,7 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   const { theme } = useTheme();
-  // 弹窗状态
+  // Modal states
   const [imageModal, setImageModal] = useState({
     isOpen: false,
     title: "",
@@ -54,40 +54,40 @@ export default function Home() {
     enableDanmaku: true,
   });
 
-  // 打字机动画状态
+  // Typewriter animation state
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const fullText = "Hello, I'm wuxian";
+  const fullText = "Hello, I'm Austin";
 
-  // 打字机动画效果
+  // Typewriter animation effect
   useEffect(() => {
-    const typeSpeed = 150; // 打字速度
-    const deleteSpeed = 100; // 删除速度
-    const pauseTime = 2000; // 完整显示后的暂停时间
-    const restartPause = 1000; // 删除完后重新开始的暂停时间
+    const typeSpeed = 150; // Typing speed
+    const deleteSpeed = 100; // Delete speed
+    const pauseTime = 2000; // Pause time after complete display
+    const restartPause = 1000; // Restart pause after deletion
 
     const timer = setTimeout(
       () => {
         if (!isDeleting) {
-          // 逐字添加
+          // Add character by character
           if (currentIndex < fullText.length) {
             setDisplayText(fullText.slice(0, currentIndex + 1));
             setCurrentIndex(currentIndex + 1);
           } else {
-            // 完整显示后暂停，然后开始删除
+            // Pause after complete display, then start deleting
             setTimeout(() => {
               setIsDeleting(true);
             }, pauseTime);
           }
         } else {
-          // 逐字删除
+          // Delete character by character
           if (currentIndex > 0) {
             setDisplayText(fullText.slice(0, currentIndex - 1));
             setCurrentIndex(currentIndex - 1);
           } else {
-            // 删除完后暂停，然后重新开始
+            // Pause after deletion, then restart
             setTimeout(() => {
               setIsDeleting(false);
             }, restartPause);
@@ -100,7 +100,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [currentIndex, isDeleting, fullText]);
 
-  // 标签点击处理函数
+  // Tag click handler function
   const handleTagClick = (tagName: string) => {
     const tagConfig = tagConfigs[tagName];
 
@@ -127,9 +127,9 @@ export default function Home() {
     }
   };
 
-  // 添加GitHub和QQ点击处理函数
+  // Add GitHub and QQ click handler functions
   const handleGithubClick = () => {
-    window.open("https://github.com/996wuxian", "_blank");
+    window.open("https://github.com/ShenghaoisYummy", "_blank");
   };
 
   const handleQQClick = () => {
@@ -137,7 +137,7 @@ export default function Home() {
       isOpen: true,
       title: "QQ",
       images: ["/images/qq.jpg"],
-      danmakuText: "联系我",
+      danmakuText: "Contact Me",
       enableDanmaku: true,
       imageWidth: 500,
       imageHeight: 500,
@@ -146,49 +146,7 @@ export default function Home() {
 
   const tags = [
     {
-      name: "做饭",
-    },
-    {
-      name: "摄影",
-    },
-    {
-      name: "五哈",
-    },
-    {
-      name: "美食",
-    },
-    {
-      name: "沧元图",
-    },
-    {
-      name: "音乐",
-    },
-    {
-      name: "蜡笔小新",
-    },
-    {
-      name: "英雄联盟手游",
-    },
-    {
-      name: "天空中的歌",
-    },
-    {
-      name: "鲜花",
-    },
-    {
-      name: "枕刀歌",
-    },
-    {
-      name: "镖人",
-    },
-    {
-      name: "不良人",
-    },
-    {
-      name: "不良人天罡传",
-    },
-    {
-      name: "鬼灭之刃",
+      name: "Cooking",
     },
   ];
 
@@ -197,11 +155,11 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>首页 - wuxian&apos;s web</title>
-        <meta name="description" content="wuxian的个人网站首页" />
+        <title>Home - austin&apos;s web</title>
+        <meta name="description" content="austin's personal website homepage" />
       </Head>
       <div className="relative">
-        {/* 弹窗组件 */}
+        {/* Modal components */}
         <ImageModal
           isOpen={imageModal.isOpen}
           onClose={() => setImageModal({ ...imageModal, isOpen: false })}
@@ -232,12 +190,12 @@ export default function Home() {
           enableDanmaku={videoModal.enableDanmaku}
         />
 
-        {/* 主要内容区域 */}
+        {/* Main content area */}
         <div
           className={`${geistSans.className} ${geistMono.className} items-center justify-items-center min-h-screen gap-16 font-[family-name:var(--font-geist-sans)] flex justify-center px-4 md:px-0 `}
         >
           <div className="flex flex-col w-full max-w-3xl h-[100vh] md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-20 md:pb-0 hide-scrollbar">
-            {/* 头部区域 - 头像和基本信息 */}
+            {/* Header area - avatar and basic info */}
             <div className="flex gap-[10px] flex-col md:flex-row pt-[100px] md:pt-0">
               <div className="relative w-full md:w-[250px] flex justify-center items-center mx-auto md:mx-0">
                 <Image
@@ -263,7 +221,7 @@ export default function Home() {
                 <div className="text-[28px] md:text-[40px] font-bold text-[#fff] text-shadow-sm">
                   <span className="inline-block">
                     {displayText.split(" ").map((word, wordIndex) => {
-                      if (word === "wuxian") {
+                      if (word === "austin") {
                         return (
                           <span
                             key={wordIndex}
@@ -287,21 +245,15 @@ export default function Home() {
                 </div>
                 <div className="text-shadow-sm text-[#fff] text-[14px] md:text-[16px]">
                   <span className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent text-[16px] md:text-[18px]">
-                    Front-end
+                    Full-Stack & AI Developer
                   </span>{" "}
-                  development (前端开发工程师)
                 </div>
-                <div className="text-shadow-sm text-[#fff] text-[14px] md:text-[16px]">
-                  <span className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent text-[16px] md:text-[18px]">
-                    25
-                  </span>{" "}
-                  years old (25岁)
-                </div>
+
                 <div className="text-shadow-sm text-[#fff] text-[14px] md:text-[16px]">
                   <span className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent text-[16px] md:text-[18px]">
                     2.5
                   </span>{" "}
-                  work experience (2.5年工作经验)
+                  years work experience
                 </div>
                 <div className="flex mt-[10px] gap-[10px] justify-center md:justify-start">
                   <div
@@ -325,9 +277,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 内容区域 - 在800px以下变为垂直布局 */}
+            {/* Content area - vertical layout below 800px */}
             <div className="flex gap-[10px] mt-[20px] flex-col md:flex-row px-4 md:px-0">
-              {/* 左侧/中间区域 */}
+              {/* Left/center area */}
               <div className="flex order-2 md:order-1 w-full md:w-auto">
                 <div className="flex flex-col gap-[10px] w-full md:w-[250px]">
                   <div className="flex gap-[10px] flex-col flex-row">
@@ -339,7 +291,7 @@ export default function Home() {
                           height={20}
                           color="#fff"
                         />
-                        广州番禺区
+                        Sydney
                       </div>
                       <div className="flex items-center gap-[5px]">
                         <SvgIcon
@@ -348,7 +300,7 @@ export default function Home() {
                           height={20}
                           color="#fff"
                         />
-                        在职
+                        Not Employed
                       </div>
                     </div>
                     <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col flex-1">
@@ -359,7 +311,7 @@ export default function Home() {
                           height={20}
                           color="#fff"
                         />
-                        广西
+                        China
                       </div>
                       <div className="flex items-center gap-[5px]">
                         <SvgIcon
@@ -368,7 +320,7 @@ export default function Home() {
                           height={20}
                           color="#fff"
                         />
-                        家
+                        Home
                       </div>
                     </div>
                   </div>
@@ -419,20 +371,17 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              {/* 右侧/底部区域 */}
+              {/* Right/bottom area */}
               <div className="flex flex-col gap-[10px] order-1 md:order-2 w-full md:w-auto">
-                {/* GitHub贡献热力图 */}
+                {/* GitHub contribution heatmap */}
                 <div className="w-full overflow-x-auto">
-                  <GitHubHeatmap username="996wuxian" year={2025} />
+                  <GitHubHeatmap username="shenghaoisyummy" year={2025} />
                 </div>
 
                 <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col">
                   <div className="font-bold text-[16px] flex items-center gap-[5px]">
                     <SvgIcon name="site" width={20} height={20} color="#fff" />
-                    <div className="flex flex-col">
-                      Navigation
-                      <span className="text-[11px] font-[400]">导航</span>
-                    </div>
+                    <div className="flex flex-col">Navigation</div>
                   </div>
                   <div className="flex gap-[10px] flex-col sm:flex-row">
                     <Link
@@ -440,7 +389,7 @@ export default function Home() {
                       className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col cursor-pointer flex-1"
                     >
                       <div className="flex justify-between items-center">
-                        作品集
+                        Portfolio
                         <SvgIcon
                           name="zuopin"
                           width={25}
@@ -448,14 +397,14 @@ export default function Home() {
                           color="#fff"
                         />
                       </div>
-                      <span className="text-[12px]">记录前端作品</span>
+                      <span className="text-[12px]">Frontend projects</span>
                     </Link>
                     <Link
                       href="/blog"
                       className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col cursor-pointer flex-1"
                     >
                       <div className="flex justify-between items-center">
-                        文章
+                        Articles
                         <SvgIcon
                           name="docs"
                           width={25}
@@ -463,14 +412,14 @@ export default function Home() {
                           color="#fff"
                         />
                       </div>
-                      <span className="text-[12px]">记录前端知识</span>
+                      <span className="text-[12px]">Frontend knowledge</span>
                     </Link>
                     <Link
                       href="/chat"
                       className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col cursor-pointer flex-1"
                     >
                       <div className="flex justify-between items-center">
-                        聊天室
+                        Chat Room
                         <SvgIcon
                           name="comment"
                           width={25}
@@ -478,24 +427,24 @@ export default function Home() {
                           color="#fff"
                         />
                       </div>
-                      <span className="text-[12px]">实时聊天交流</span>
+                      <span className="text-[12px]">Real-time chat</span>
                     </Link>
                   </div>
                   <div className="text-[12px] md:text-[14px]">
-                    2025年开始持续更新中...
+                    Continuously updating since 2025...
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 滚动到作品页按钮 */}
+          {/* Scroll to works page button */}
           <div className="fixed bottom-8 right-8 z-10">
             <Link
               href="/works"
               className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
             >
-              <span className="text-sm">作品集</span>
+              <span className="text-sm">Portfolio</span>
               <SvgIcon name="right" width={20} height={20} color="#fff" />
             </Link>
           </div>

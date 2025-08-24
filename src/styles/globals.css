@@ -235,3 +235,74 @@ body {
   padding-top: calc(100vh - 100dvh + env(safe-area-inset-top, 0px));
   min-padding-top: env(safe-area-inset-top, 0px);
 }
+
+/* Loading Animation Styles */
+.loading-animation-loader {
+  display: flex;
+  margin: 0.25em 0;
+  gap: 0.1em;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 90vw;
+  align-items: center;
+}
+
+.loading-animation-loader svg {
+  width: 48px;
+  height: 48px;
+}
+
+.loading-animation-space-separator {
+  width: 20px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.loading-animation-cyberpunk-x {
+  filter: drop-shadow(0 0 5px #4A90E2);
+}
+
+.loading-animation-cyberpunk-glow {
+  animation: dashArray 2s ease-in-out infinite,
+    dashOffset 2s linear infinite;
+}
+
+@media (max-width: 768px) {
+  .loading-animation-loader svg {
+    width: 36px;
+    height: 36px;
+  }
+  .loading-animation-space-separator {
+    width: 15px;
+    height: 36px;
+  }
+  .loading-animation-cyberpunk-x {
+    width: 43px !important;
+    height: 43px !important;
+    font-size: 43px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-animation-loader svg {
+    width: 32px;
+    height: 32px;
+  }
+  .loading-animation-loader {
+    gap: 0.05em;
+  }
+  .loading-animation-space-separator {
+    width: 12px;
+    height: 32px;
+  }
+  .loading-animation-cyberpunk-x {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 38px !important;
+  }
+}
+
+.loading-animation-dash {
+  animation: dashArray 2s ease-in-out infinite,
+    dashOffset 2s linear infinite;
+}
