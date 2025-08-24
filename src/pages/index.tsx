@@ -192,11 +192,12 @@ export default function Home() {
 
         {/* Main content area */}
         <div
-          className={`${geistSans.className} ${geistMono.className} items-center justify-items-center min-h-screen gap-16 font-[family-name:var(--font-geist-sans)] flex justify-center px-4 md:px-0 `}
+          className={`${geistSans.className} ${geistMono.className} min-h-screen font-[family-name:var(--font-geist-sans)] flex justify-center items-center px-4 md:px-0 w-full`}
+          style={{ transform: "translateX(-5%)" }}
         >
-          <div className="flex flex-col w-full max-w-3xl h-[100vh] md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-20 md:pb-0 hide-scrollbar">
+          <div className="flex flex-col w-full max-w-3xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-20 md:pb-0 hide-scrollbar">
             {/* Header area - avatar and basic info */}
-            <div className="flex gap-[10px] flex-col md:flex-row pt-[100px] md:pt-0">
+            <div className="flex gap-[10px] flex-col md:flex-row">
               <div className="relative w-full md:w-[250px] flex justify-center items-center mx-auto md:mx-0">
                 <Image
                   src="/images/avatar.jpg"
@@ -439,7 +440,10 @@ export default function Home() {
           </div>
 
           {/* Scroll to works page button */}
-          <div className="fixed bottom-8 right-8 z-10">
+          <div
+            className="fixed bottom-8 right-8 z-10"
+            style={{ transform: "translateX(80%)" }}
+          >
             <Link
               href="/works"
               className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
