@@ -1,4 +1,4 @@
-// 作品数据类型定义
+// Works data type definition
 export interface WorkItem {
   title: string;
   description: string;
@@ -16,15 +16,15 @@ export interface WorkItem {
   }[];
 }
 
-// 作品数据
+// Works data
 export const worksData: WorkItem[] = [
   {
-    title: "wuxian's web",
+    title: "austin's web",
     description:
-      "基于Next.js开发的个人介绍网站，简单介绍了我自己个儿，歌和视频都很有品！！！！。",
+      "Personal introduction website based on Next.js development, simply introducing myself, with great songs and videos!!!!.",
     image: "/images/work1.jpg",
     tech: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
     link: "#",
-    features: ["个人介绍", "作品集", "喜好", "留言"],
+    features: ["Personal Introduction", "Portfolio", "Interests", "Comments"],
   },
 ];

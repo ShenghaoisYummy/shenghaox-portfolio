@@ -115,7 +115,7 @@ const DirectoryItem = React.memo(
 
 DirectoryItem.displayName = "DirectoryItem";
 
-// 将打字机动画提取为独立组件
+// Extract typewriter animation as independent component
 const TypewriterText = ({ text }: { text: string }) => {
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -154,7 +154,7 @@ const TypewriterText = ({ text }: { text: string }) => {
   return (
     <span className="inline-block">
       {displayText.split(" ").map((word, wordIndex) => {
-        if (word === "前端") {
+        if (word === "Frontend") {
           return (
             <span
               key={wordIndex}
@@ -187,13 +187,13 @@ export default function Blog() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("全部");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [loading, setLoading] = useState(true);
   const [blogStats, setBlogStats] = useState<BlogStats | null>(null);
   const [activeHeading, setActiveHeading] = useState<string>("");
   const [showBackToTop, setShowBackToTop] = useState(false);
   const blogContentRef = useRef<HTMLDivElement>(null);
-  // 加载文章列表
+  // Load article list
   useEffect(() => {
     loadArticles();
     loadBlogStats();
@@ -221,7 +221,7 @@ export default function Blog() {
               if (element) {
                 const rect = element.getBoundingClientRect();
                 const containerRect = scrollContainer.getBoundingClientRect();
-                // 计算相对于滚动容器的位置
+                // Calculate position relative to scroll container
                 const relativeTop = rect.top - containerRect.top;
                 return {
                   id: item.id,
@@ -232,28 +232,28 @@ export default function Blog() {
               }
               return null;
             })
-            .filter((item): item is NonNullable<typeof item> => item !== null); // 类型守卫
+            .filter((item): item is NonNullable<typeof item> => item !== null); // Type guard
 
           if (headings.length === 0) return;
 
-          // 改进的检测逻辑
-          const threshold = 80; // 减小阈值
-          let bestHeading = headings[0]; // 默认第一个标题
+          // Improved detection logic
+          const threshold = 80; // Reduce threshold
+          let bestHeading = headings[0]; // Default to first heading
 
-          // 找到最合适的标题
+          // Find the most suitable heading
           for (let i = 0; i < headings.length; i++) {
             const heading = headings[i];
 
-            // 如果标题在视口顶部附近或之上
+            // If heading is near or above viewport top
             if (heading.top <= threshold) {
               bestHeading = heading;
             } else {
-              // 如果当前标题在阈值之下，停止查找
+              // If current heading is below threshold, stop searching
               break;
             }
           }
 
-          // 特殊处理：如果没有标题在阈值内，选择最接近顶部的可见标题
+          // Special handling: if no heading is within threshold, choose closest visible heading to top
           if (bestHeading.top > threshold) {
             const visibleHeadings = headings.filter(
               (h) => h.top >= 0 && h.top <= containerHeight
@@ -263,7 +263,7 @@ export default function Blog() {
             }
           }
 
-          // 只有当找到的标题与当前不同时才更新
+          // Only update when found heading is different from current
           if (bestHeading && bestHeading.id !== activeHeading) {
             setActiveHeading(bestHeading.id);
           }
@@ -274,19 +274,19 @@ export default function Blog() {
       }
     };
 
-    // 获取滚动容器
+    // Get scroll container
     const scrollContainer = document.querySelector(".custom-scrollbar");
     if (scrollContainer) {
-      // 添加防抖延迟
+      // Add debounce delay
       let timeoutId: NodeJS.Timeout;
       const debouncedHandleScroll = () => {
         clearTimeout(timeoutId);
-        timeoutId = setTimeout(handleScroll, 30); // 减少防抖时间
+        timeoutId = setTimeout(handleScroll, 30); // Reduce debounce time
       };
 
       scrollContainer.addEventListener("scroll", debouncedHandleScroll);
-      // 初始检查
-      setTimeout(handleScroll, 100); // 延迟初始检查
+      // Initial check
+      setTimeout(handleScroll, 100); // Delay initial check
 
       return () => {
         clearTimeout(timeoutId);
@@ -295,14 +295,14 @@ export default function Blog() {
     }
   }, [selectedArticle, tableOfContents, activeHeading]);
 
-  // 监听滚动显示/隐藏回到顶部按钮
+  // Listen to scroll to show/hide back to top button
   useEffect(() => {
     if (selectedArticle) {
       setShowBackToTop(false);
       return;
     }
 
-    // 等待数据加载完成和DOM渲染
+    // Wait for data loading completion and DOM rendering
     if (loading || articles.length === 0) {
       setShowBackToTop(false);
       return;
@@ -312,24 +312,29 @@ export default function Blog() {
       if (blogContentRef.current) {
         const scrollTop = blogContentRef.current.scrollTop;
         const shouldShow = scrollTop > 100;
-        console.log("滚动位置:", scrollTop, "是否显示按钮:", shouldShow); // 调试日志
+        console.log(
+          "Scroll position:",
+          scrollTop,
+          "Should show button:",
+          shouldShow
+        ); // Debug log
         setShowBackToTop(shouldShow);
       }
     };
 
-    // 延迟设置监听器，确保DOM完全渲染
+    // Delay setting up listener to ensure DOM is fully rendered
     const timer = setTimeout(() => {
       const scrollContainer = blogContentRef.current;
       if (scrollContainer) {
         scrollContainer.addEventListener("scroll", handleScroll);
-        console.log("回到顶部监听器已添加");
+        console.log("Back to top listener added");
 
-        // 立即检查一次滚动位置
+        // Immediately check scroll position once
         handleScroll();
       } else {
-        console.log("blogContentRef.current 为空");
+        console.log("blogContentRef.current is null");
       }
-    }, 300); // 增加延迟时间
+    }, 300); // Increase delay time
 
     return () => {
       clearTimeout(timer);
@@ -340,7 +345,7 @@ export default function Blog() {
     };
   }, [selectedArticle, loading, articles.length]);
 
-  // 回到顶部函数
+  // Back to top function
   const scrollToTop = () => {
     if (blogContentRef.current) {
       blogContentRef.current.scrollTo({
@@ -350,12 +355,12 @@ export default function Blog() {
     }
   };
 
-  // 添加折叠状态管理
+  // Add collapse state management
   const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(
     new Set()
   );
 
-  // 切换文件夹折叠状态
+  // Toggle folder collapse state
   const toggleFolder = useCallback((folderId: string) => {
     setCollapsedFolders((prev) => {
       const newSet = new Set(prev);
@@ -372,16 +377,16 @@ export default function Blog() {
     try {
       const response = await fetch("/api/blogs");
       if (!response.ok) {
-        throw new Error("加载文章失败");
+        throw new Error("Failed to load articles");
       }
       const data = await response.json();
       setArticles(data.articles || []);
-      setCategories(data.categories || ["全部"]);
+      setCategories(data.categories || ["All"]);
       setLoading(false);
     } catch (error) {
-      console.error("加载文章失败:", error);
+      console.error("Failed to load articles:", error);
       setArticles([]);
-      setCategories(["全部"]);
+      setCategories(["All"]);
       setLoading(false);
     }
   };
@@ -414,7 +419,7 @@ export default function Blog() {
       console.error("加载统计信息失败:", error);
     }
   };
-  // 过滤文章
+  // Filter articles
   const filteredArticles = articles.filter((article) => {
     const matchesSearch =
       article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -424,12 +429,12 @@ export default function Blog() {
       );
 
     const matchesCategory =
-      selectedCategory === "全部" || article.category === selectedCategory;
+      selectedCategory === "All" || article.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
 
-  // 生成目录
+  // Generate table of contents
   const generateTableOfContents = (content: string) => {
     const headings = content.match(/^#{1,6}\s+.+$/gm) || [];
     return headings.map((heading, index) => {
@@ -443,7 +448,7 @@ export default function Blog() {
     });
   };
 
-  // 打开文章
+  // Open article
   const openArticle = (article: BlogArticle) => {
     setIsTransitioning(true);
     setTimeout(() => {
@@ -453,7 +458,7 @@ export default function Blog() {
     }, 300);
   };
 
-  // 返回文章列表
+  // Return to article list
   const backToList = () => {
     setIsTransitioning(true);
     setTimeout(() => {
@@ -463,7 +468,7 @@ export default function Blog() {
     }, 300);
   };
 
-  // 跳转到指定标题
+  // Jump to specified heading
   const scrollToHeading = (headingId: string) => {
     const element = document.getElementById(headingId);
     if (element) {
@@ -473,18 +478,18 @@ export default function Blog() {
 
   const [showToast, setShowToast] = React.useState(false);
 
-  // 渲染 Markdown 内容（简化版）
+  // Render Markdown content (simplified version)
   const renderMarkdown = (content: string) => {
     const lines = content.split("\n");
     const elements: JSX.Element[] = [];
     let inCodeBlock = false;
     let codeBlockContent = "";
     let codeLanguage = "";
-    let headingIndex = 0; // 添加标题计数器
+    let headingIndex = 0; // Add heading counter
 
-    // 复制代码功能
+    // Copy code functionality
     const copyToClipboard = (text: string) => {
-      // 移除末尾的换行符
+      // Remove trailing newlines
       const cleanText = text.replace(/\n$/, "");
       navigator.clipboard
         .writeText(cleanText)
@@ -495,22 +500,22 @@ export default function Blog() {
           }, 2000);
         })
         .catch((err) => {
-          console.error("复制失败:", err);
+          console.error("Copy failed:", err);
         });
     };
 
     lines.forEach((line, index) => {
-      // 代码块处理
+      // Code block processing
       if (line.startsWith("```")) {
         if (!inCodeBlock) {
           inCodeBlock = true;
           codeBlockContent = "";
-          // 提取语言类型
+          // Extract language type
           codeLanguage = line.replace("```", "").trim() || "plaintext";
         } else {
           inCodeBlock = false;
 
-          // 关键修复：为每个代码块创建独立的内容副本
+          // Key fix: create independent content copy for each code block
           const currentCodeContent = codeBlockContent;
           const currentLanguage = codeLanguage;
 
@@ -519,7 +524,7 @@ export default function Blog() {
               key={`code-${index}`}
               className="bg-gray-900 rounded-lg my-4 overflow-hidden relative group"
             >
-              {/* 语言标签和复制按钮 */}
+              {/* Language label and copy button */}
               <div className="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
                 <span className="text-xs text-gray-400 uppercase font-mono">
                   {currentLanguage}
@@ -527,7 +532,7 @@ export default function Blog() {
                 <button
                   onClick={() => copyToClipboard(currentCodeContent)}
                   className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 bg-gray-700 hover:bg-gray-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1"
-                  title="复制代码"
+                  title="Copy code"
                 >
                   <svg
                     width="14"
@@ -547,11 +552,11 @@ export default function Blog() {
                     ></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
-                  复制
+                  Copy
                 </button>
               </div>
 
-              {/* 使用 SyntaxHighlighter 进行语法高亮 */}
+              {/* Use SyntaxHighlighter for syntax highlighting */}
               <SyntaxHighlighter
                 language={
                   currentLanguage === "plaintext" ? "text" : currentLanguage
@@ -575,7 +580,7 @@ export default function Blog() {
       }
 
       if (inCodeBlock) {
-        // 修复复制功能：正确拼接代码内容
+        // Fix copy functionality: correctly concatenate code content
         if (codeBlockContent === "") {
           codeBlockContent = line;
         } else {
@@ -584,10 +589,10 @@ export default function Blog() {
         return;
       }
 
-      // 标题处理 - 修复 ID 生成逻辑
+      // Heading processing - fix ID generation logic
       if (line.startsWith("# ")) {
-        const id = `heading-${headingIndex}`; // 使用计数器生成 ID
-        headingIndex++; // 递增计数器
+        const id = `heading-${headingIndex}`; // Use counter to generate ID
+        headingIndex++; // Increment counter
         elements.push(
           <h1
             key={index}
@@ -598,8 +603,8 @@ export default function Blog() {
           </h1>
         );
       } else if (line.startsWith("## ")) {
-        const id = `heading-${headingIndex}`; // 使用计数器生成 ID
-        headingIndex++; // 递增计数器
+        const id = `heading-${headingIndex}`; // Use counter to generate ID
+        headingIndex++; // Increment counter
         elements.push(
           <h2
             key={index}
@@ -610,8 +615,8 @@ export default function Blog() {
           </h2>
         );
       } else if (line.startsWith("### ")) {
-        const id = `heading-${headingIndex}`; // 使用计数器生成 ID
-        headingIndex++; // 递增计数器
+        const id = `heading-${headingIndex}`; // Use counter to generate ID
+        headingIndex++; // Increment counter
         elements.push(
           <h3
             key={index}
@@ -622,7 +627,7 @@ export default function Blog() {
           </h3>
         );
       } else if (line.trim() && !line.startsWith("`")) {
-        // 普通段落
+        // Normal paragraph
         elements.push(
           <p key={index} className="mb-4 text-gray-300 leading-relaxed">
             {line}
@@ -666,8 +671,11 @@ export default function Blog() {
   return (
     <>
       <Head>
-        <title>docs - wuxian&apos;s web</title>
-        <meta name="description" content="分享前端开发经验和技术文章" />
+        <title>docs - austin&apos;s web</title>
+        <meta
+          name="description"
+          content="Frontend development experience and technical articles"
+        />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
@@ -688,7 +696,7 @@ export default function Blog() {
           >
             <polyline points="20,6 9,17 4,12"></polyline>
           </svg>
-          代码已复制到剪贴板
+          Code copied to clipboard
         </div>
       )}
 
@@ -706,19 +714,19 @@ export default function Blog() {
             className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
           >
             <SvgIcon name="left" width={16} height={16} color="#fff" />
-            <span className="text-sm">作品集</span>
+            <span className="text-sm">Portfolio</span>
           </Link>
           <Link
             href="/"
             className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
           >
             <SvgIcon name="home" width={16} height={16} color="#fff" />
-            <span className="text-sm">首页</span>
+            <span className="text-sm">Home</span>
           </Link>
         </div>
 
         <div className="container mx-auto px-4 pt-20 pb-8 max-w-full overflow-x-hidden">
-          {/* 文章列表视图 */}
+          {/* Article list view */}
           <div
             className={`transition-all duration-300 ${
               selectedArticle
@@ -733,7 +741,7 @@ export default function Blog() {
                 <div className="bg-[rgba(0,0,0,.3)] rounded-lg p-4 border border-[rgba(255,255,255,.1)]">
                   <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                     <SvgIcon name="tag" width={20} height={20} color="#fff" />
-                    文章分类
+                    Article Categories
                   </h3>
                   <div className="space-y-2">
                     {categories.map((category) => (
@@ -754,7 +762,7 @@ export default function Blog() {
                               : "bg-[rgba(255,255,255,.1)] text-gray-400"
                           }`}
                         >
-                          {category === "全部"
+                          {category === "All"
                             ? articles.length
                             : articles.filter(
                                 (article) => article.category === category
@@ -766,18 +774,18 @@ export default function Blog() {
                 </div>
               </div>
 
-              {/* 中间文章列表 */}
+              {/* Center article list */}
               <div className="flex-1 w-full">
                 {/* 搜索栏 */}
                 <div className="mb-4">
                   <div className="max-w-2xl mx-auto">
                     <h1 className="text-[40px] font-bold text-[#fff] text-shadow-sm flex items-end justify-center mb-[10px]">
-                      <TypewriterText text="前端 知识库" />
+                      <TypewriterText text="Frontend Knowledge Base" />
                     </h1>
                     <div className="relative">
                       <input
                         type="text"
-                        placeholder="搜索文章标题、内容或标签..."
+                        placeholder="Search articles, content, or tags..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full px-4 py-3 pl-12 bg-[rgba(0,0,0,.3)] border border-[rgba(255,255,255,.1)] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#3d85a9] transition-colors"
@@ -815,7 +823,7 @@ export default function Blog() {
                               : "bg-[rgba(255,255,255,.1)] text-gray-400"
                           }`}
                         >
-                          {category === "全部"
+                          {category === "All"
                             ? articles.length
                             : articles.filter(
                                 (article) => article.category === category
@@ -862,13 +870,13 @@ export default function Blog() {
                     </div>
                   ))}
 
-                  {/* 回到顶部按钮 */}
+                  {/* Back to top button */}
                   {showBackToTop && (
                     <div className="sticky bottom-4 flex justify-end pr-4 pointer-events-none ">
                       <button
                         onClick={scrollToTop}
                         className="bg-[rgba(61,133,169,0.9)] hover:bg-[rgba(61,133,169,1)] text-white p-1 rounded-full shadow-lg transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-[rgba(255,255,255,0.1)] pointer-events-auto cursor-pointer"
-                        aria-label="回到顶部"
+                        aria-label="Back to top"
                       >
                         <SvgIcon
                           name="top"
@@ -884,9 +892,9 @@ export default function Blog() {
                 {filteredArticles.length === 0 && (
                   <div className="text-center py-12">
                     <p className="text-gray-400 text-lg">
-                      {selectedCategory === "全部"
-                        ? "没有找到相关文章"
-                        : `在 "${selectedCategory}" 分类中没有找到相关文章`}
+                      {selectedCategory === "All"
+                        ? "No related articles found"
+                        : `No related articles found in "${selectedCategory}" category`}
                     </p>
                   </div>
                 )}
@@ -897,7 +905,7 @@ export default function Blog() {
                 <div className="bg-[rgba(0,0,0,.3)] rounded-lg p-3 border border-[rgba(255,255,255,.1)]">
                   <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
                     <SvgIcon name="count" width={20} height={20} color="#fff" />
-                    博客统计
+                    Blog Statistics
                   </h3>
 
                   {blogStats ? (
@@ -911,25 +919,29 @@ export default function Blog() {
                             height={15}
                             color="#fff"
                           />
-                          总体统计
+                          Overall Statistics
                         </h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-gray-300">总文章数</span>
+                            <span className="text-gray-300">
+                              Total Articles
+                            </span>
                             <span className="text-white font-medium">
-                              {blogStats.totalArticles} 篇
+                              {blogStats.totalArticles} articles
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-300">总目录数</span>
+                            <span className="text-gray-300">
+                              Total Directories
+                            </span>
                             <span className="text-white font-medium">
-                              {blogStats.totalDirectories} 个
+                              {blogStats.totalDirectories} dirs
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-300">总文件数</span>
+                            <span className="text-gray-300">Total Files</span>
                             <span className="text-white font-medium">
-                              {blogStats.totalFiles} 个
+                              {blogStats.totalFiles} files
                             </span>
                           </div>
                         </div>
@@ -944,7 +956,7 @@ export default function Blog() {
                             height={15}
                             color="#fff"
                           />
-                          分类统计
+                          Category Statistics
                         </h4>
                         <div className="space-y-2 text-sm">
                           {Object.entries(blogStats.categoryStats).map(
@@ -978,10 +990,10 @@ export default function Blog() {
                         </div>
                       </div>
 
-                      {/* 目录结构 */}
+                      {/* Directory Structure */}
                       <div className="bg-[rgba(0,0,0,.2)] rounded-lg p-4 overflow-y-auto custom-scrollbar h-[150px]">
                         <h4 className="text-sm font-medium text-[#fff] mb-3">
-                          📁 目录结构
+                          📁 Directory Structure
                         </h4>
                         <div className="text-xs text-gray-300 font-mono leading-relaxed max-h-60 overflow-y-auto custom-scrollbar">
                           {blogStats?.directoryTree &&
@@ -999,20 +1011,24 @@ export default function Blog() {
                               )}
                             </div>
                           ) : (
-                            <div className="text-gray-500">暂无目录结构</div>
+                            <div className="text-gray-500">
+                              No directory structure available
+                            </div>
                           )}
                         </div>
                       </div>
 
                       {/* 更新时间 */}
                       <div className="text-xs text-gray-400 text-center pt-2 border-t border-[rgba(255,255,255,.1)]">
-                        最后更新: {blogStats.lastUpdated}
+                        Last updated: {blogStats.lastUpdated}
                       </div>
                     </div>
                   ) : (
                     <div className="text-center py-8">
                       <div className="animate-spin w-6 h-6 border-2 border-[#3d85a9] border-t-transparent rounded-full mx-auto mb-2"></div>
-                      <p className="text-gray-400 text-sm">加载统计信息中...</p>
+                      <p className="text-gray-400 text-sm">
+                        Loading statistics...
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1020,7 +1036,7 @@ export default function Blog() {
             </div>
           </div>
 
-          {/* 文章详情视图 - 响应式优化 */}
+          {/* Article detail view - responsive optimization */}
           {selectedArticle && (
             <div
               className={`transition-all bg-[rgba(0,0,0,.1)] duration-300 p-10 rounded-lg ${
@@ -1028,18 +1044,18 @@ export default function Blog() {
               }`}
             >
               <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-4 lg:gap-8">
-                {/* 文章内容 */}
+                {/* Article content */}
                 <div className="flex-1 order-2 lg:order-1">
-                  {/* 返回按钮 */}
+                  {/* Back button */}
                   <button
                     onClick={backToList}
                     className="mb-4 lg:mb-6 bg-[rgba(0,0,0,.3)] hover:bg-[rgba(0,0,0,.4)] rounded-lg px-3 py-2 lg:px-4 lg:py-2 text-white transition-colors flex items-center gap-2 text-sm lg:text-base"
                   >
                     <SvgIcon name="left" width={16} height={16} color="#fff" />
-                    返回文章列表
+                    Back to article list
                   </button>
 
-                  {/* 文章头部 */}
+                  {/* Article header */}
                   <div className="mb-6 lg:mb-8">
                     <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 lg:mb-4 leading-tight">
                       {selectedArticle.title}
@@ -1057,25 +1073,25 @@ export default function Blog() {
                     </div>
                   </div>
 
-                  {/* 文章内容 */}
+                  {/* Article content */}
                   <div className="prose prose-invert max-w-none prose-sm lg:prose-base">
                     {renderMarkdown(selectedArticle.content)}
                   </div>
                 </div>
 
-                {/* 目录 - 响应式处理 */}
+                {/* Table of Contents - responsive handling */}
                 {tableOfContents.length > 0 && (
                   <div className="w-full max-w-[300px] order-1 lg:order-2 lg:sticky lg:top-20 lg:h-fit">
                     <div className="bg-[rgba(0,0,0,.3)] rounded-lg p-3 lg:p-4 border border-[rgba(255,255,255,.1)]">
                       <h3 className="text-base lg:text-lg font-bold text-white mb-3 lg:mb-4">
-                        目录
+                        Table of Contents
                       </h3>
                       <nav className="lg:block">
-                        {/* 移动端折叠目录 */}
+                        {/* Mobile collapsible TOC */}
                         <div className="lg:hidden">
                           <details className="group">
                             <summary className="cursor-pointer text-sm text-gray-300 hover:text-white transition-colors list-none flex items-center justify-between">
-                              <span>展开目录</span>
+                              <span>Expand TOC</span>
                               <SvgIcon
                                 name="down"
                                 width={16}
@@ -1115,7 +1131,7 @@ export default function Blog() {
                           </details>
                         </div>
 
-                        {/* 桌面端展开目录 */}
+                        {/* Desktop expanded TOC */}
                         <div className="hidden lg:block">
                           {tableOfContents.map((item) => (
                             <button
@@ -1156,7 +1172,7 @@ export default function Blog() {
             href="/chat"
             className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
           >
-            <span className="text-sm">聊天室</span>
+            <span className="text-sm">Chat Room</span>
             <SvgIcon name="right" width={20} height={20} color="#fff" />
           </Link>
         </div>

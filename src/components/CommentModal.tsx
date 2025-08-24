@@ -20,26 +20,26 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
   const [loading, setLoading] = useState(false);
   const [nicknameError, setNicknameError] = useState("");
   const [contentError, setContentError] = useState("");
-  // 新增回复相关状态
+  // Add reply-related state
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [replyNickname, setReplyNickname] = useState("");
   const [replyNicknameError, setReplyNicknameError] = useState("");
   const [replyContentError, setReplyContentError] = useState("");
-  // 加载评论列表
+  // Load comments list
   const loadComments = async () => {
     try {
       const data = await commentAPI.getComments();
       setComments(data);
     } catch (error) {
-      console.error("加载评论失败:", error);
+      console.error("Failed to load comments:", error);
     }
   };
 
   const handleReplySubmit = async (parentId: number) => {
     if (!replyContent.trim()) return;
 
-    const finalNickname = replyNickname.trim() || "匿名用户";
+    const finalNickname = replyNickname.trim() || "Anonymous User";
 
     if (!validateReplyInput(replyNickname, replyContent)) {
       return;
@@ -62,32 +62,38 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
       setReplyContentError("");
       await loadComments();
     } catch (error) {
-      console.error("提交回复失败:", error);
+      console.error("Failed to submit reply:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 新增：验证回复输入
+  // Add: validate reply input
   const validateReplyInput = (nickname: string, content: string): boolean => {
     setReplyNicknameError("");
     setReplyContentError("");
 
-    // 验证昵称
+    // Validate nickname
     if (nickname.trim()) {
       if (nickname.trim().length > 10) {
-        setReplyNicknameError("昵称不能超过10个字");
+        setReplyNicknameError("Nickname cannot exceed 10 characters");
         return false;
       }
 
       if (!isValidNickname(nickname)) {
         const trimmedNickname = nickname.trim().toLowerCase();
-        if (trimmedNickname === "wuxian") {
-          setReplyNicknameError("该昵称不可用，请选择其他昵称");
+        if (trimmedNickname === "austin") {
+          setReplyNicknameError(
+            "This nickname is unavailable, please choose another"
+          );
         } else if (containsProfanity(nickname)) {
-          setReplyNicknameError("昵称包含不当词汇，请修改后重试");
+          setReplyNicknameError(
+            "Nickname contains inappropriate words, please modify and try again"
+          );
         } else {
-          setReplyNicknameError("该昵称不可用，请选择其他昵称");
+          setReplyNicknameError(
+            "This nickname is unavailable, please choose another"
+          );
         }
         return false;
       }
@@ -117,18 +123,24 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
 
     if (value.trim()) {
       if (value.trim().length > 10) {
-        setReplyNicknameError("昵称不能超过10个字");
+        setReplyNicknameError("Nickname cannot exceed 10 characters");
         return;
       }
 
       if (!isValidNickname(value)) {
         const trimmedNickname = value.trim().toLowerCase();
-        if (trimmedNickname === "wuxian") {
-          setReplyNicknameError("该昵称不可用，请选择其他昵称");
+        if (trimmedNickname === "austin") {
+          setReplyNicknameError(
+            "This nickname is unavailable, please choose another"
+          );
         } else if (containsProfanity(value)) {
-          setReplyNicknameError("昵称包含不当词汇，请修改后重试");
+          setReplyNicknameError(
+            "Nickname contains inappropriate words, please modify and try again"
+          );
         } else {
-          setReplyNicknameError("该昵称不可用，请选择其他昵称");
+          setReplyNicknameError(
+            "This nickname is unavailable, please choose another"
+          );
         }
       } else {
         setReplyNicknameError("");
@@ -338,23 +350,29 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
     setNicknameError("");
     setContentError("");
 
-    // 验证昵称
+    // Validate nickname
     if (nickname.trim()) {
       // 检查昵称长度
       if (nickname.trim().length > 10) {
-        setNicknameError("昵称不能超过10个字");
+        setNicknameError("Nickname cannot exceed 10 characters");
         return false;
       }
 
       // 检查昵称是否合法
       if (!isValidNickname(nickname)) {
         const trimmedNickname = nickname.trim().toLowerCase();
-        if (trimmedNickname === "wuxian") {
-          setNicknameError("该昵称不可用，请选择其他昵称");
+        if (trimmedNickname === "austin") {
+          setNicknameError(
+            "This nickname is unavailable, please choose another"
+          );
         } else if (containsProfanity(nickname)) {
-          setNicknameError("昵称包含不当词汇，请修改后重试");
+          setNicknameError(
+            "Nickname contains inappropriate words, please modify and try again"
+          );
         } else {
-          setNicknameError("该昵称不可用，请选择其他昵称");
+          setNicknameError(
+            "This nickname is unavailable, please choose another"
+          );
         }
         return false;
       }
@@ -448,23 +466,29 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
     const value = e.target.value;
     setNickname(value);
 
-    // 实时验证昵称
+    // 实时Validate nickname
     if (value.trim()) {
       // 检查昵称长度
       if (value.trim().length > 10) {
-        setNicknameError("昵称不能超过10个字");
+        setNicknameError("Nickname cannot exceed 10 characters");
         return;
       }
 
       // 检查昵称是否合法
       if (!isValidNickname(value)) {
         const trimmedNickname = value.trim().toLowerCase();
-        if (trimmedNickname === "wuxian") {
-          setNicknameError("该昵称不可用，请选择其他昵称");
+        if (trimmedNickname === "austin") {
+          setNicknameError(
+            "This nickname is unavailable, please choose another"
+          );
         } else if (containsProfanity(value)) {
-          setNicknameError("昵称包含不当词汇，请修改后重试");
+          setNicknameError(
+            "Nickname contains inappropriate words, please modify and try again"
+          );
         } else {
-          setNicknameError("该昵称不可用，请选择其他昵称");
+          setNicknameError(
+            "This nickname is unavailable, please choose another"
+          );
         }
       } else {
         setNicknameError("");
