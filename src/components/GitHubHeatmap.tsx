@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import SvgIcon from "./SvgIcon";
 
 // GitHub贡献数据类型定义
@@ -15,7 +15,6 @@ interface GitHubContributionsData {
 
 interface GitHubHeatmapProps {
   username: string;
-  year: number;
 }
 
 // 缓存键生成函数
@@ -25,7 +24,7 @@ const getCacheKey = (username: string, year: number) =>
 // 缓存过期时间（24小时）
 const CACHE_EXPIRY = 24 * 60 * 60 * 1000;
 
-const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username, year }) => {
+const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
   const [contributions, setContributions] = useState<ContributionDay[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalContributions, setTotalContributions] = useState(0);
@@ -101,27 +100,59 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username, year }) => {
         setLoading(true);
         setError(null);
 
-        // 首先尝试从缓存获取数据
-        const cachedData = getCachedData(username, year);
+        // 计算需要获取的日期范围（过去12个月）
+        const today = new Date();
+        const oneYearAgo = new Date(today);
+        oneYearAgo.setFullYear(today.getFullYear() - 1);
+        oneYearAgo.setDate(today.getDate() + 1); // 从12个月前的明天开始
 
-        if (cachedData) {
-          console.log("使用缓存数据");
-          // 过滤掉今天以后的数据
-          const filteredContributions = cachedData.contributions;
-          setContributions(filteredContributions);
-          setTotalContributions(cachedData.total[year.toString()] || 0);
-        } else {
-          console.log("从API获取数据");
-          // 缓存中没有数据，从API获取
-          const data = await fetchContributions(username, year);
+        const currentYear = today.getFullYear();
+        const previousYear = currentYear - 1;
+        
+        // 需要获取的年份数据
+        const yearsToFetch = [previousYear, currentYear];
+        const allContributions: ContributionDay[] = [];
 
-          // 过滤掉今天以后的数据
-          const filteredContributions = data.contributions;
+        // 获取所需年份的数据
+        for (const year of yearsToFetch) {
+          let yearData: GitHubContributionsData | null = null;
+          
+          // 尝试从缓存获取
+          const cachedData = getCachedData(username, year);
+          if (cachedData) {
+            console.log(`使用${year}年缓存数据`);
+            yearData = cachedData;
+          } else {
+            console.log(`从API获取${year}年数据`);
+            try {
+              yearData = await fetchContributions(username, year);
+            } catch (error) {
+              console.warn(`获取${year}年数据失败:`, error);
+              continue;
+            }
+          }
 
-          setContributions(filteredContributions);
-          setTotalContributions(data.total[year.toString()] || 0);
+          if (yearData) {
+            allContributions.push(...yearData.contributions);
+          }
         }
-      } catch {
+
+        // 过滤出过去12个月的数据
+        const twelveMonthsData = allContributions.filter((day: ContributionDay) => {
+          const dayDate = new Date(day.date);
+          return dayDate >= oneYearAgo && dayDate <= today;
+        });
+
+        // 按日期排序
+        twelveMonthsData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        // 计算总贡献数
+        const total = twelveMonthsData.reduce((sum: number, day: ContributionDay) => sum + day.count, 0);
+
+        setContributions(twelveMonthsData);
+        setTotalContributions(total);
+      } catch (error) {
+        console.error("获取GitHub数据失败:", error);
         setError("获取GitHub数据失败，请检查用户名或网络连接");
         setContributions([]);
         setTotalContributions(0);
@@ -133,7 +164,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username, year }) => {
     if (username) {
       loadContributions();
     }
-  }, [username, year]);
+  }, [username]);
 
   // 获取颜色
   const getColor = (level: number): string => {
@@ -147,36 +178,46 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username, year }) => {
     return colors[level as keyof typeof colors] || colors[0];
   };
 
-  // 按周分组
+  // 按周分组（12个月滚动）
   const getWeeks = () => {
     if (contributions.length === 0) return [];
 
+    // 创建完整的53周网格（一年最多53周）
+    const today = new Date();
+    const oneYearAgo = new Date(today);
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
+    oneYearAgo.setDate(today.getDate() + 1);
+
+    // 找到开始周的星期天
+    const startDate = new Date(oneYearAgo);
+    startDate.setDate(startDate.getDate() - startDate.getDay()); // 调整到周日
+
     const weeks: ContributionDay[][] = [];
-    let currentWeek: ContributionDay[] = [];
+    const currentDate = new Date(startDate);
 
-    // 获取年份的第一天是星期几
-    const firstDay = new Date(year, 0, 1);
-    const firstDayOfWeek = firstDay.getDay();
-
-    // 填充第一周的空白天数
-    for (let i = 0; i < firstDayOfWeek; i++) {
-      currentWeek.push({ date: "", count: 0, level: 0 });
-    }
-
-    contributions.forEach((day) => {
-      currentWeek.push(day);
-
-      if (currentWeek.length === 7) {
-        weeks.push([...currentWeek]);
-        currentWeek = [];
+    // 生成53周的网格
+    for (let week = 0; week < 53; week++) {
+      const currentWeek: ContributionDay[] = [];
+      
+      for (let day = 0; day < 7; day++) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        
+        // 查找是否有该日期的贡献数据
+        const contribution = contributions.find(c => c.date === dateStr);
+        
+        if (contribution) {
+          currentWeek.push(contribution);
+        } else if (currentDate >= oneYearAgo && currentDate <= today) {
+          // 在日期范围内但没有数据，填充0
+          currentWeek.push({ date: dateStr, count: 0, level: 0 });
+        } else {
+          // 超出范围，填充空白
+          currentWeek.push({ date: "", count: 0, level: 0 });
+        }
+        
+        currentDate.setDate(currentDate.getDate() + 1);
       }
-    });
-
-    // 处理最后一周
-    if (currentWeek.length > 0) {
-      while (currentWeek.length < 7) {
-        currentWeek.push({ date: "", count: 0, level: 0 });
-      }
+      
       weeks.push(currentWeek);
     }
 
@@ -227,38 +268,73 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username, year }) => {
       <div className="mb-[12px]">
         <h3 className="text-[16px] font-semibold mb-[1px] flex items-center gap-2">
           <SvgIcon name="github" width={20} height={20} color="#fff" />
-          {year}年GitHub提交
+          Past 12 Months GitHub Commits
         </h3>
         <p className="text-[12px] text-[rgba(255,255,255,0.7)]">
-          {totalContributions} contributions in {year}
-        </p>
-        <p className="text-[12px] text-[rgba(255,255,255,0.7)]">
-          {totalContributions} 次提交在 2025年
+          {totalContributions} contributions in the last 12 months
         </p>
       </div>
 
       <div className="relative">
         {/* 月份标签 */}
         <div className="flex mb-[8px] text-[10px] text-[rgba(255,255,255,0.7)] pl-[20px]">
-          {months.map((month, monthIndex) => {
-            // 计算每个月对应的周数
-            const monthWeeks = weeks.filter((week, weekIndex) => {
-              const weekDate = new Date(year, 0, 1 + weekIndex * 7);
-              return weekDate.getMonth() === monthIndex;
-            }).length;
-
-            return (
-              <div
-                key={month}
-                className="text-center flex-shrink-0"
-                style={{
-                  width: `${Math.max(monthWeeks * 12, 26)}px`,
-                }}
-              >
-                {month}
-              </div>
-            );
-          })}
+          {(() => {
+            const monthLabels: React.ReactElement[] = [];
+            const today = new Date();
+            const oneYearAgo = new Date(today);
+            oneYearAgo.setFullYear(today.getFullYear() - 1);
+            
+            // 找到开始周的星期天
+            const startDate = new Date(oneYearAgo);
+            startDate.setDate(startDate.getDate() - startDate.getDay() + 1); // 下周一
+            
+            let currentMonth = startDate.getMonth();
+            let weekCount = 0;
+            
+            for (let week = 0; week < 53; week++) {
+              const weekStartDate = new Date(startDate);
+              weekStartDate.setDate(startDate.getDate() + week * 7);
+              const weekMonth = weekStartDate.getMonth();
+              
+              if (week === 0 || weekMonth !== currentMonth) {
+                if (week > 0) {
+                  // 添加前一个月的标签
+                  monthLabels.push(
+                    <div
+                      key={`${currentMonth}-${week}`}
+                      className="text-center flex-shrink-0"
+                      style={{
+                        width: `${Math.max(weekCount * 12, 26)}px`,
+                      }}
+                    >
+                      {months[currentMonth]}
+                    </div>
+                  );
+                }
+                currentMonth = weekMonth;
+                weekCount = 1;
+              } else {
+                weekCount++;
+              }
+            }
+            
+            // 添加最后一个月
+            if (weekCount > 0) {
+              monthLabels.push(
+                <div
+                  key={`${currentMonth}-final`}
+                  className="text-center flex-shrink-0"
+                  style={{
+                    width: `${Math.max(weekCount * 12, 26)}px`,
+                  }}
+                >
+                  {months[currentMonth]}
+                </div>
+              );
+            }
+            
+            return monthLabels;
+          })()}
         </div>
 
         <div className="flex">
