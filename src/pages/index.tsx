@@ -9,12 +9,6 @@ import VideoModal from "@/components/VideoModal";
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import {
-  tagConfigs,
-  ImageModalConfig,
-  MusicModalConfig,
-  VideoModalConfig,
-} from "@/data/tagConfigs";
 import { experienceData } from "@/data/experience";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -100,32 +94,6 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [currentIndex, isDeleting, fullText]);
 
-  // Tag click handler function
-  const handleTagClick = (tagName: string) => {
-    const tagConfig = tagConfigs[tagName];
-
-    if (!tagConfig) {
-      return;
-    }
-
-    switch (tagConfig.type) {
-      case "image":
-        setImageModal(tagConfig.config as ImageModalConfig);
-        break;
-      case "music":
-        setMusicModal(tagConfig.config as MusicModalConfig);
-        break;
-      case "video":
-        setVideoModal(tagConfig.config as VideoModalConfig);
-        break;
-      case "link":
-        const linkConfig = tagConfig.config as { url: string };
-        window.open(linkConfig.url, "_blank");
-        break;
-      default:
-        break;
-    }
-  };
 
   // Add GitHub and QQ click handler functions
   const handleGithubClick = () => {
@@ -144,11 +112,6 @@ export default function Home() {
     });
   };
 
-  const tags = [
-    {
-      name: "Cooking",
-    },
-  ];
 
   const express = experienceData;
 
@@ -279,72 +242,21 @@ export default function Home() {
             </div>
 
             {/* Content area - vertical layout below 800px */}
-            <div className="flex gap-[10px] mt-[20px] flex-col md:flex-row px-4 md:px-0">
+            <div className="flex gap-[10px] mt-[20px] flex-col md:grid md:grid-cols-[250px_1fr] px-4 md:px-0">
               {/* Left/center area */}
-              <div className="flex order-2 md:order-1 w-full md:w-auto">
-                <div className="flex flex-col gap-[10px] w-full md:w-[250px]">
-                  <div className="flex gap-[10px] flex-col flex-row">
-                    <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col flex-1">
-                      <div className="flex items-center gap-[5px]">
-                        <SvgIcon
-                          name="address"
-                          width={20}
-                          height={20}
-                          color="#fff"
-                        />
-                        Sydney
-                      </div>
-                      <div className="flex items-center gap-[5px]">
-                        <SvgIcon
-                          name="work"
-                          width={20}
-                          height={20}
-                          color="#fff"
-                        />
-                        Not Employed
-                      </div>
-                    </div>
-                    <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col flex-1">
-                      <div className="flex items-center gap-[5px]">
-                        <SvgIcon
-                          name="address"
-                          width={20}
-                          height={20}
-                          color="#fff"
-                        />
-                        China
-                      </div>
-                      <div className="flex items-center gap-[5px]">
-                        <SvgIcon
-                          name="home"
-                          width={20}
-                          height={20}
-                          color="#fff"
-                        />
-                        Home
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] gap-[10px] flex flex-wrap text-[12px]">
-                    {tags.map((tag) => (
-                      <div
-                        className="bg-[rgba(255,255,255,.1)] rounded-[5px] p-[5px] w-fit cursor-pointer hover:bg-[rgba(255,255,255,.2)] transition-all duration-200 transform hover:scale-105"
-                        key={tag.name}
-                        onClick={() => handleTagClick(tag.name)}
-                      >
-                        {tag.name}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col">
-                    <div className="relative">
+              <div className="order-2 md:order-1">
+                <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col h-full">
+                    <div className="relative flex flex-col justify-between h-full">
+                      {/* Background timeline line */}
+                      <div className="absolute left-[5px] top-[6px] bottom-[6px] w-[2px] bg-gradient-to-b from-[#1b2c55] to-[#3d85a9]"></div>
+                      
                       {express.map((item, index) => (
                         <div
                           key={index}
-                          className="relative flex items-start last:mb-0"
+                          className="relative flex items-start"
                         >
                           {/* 时间线左侧圆点 */}
-                          <div className="relative flex flex-col items-center mr-[15px]">
+                          <div className="relative flex flex-col items-center mr-[15px] z-10">
                             <div
                               className={`w-[12px] h-[12px] rounded-full border-2 border-white ${
                                 index === express.length - 1
@@ -352,34 +264,35 @@ export default function Home() {
                                   : "bg-[#1b2c55]"
                               }`}
                             ></div>
-                            {/* 连接线 */}
-                            {index < express.length - 1 && (
-                              <div className="w-[2px] h-[40px] bg-gradient-to-b from-[#1b2c55] to-[#3d85a9] mt-[5px]"></div>
-                            )}
                           </div>
 
                           <div className="flex-1">
                             <div className="font-semibold text-[#fff] mb-[2px] text-[13px] md:text-[14px]">
                               {item.name}
                             </div>
-                            <div className="text-[11px] md:text-[12px] text-[rgba(255,255,255,0.7)]">
+                            <div className="text-[11px] md:text-[12px] text-[rgba(255,255,255,0.8)] mb-[2px] font-medium">
+                              {item.position}
+                            </div>
+                            <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.7)] mb-[4px]">
                               {item.date}
+                            </div>
+                            <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.6)] leading-relaxed">
+                              {item.description}
                             </div>
                           </div>
                         </div>
                       ))}
                     </div>
-                  </div>
                 </div>
               </div>
               {/* Right/bottom area */}
-              <div className="flex flex-col gap-[10px] order-1 md:order-2 w-full md:w-auto">
+              <div className="flex flex-col gap-[10px] order-1 md:order-2">
                 {/* GitHub contribution heatmap */}
                 <div className="w-full overflow-x-auto">
                   <GitHubHeatmap username="shenghaoisyummy" />
                 </div>
 
-                <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col">
+                <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col flex-1">
                   <div className="font-bold text-[16px] flex items-center gap-[5px]">
                     <SvgIcon name="site" width={20} height={20} color="#fff" />
                     <div className="flex flex-col">Navigation</div>
