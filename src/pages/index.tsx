@@ -262,10 +262,10 @@ export default function Home() {
                         </div>
 
                         <div className="flex-1">
-                          <div className="font-semibold text-[#fff] mb-[2px] text-[13px] md:text-[14px]">
+                          <div className="font-bold bg-gradient-to-r from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent mb-[3px] text-[13px] md:text-[14px] uppercase tracking-wider">
                             {item.name}
                           </div>
-                          <div className="text-[11px] md:text-[12px] text-[rgba(255,255,255,0.8)] mb-[2px] font-medium">
+                          <div className="text-[11px] md:text-[12px] text-[#87ceeb] mb-[4px] font-bold italic">
                             {item.position}
                           </div>
                           <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.7)] mb-[4px]">
