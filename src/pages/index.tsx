@@ -251,7 +251,7 @@ export default function Home() {
                     {express.map((item, index) => (
                       <div key={index} className="relative flex items-start">
                         {/* 时间线左侧圆点 */}
-                        <div className="relative flex flex-col items-center mr-[15px] z-10">
+                        <div className="relative flex flex-col items-center mr-[15px] z-10 mt-[2px]">
                           <div
                             className={`w-[12px] h-[12px] rounded-full border-2 border-white ${
                               index === express.length - 1
@@ -295,7 +295,7 @@ export default function Home() {
                   <div className="flex gap-[20px] flex-col sm:flex-row">
                     <Link
                       href="/works"
-                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(0,0,0,.5)] transition-colors"
+                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(255,107,53,0.2)] hover:border-[#ff6b35] border border-transparent transition-all duration-300"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Portfolio</span>
@@ -312,7 +312,7 @@ export default function Home() {
                     </Link>
                     <Link
                       href="/blog"
-                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(0,0,0,.5)] transition-colors"
+                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(32,178,170,0.2)] hover:border-[#20b2aa] border border-transparent transition-all duration-300"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Articles</span>
@@ -329,7 +329,7 @@ export default function Home() {
                     </Link>
                     <Link
                       href="/chat"
-                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(0,0,0,.5)] transition-colors"
+                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(74,144,194,0.2)] hover:border-[#4a90c2] border border-transparent transition-all duration-300"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Chat Room</span>
