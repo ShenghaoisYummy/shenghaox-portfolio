@@ -94,7 +94,6 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [currentIndex, isDeleting, fullText]);
 
-
   // Add GitHub and QQ click handler functions
   const handleGithubClick = () => {
     window.open("https://github.com/ShenghaoisYummy", "_blank");
@@ -111,7 +110,6 @@ export default function Home() {
       imageHeight: 500,
     });
   };
-
 
   const express = experienceData;
 
@@ -246,43 +244,40 @@ export default function Home() {
               {/* Left/center area */}
               <div className="order-2 md:order-1">
                 <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col h-full">
-                    <div className="relative flex flex-col justify-between h-full">
-                      {/* Background timeline line */}
-                      <div className="absolute left-[5px] top-[6px] bottom-[6px] w-[2px] bg-gradient-to-b from-[#1b2c55] to-[#3d85a9]"></div>
-                      
-                      {express.map((item, index) => (
-                        <div
-                          key={index}
-                          className="relative flex items-start"
-                        >
-                          {/* 时间线左侧圆点 */}
-                          <div className="relative flex flex-col items-center mr-[15px] z-10">
-                            <div
-                              className={`w-[12px] h-[12px] rounded-full border-2 border-white ${
-                                index === express.length - 1
-                                  ? "bg-[#3d85a9]"
-                                  : "bg-[#1b2c55]"
-                              }`}
-                            ></div>
-                          </div>
+                  <div className="relative flex flex-col justify-between h-full">
+                    {/* Background timeline line */}
+                    <div className="absolute left-[5px] top-[6px] bottom-[6px] w-[2px] bg-gradient-to-b from-[#1b2c55] to-[#3d85a9]"></div>
 
-                          <div className="flex-1">
-                            <div className="font-semibold text-[#fff] mb-[2px] text-[13px] md:text-[14px]">
-                              {item.name}
-                            </div>
-                            <div className="text-[11px] md:text-[12px] text-[rgba(255,255,255,0.8)] mb-[2px] font-medium">
-                              {item.position}
-                            </div>
-                            <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.7)] mb-[4px]">
-                              {item.date}
-                            </div>
-                            <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.6)] leading-relaxed">
-                              {item.description}
-                            </div>
+                    {express.map((item, index) => (
+                      <div key={index} className="relative flex items-start">
+                        {/* 时间线左侧圆点 */}
+                        <div className="relative flex flex-col items-center mr-[15px] z-10">
+                          <div
+                            className={`w-[12px] h-[12px] rounded-full border-2 border-white ${
+                              index === express.length - 1
+                                ? "bg-[#3d85a9]"
+                                : "bg-[#1b2c55]"
+                            }`}
+                          ></div>
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="font-semibold text-[#fff] mb-[2px] text-[13px] md:text-[14px]">
+                            {item.name}
+                          </div>
+                          <div className="text-[11px] md:text-[12px] text-[rgba(255,255,255,0.8)] mb-[2px] font-medium">
+                            {item.position}
+                          </div>
+                          <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.7)] mb-[4px]">
+                            {item.date}
+                          </div>
+                          <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.6)] leading-relaxed">
+                            {item.description}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               {/* Right/bottom area */}
@@ -292,59 +287,65 @@ export default function Home() {
                   <GitHubHeatmap username="shenghaoisyummy" />
                 </div>
 
-                <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col flex-1">
-                  <div className="font-bold text-[16px] flex items-center gap-[5px]">
-                    <SvgIcon name="site" width={20} height={20} color="#fff" />
+                <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[20px] text-[#fff] text-[16px] gap-[20px] flex flex-col flex-1">
+                  <div className="font-bold text-[20px] flex items-center gap-[8px]">
+                    <SvgIcon name="site" width={24} height={24} color="#fff" />
                     <div className="flex flex-col">Navigation</div>
                   </div>
-                  <div className="flex gap-[10px] flex-col sm:flex-row">
+                  <div className="flex gap-[20px] flex-col sm:flex-row">
                     <Link
                       href="/works"
-                      className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col cursor-pointer flex-1"
+                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(0,0,0,.5)] transition-colors"
                     >
                       <div className="flex justify-between items-center">
-                        Portfolio
+                        <span className="font-semibold">Portfolio</span>
                         <SvgIcon
                           name="zuopin"
-                          width={25}
-                          height={25}
+                          width={30}
+                          height={30}
                           color="#fff"
                         />
                       </div>
-                      <span className="text-[12px]">Frontend projects</span>
+                      <span className="text-[14px] text-[rgba(255,255,255,0.8)]">
+                        Full-Stack projects
+                      </span>
                     </Link>
                     <Link
                       href="/blog"
-                      className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col cursor-pointer flex-1"
+                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(0,0,0,.5)] transition-colors"
                     >
                       <div className="flex justify-between items-center">
-                        Articles
+                        <span className="font-semibold">Articles</span>
                         <SvgIcon
                           name="docs"
-                          width={25}
-                          height={25}
+                          width={30}
+                          height={30}
                           color="#fff"
                         />
                       </div>
-                      <span className="text-[12px]">Frontend knowledge</span>
+                      <span className="text-[14px] text-[rgba(255,255,255,0.8)]">
+                        Full-Stack & AI knowledges
+                      </span>
                     </Link>
                     <Link
                       href="/chat"
-                      className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] text-[14px] gap-[10px] flex flex-col cursor-pointer flex-1"
+                      className="bg-[rgba(0,0,0,.3)] rounded-[8px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(0,0,0,.5)] transition-colors"
                     >
                       <div className="flex justify-between items-center">
-                        Chat Room
+                        <span className="font-semibold">Chat Room</span>
                         <SvgIcon
                           name="comment"
-                          width={25}
-                          height={25}
+                          width={30}
+                          height={30}
                           color="#fff"
                         />
                       </div>
-                      <span className="text-[12px]">Real-time chat</span>
+                      <span className="text-[14px] text-[rgba(255,255,255,0.8)]">
+                        Real-time chat
+                      </span>
                     </Link>
                   </div>
-                  <div className="text-[12px] md:text-[14px]">
+                  <div className="text-[14px] md:text-[16px] text-[rgba(255,255,255,0.7)]">
                     Continuously updating since 2025...
                   </div>
                 </div>
