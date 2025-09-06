@@ -27,7 +27,41 @@ body {
 
 /* 确保主题切换时的平滑过渡 */
 * {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Enhanced text shadow utility */
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Improved glass morphism effect */
+.glass-effect {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+/* Gradient border animation */
+@keyframes gradient-border {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-border {
+  background: linear-gradient(45deg, #4a90c2, #7db8d8, #3d85a9, #4a90c2);
+  background-size: 300% 300%;
+  animation: gradient-border 6s ease infinite;
+}
+
+/* Enhanced hover glow effects */
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(74, 144, 194, 0.3), 0 0 40px rgba(125, 184, 216, 0.2);
 }
 
 /* 自定义滚动条样式 */

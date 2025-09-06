@@ -243,7 +243,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
 
   if (loading) {
     return (
-      <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[15px] text-[#fff] w-full max-w-full">
+      <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[16px] text-[#fff] w-full max-w-full shadow-lg">
         <div className="animate-pulse flex items-center gap-2">
           <div className="w-4 h-4 bg-[#3d85a9] rounded animate-spin"></div>
           <span>加载GitHub贡献图...</span>
@@ -254,7 +254,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
 
   if (error) {
     return (
-      <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[15px] text-[#fff] w-full max-w-full">
+      <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[16px] text-[#fff] w-full max-w-full shadow-lg">
         <div className="text-red-400">
           <div className="font-semibold mb-2">⚠️ 加载失败</div>
           <div className="text-sm">{error}</div>
@@ -264,7 +264,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
   }
 
   return (
-    <div className="bg-[rgba(0,0,0,.3)] rounded-[5px] p-[10px] text-[#fff] overflow-x-auto custom-scrollbar">
+    <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[16px] text-[#fff] overflow-x-auto custom-scrollbar shadow-lg">
       <div className="mb-[12px]">
         <h3 className="text-[16px] font-semibold mb-[1px] flex items-center gap-2">
           <SvgIcon name="github" width={20} height={20} color="#fff" />
