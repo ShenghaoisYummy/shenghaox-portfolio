@@ -125,7 +125,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
       {/* 浅色主题背景图片 */}
       <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1]"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1] min-h-full"
         style={{
           backgroundImage: `url('/images/img3.jpg')`,
           opacity: theme === "light" ? 1 : 0,
@@ -134,7 +134,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
       {/* 深色主题背景图片 */}
       <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1]"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1] min-h-full"
         style={{
           backgroundImage: `url('/images/img2.jpg')`,
           opacity: theme === "dark" ? 1 : 0,
