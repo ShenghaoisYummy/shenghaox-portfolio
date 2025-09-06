@@ -155,9 +155,9 @@ export default function Home() {
         <div
           className={`${geistSans.className} ${geistMono.className} min-h-screen font-[family-name:var(--font-geist-sans)] flex justify-center items-center px-4 md:px-8 w-full`}
         >
-          <div className="flex flex-col w-full max-w-4xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-24 md:pb-0 hide-scrollbar">
+          <div className="flex flex-col w-full max-w-4xl lg:max-w-5xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-8 md:pb-0 hide-scrollbar">
             {/* Header area - avatar and basic info */}
-            <div className="flex gap-[16px] md:gap-[20px] flex-col md:flex-row mb-6">
+            <div className="flex gap-[6px] md:gap-[8px] flex-col md:flex-row mb-1 ml-[30px] mb-[15px]">
               <div className="relative w-full md:w-[250px] flex justify-center items-center mx-auto md:mx-0">
                 <Image
                   src="/images/avatar.jpg"
@@ -178,11 +178,8 @@ export default function Home() {
                   ""
                 )}
               </div>
-              <div
-                className="flex flex-col gap-[12px] md:gap-[16px] text-center md:text-left px-4 md:px-0 relative"
-                style={{ left: "40px" }}
-              >
-                <div className="text-[32px] md:text-[48px] font-bold text-[#fff] text-shadow-lg">
+              <div className="flex flex-col gap-[3px] md:gap-[5px] text-center md:text-left px-4 md:px-0 md:translate-x-5 lg:translate-x-10">
+                <div className="text-[28px] md:text-[42px] font-bold text-[#fff] text-shadow-lg leading-tight mb-[1.5rem]">
                   <span className="inline-block">
                     {displayText.split(" ").map((word, wordIndex) => {
                       if (word === "austin") {
@@ -207,45 +204,45 @@ export default function Home() {
                     <span className="animate-pulse text-[#3d85a9]">|</span>
                   </span>
                 </div>
-                <div className="text-shadow-sm text-[#fff] text-[16px] md:text-[20px]">
-                  <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[18px] md:text-[22px] font-semibold">
+                <div className="text-shadow-sm text-[#fff] text-[15px] md:text-[18px]">
+                  <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[17px] md:text-[20px] font-semibold">
                     Full-Stack & AI Developer
                   </span>{" "}
                 </div>
 
-                <div className="text-shadow-sm text-[rgba(255,255,255,0.9)] text-[15px] md:text-[18px]">
-                  <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[17px] md:text-[20px] font-semibold">
+                <div className="text-shadow-sm text-[rgba(255,255,255,0.9)] text-[14px] md:text-[16px]">
+                  <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[16px] md:text-[18px] font-semibold">
                     2.5
                   </span>{" "}
                   years work experience
                 </div>
-                <div className="flex mt-[10px] gap-[10px] justify-center md:justify-start">
+                <div className="flex mt-[3px] gap-[5px] justify-center md:justify-start">
                   <div
-                    className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[8px] p-[10px] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
+                    className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[8px] p-[8px] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
                     onClick={handleGithubClick}
                   >
                     <SvgIcon
                       name="github"
-                      width={20}
-                      height={20}
+                      width={18}
+                      height={18}
                       color="#fff"
                     />
                   </div>
                   <div
-                    className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[8px] p-[10px] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
+                    className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[8px] p-[8px] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
                     onClick={handleQQClick}
                   >
-                    <SvgIcon name="qq" width={20} height={20} color="#fff" />
+                    <SvgIcon name="qq" width={18} height={18} color="#fff" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Content area - vertical layout below 800px */}
-            <div className="flex gap-[16px] md:gap-[20px] mt-[24px] flex-col lg:grid lg:grid-cols-[290px_1fr] px-4 md:px-0">
+            <div className="flex gap-[6px] md:gap-[10px] flex-col lg:grid lg:grid-cols-[250px_1fr] px-4 md:px-8 lg:px-8">
               {/* Left/center area */}
               <div className="order-2 lg:order-1">
-                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[16px] text-[#fff] text-[14px] gap-[12px] flex flex-col h-full shadow-lg">
+                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[6px] text-[#fff] text-[14px] gap-[6px] flex flex-col h-full shadow-lg">
                   <div className="relative flex flex-col justify-between h-full">
                     {/* Background timeline line */}
                     <div className="absolute left-[5px] top-[6px] bottom-[6px] w-[3px] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"></div>
@@ -283,19 +280,19 @@ export default function Home() {
                 </div>
               </div>
               {/* Right/bottom area */}
-              <div className="flex flex-col gap-[16px] md:gap-[20px] order-1 lg:order-2">
+              <div className="flex flex-col gap-[6px] md:gap-[10px] order-1 lg:order-2">
                 {/* GitHub contribution heatmap */}
                 <GitHubHeatmap username="shenghaoisyummy" />
 
-                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[24px] text-[#fff] text-[16px] gap-[24px] flex flex-col flex-1 shadow-lg">
-                  <div className="font-bold text-[20px] flex items-center gap-[8px]">
-                    <SvgIcon name="site" width={24} height={24} color="#fff" />
+                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[16px] p-[32px] text-[#fff] text-[18px] gap-[32px] flex flex-col flex-1 shadow-lg">
+                  <div className="font-bold text-[24px] flex items-center gap-[12px]">
+                    <SvgIcon name="site" width={28} height={28} color="#fff" />
                     <div className="flex flex-col">Navigation</div>
                   </div>
-                  <div className="flex gap-[16px] md:gap-[20px] flex-col sm:flex-row">
+                  <div className="flex gap-[20px] md:gap-[24px] flex-col sm:flex-row">
                     <Link
                       href="/works"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(255,107,53,0.15)] hover:border-[#ff6b35] hover:shadow-lg hover:shadow-[rgba(255,107,53,0.2)] hover:scale-[1.02] transition-all duration-300 group"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[14px] text-[#fff] text-[16px] gap-[8px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Portfolio</span>
@@ -314,7 +311,7 @@ export default function Home() {
                     </Link>
                     <Link
                       href="/blog"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] hover:scale-[1.02] transition-all duration-300 group"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[14px] text-[#fff] text-[16px] gap-[8px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Articles</span>
@@ -333,7 +330,7 @@ export default function Home() {
                     </Link>
                     <Link
                       href="/chat"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[20px] text-[#fff] text-[16px] gap-[15px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] hover:scale-[1.02] transition-all duration-300 group"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[14px] text-[#fff] text-[16px] gap-[8px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(255,107,53,0.15)] hover:border-[#ff6b35] hover:shadow-lg hover:shadow-[rgba(255,107,53,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Chat Room</span>

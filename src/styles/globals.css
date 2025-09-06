@@ -22,12 +22,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow: hidden; /* 防止 body 产生滚动条 */
+  overflow-x: hidden; /* 防止横向滚动条，允许纵向滚动 */
 }
 
 /* 确保主题切换时的平滑过渡 */
 * {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 /* Enhanced text shadow utility */
@@ -45,7 +46,8 @@ body {
 
 /* Gradient border animation */
 @keyframes gradient-border {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -61,7 +63,8 @@ body {
 
 /* Enhanced hover glow effects */
 .hover-glow:hover {
-  box-shadow: 0 0 20px rgba(74, 144, 194, 0.3), 0 0 40px rgba(125, 184, 216, 0.2);
+  box-shadow: 0 0 20px rgba(74, 144, 194, 0.3),
+    0 0 40px rgba(125, 184, 216, 0.2);
 }
 
 /* 自定义滚动条样式 */
@@ -293,12 +296,11 @@ body {
 }
 
 .loading-animation-cyberpunk-x {
-  filter: drop-shadow(0 0 5px #4A90E2);
+  filter: drop-shadow(0 0 5px #4a90e2);
 }
 
 .loading-animation-cyberpunk-glow {
-  animation: dashArray 2s ease-in-out infinite,
-    dashOffset 2s linear infinite;
+  animation: dashArray 2s ease-in-out infinite, dashOffset 2s linear infinite;
 }
 
 @media (max-width: 768px) {
@@ -337,6 +339,5 @@ body {
 }
 
 .loading-animation-dash {
-  animation: dashArray 2s ease-in-out infinite,
-    dashOffset 2s linear infinite;
+  animation: dashArray 2s ease-in-out infinite, dashOffset 2s linear infinite;
 }
