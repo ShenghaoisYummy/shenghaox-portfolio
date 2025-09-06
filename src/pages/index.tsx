@@ -168,7 +168,7 @@ export default function Home() {
                 />
                 {theme !== "dark" ? (
                   <Image
-                    src="/images/smoke.png"
+                    src="/images/"
                     alt="Logo"
                     width={200}
                     height={200}
@@ -242,7 +242,7 @@ export default function Home() {
             <div className="flex gap-[6px] md:gap-[10px] flex-col lg:grid lg:grid-cols-[250px_1fr] px-4 md:px-8 lg:px-8">
               {/* Left/center area */}
               <div className="order-2 lg:order-1">
-                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[6px] text-[#fff] text-[14px] gap-[6px] flex flex-col h-full shadow-lg">
+                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[6px] text-[#fff] text-[14px] gap-[6px] flex flex-col h-full shadow-lg">
                   <div className="relative flex flex-col justify-between h-full">
                     {/* Background timeline line */}
                     <div className="absolute left-[5px] top-[6px] bottom-[6px] w-[3px] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"></div>
@@ -261,16 +261,16 @@ export default function Home() {
                         </div>
 
                         <div className="flex-1">
-                          <div className="font-bold bg-gradient-to-r from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent mb-[3px] text-[13px] md:text-[14px] uppercase tracking-wider">
+                          <div className="font-bold bg-gradient-to-r from-[#60a5fa] to-[#93c5fd] bg-clip-text text-transparent mb-[3px] text-[13px] md:text-[14px] uppercase tracking-wider drop-shadow-lg">
                             {item.name}
                           </div>
-                          <div className="text-[11px] md:text-[12px] text-[#87ceeb] mb-[4px] font-bold italic">
+                          <div className="text-[11px] md:text-[12px] text-[#60a5fa] mb-[4px] font-bold italic drop-shadow-md">
                             {item.position}
                           </div>
-                          <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.7)] mb-[4px]">
+                          <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.9)] mb-[4px] drop-shadow-sm">
                             {item.date}
                           </div>
-                          <div className="text-[11px] md:text-[12px] text-[rgba(255,255,255,0.8)] leading-relaxed">
+                          <div className="text-[11px] md:text-[12px] text-[rgba(255,255,255,0.95)] leading-relaxed drop-shadow-sm">
                             {item.description}
                           </div>
                         </div>
@@ -295,7 +295,7 @@ export default function Home() {
                       className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[14px] text-[#fff] text-[16px] gap-[8px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold">Portfolio</span>
+                        <span className="font-semibold">Projects</span>
                         <div className="group-hover:rotate-12 transition-transform duration-300">
                           <SvgIcon
                             name="zuopin"

@@ -127,7 +127,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1] min-h-full"
         style={{
-          backgroundImage: `url('/images/img3.jpg')`,
+          backgroundImage: `url('/images/sea.jpg')`,
           opacity: theme === "light" ? 1 : 0,
         }}
       />
@@ -136,7 +136,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1] min-h-full"
         style={{
-          backgroundImage: `url('/images/img2.jpg')`,
+          backgroundImage: `url('/images/starry-night.jpg')`,
           opacity: theme === "dark" ? 1 : 0,
         }}
       />
