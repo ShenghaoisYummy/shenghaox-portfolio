@@ -342,11 +342,11 @@ export default function Home() {
                       </span>
                     </Link>
                     <Link
-                      href="/blog"
+                      href="https://personal-blog-jade-five.vercel.app/"
                       className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[0.75rem] p-[0.875rem] text-[#fff] text-[1rem] gap-[0.5rem] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold">Articles</span>
+                        <span className="font-semibold">Blog</span>
                         <div className="group-hover:scale-110 transition-transform duration-300">
                           <SvgIcon
                             name="docs"
