@@ -144,7 +144,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       {/* 点赞按钮 */}
 
       {!isChatPage && (
-        <div className="fixed top-72 right-4 z-10">
+        <div className="fixed top-72 right-4 z-10 hidden md:block">
           <div className="flex flex-col justify-start text-1xl items-center shadow-xl z-10 bg-black/20 dark:bg-[#191818] gap-2 p-2 rounded-2xl transition-transform duration-300 hover:scale-105">
             <button
               onClick={() => handleReaction("like")}
@@ -304,11 +304,11 @@ function Layout({ children }: { children: React.ReactNode }) {
         <button
           onClick={handleCommentClick}
           className={`
-          fixed bottom-48 right-4 z-10
+          fixed bottom-48 right-4 z-10 hidden md:flex
           bg-[#5D676B] hover:bg-[#2C363F] text-white
           shadow-lg hover:shadow-xl
           transition-all duration-300 ease-out
-          flex items-center justify-center cursor-pointer w-12 h-12 rounded-full 
+          items-center justify-center cursor-pointer w-12 h-12 rounded-full 
         `}
         >
           <SvgIcon name="comment" width={20} height={20} color="#fff" />
