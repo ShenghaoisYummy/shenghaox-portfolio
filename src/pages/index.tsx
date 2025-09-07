@@ -357,7 +357,7 @@ export default function Home() {
           </div>
 
           {/* Scroll to works page button */}
-          <div className="fixed bottom-8 right-8 z-10">
+          <div className="fixed bottom-8 right-8 z-10 hidden">
             <Link
               href="/works"
               className="bg-[rgba(0,0,0,.6)] hover:bg-[rgba(0,0,0,.8)] border border-[rgba(255,255,255,0.1)] rounded-[0.625rem] p-[0.75rem] cursor-pointer transition-all duration-300 flex items-center gap-2 text-white backdrop-blur-md shadow-lg hover:shadow-xl hover:scale-105"
