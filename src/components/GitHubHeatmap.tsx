@@ -29,6 +29,21 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
   const [loading, setLoading] = useState(true);
   const [totalContributions, setTotalContributions] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // 检测移动设备
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIsMobile);
+    };
+  }, []);
 
   // 从本地存储获取缓存数据
   const getCachedData = (username: string, year: number) => {
@@ -100,11 +115,16 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         setLoading(true);
         setError(null);
 
-        // 计算需要获取的日期范围（过去12个月）
+        // 计算需要获取的日期范围（移动端6个月，桌面端12个月）
         const today = new Date();
-        const oneYearAgo = new Date(today);
-        oneYearAgo.setFullYear(today.getFullYear() - 1);
-        oneYearAgo.setDate(today.getDate() + 1); // 从12个月前的明天开始
+        const monthsToShow = isMobile ? 6 : 12;
+        const startDate = new Date(today);
+        if (monthsToShow === 6) {
+          startDate.setMonth(today.getMonth() - 6);
+        } else {
+          startDate.setFullYear(today.getFullYear() - 1);
+        }
+        startDate.setDate(today.getDate() + 1); // 从指定时间前的明天开始
 
         const currentYear = today.getFullYear();
         const previousYear = currentYear - 1;
@@ -137,19 +157,19 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
           }
         }
 
-        // 过滤出过去12个月的数据
-        const twelveMonthsData = allContributions.filter((day: ContributionDay) => {
+        // 过滤出指定月数的数据
+        const filteredData = allContributions.filter((day: ContributionDay) => {
           const dayDate = new Date(day.date);
-          return dayDate >= oneYearAgo && dayDate <= today;
+          return dayDate >= startDate && dayDate <= today;
         });
 
         // 按日期排序
-        twelveMonthsData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        filteredData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         // 计算总贡献数
-        const total = twelveMonthsData.reduce((sum: number, day: ContributionDay) => sum + day.count, 0);
+        const total = filteredData.reduce((sum: number, day: ContributionDay) => sum + day.count, 0);
 
-        setContributions(twelveMonthsData);
+        setContributions(filteredData);
         setTotalContributions(total);
       } catch (error) {
         console.error("获取GitHub数据失败:", error);
@@ -164,7 +184,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
     if (username) {
       loadContributions();
     }
-  }, [username]);
+  }, [username, isMobile]);
 
   // 获取颜色
   const getColor = (level: number): string => {
@@ -178,25 +198,32 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
     return colors[level as keyof typeof colors] || colors[0];
   };
 
-  // 按周分组（12个月滚动）
+  // 按周分组（移动端6个月，桌面端12个月滚动）
   const getWeeks = () => {
     if (contributions.length === 0) return [];
 
-    // 创建完整的53周网格（一年最多53周）
+    // 计算显示的周数（移动端约26周，桌面端53周）
+    const weeksToShow = isMobile ? 26 : 53;
+    const monthsBack = isMobile ? 6 : 12;
+    
     const today = new Date();
-    const oneYearAgo = new Date(today);
-    oneYearAgo.setFullYear(today.getFullYear() - 1);
-    oneYearAgo.setDate(today.getDate() + 1);
+    const periodStart = new Date(today);
+    if (monthsBack === 6) {
+      periodStart.setMonth(today.getMonth() - 6);
+    } else {
+      periodStart.setFullYear(today.getFullYear() - 1);
+    }
+    periodStart.setDate(today.getDate() + 1);
 
     // 找到开始周的星期天
-    const startDate = new Date(oneYearAgo);
+    const startDate = new Date(periodStart);
     startDate.setDate(startDate.getDate() - startDate.getDay()); // 调整到周日
 
     const weeks: ContributionDay[][] = [];
     const currentDate = new Date(startDate);
 
-    // 生成53周的网格
-    for (let week = 0; week < 53; week++) {
+    // 生成对应周数的网格
+    for (let week = 0; week < weeksToShow; week++) {
       const currentWeek: ContributionDay[] = [];
       
       for (let day = 0; day < 7; day++) {
@@ -207,7 +234,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         
         if (contribution) {
           currentWeek.push(contribution);
-        } else if (currentDate >= oneYearAgo && currentDate <= today) {
+        } else if (currentDate >= periodStart && currentDate <= today) {
           // 在日期范围内但没有数据，填充0
           currentWeek.push({ date: dateStr, count: 0, level: 0 });
         } else {
@@ -268,10 +295,10 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
       <div className="mb-[12px]">
         <h3 className="text-[16px] font-semibold mb-[1px] flex items-center gap-2">
           <SvgIcon name="github" width={20} height={20} color="#fff" />
-          Past 12 Months GitHub Commits
+          Past {isMobile ? '6' : '12'} Months GitHub Commits
         </h3>
         <p className="text-[12px] text-[rgba(255,255,255,0.7)]">
-          {totalContributions} contributions in the last 12 months
+          {totalContributions} contributions in the last {isMobile ? '6' : '12'} months
         </p>
       </div>
 
@@ -281,17 +308,24 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
           {(() => {
             const monthLabels: React.ReactElement[] = [];
             const today = new Date();
-            const oneYearAgo = new Date(today);
-            oneYearAgo.setFullYear(today.getFullYear() - 1);
+            const monthsBack = isMobile ? 6 : 12;
+            const weeksToShow = isMobile ? 26 : 53;
+            
+            const periodStart = new Date(today);
+            if (monthsBack === 6) {
+              periodStart.setMonth(today.getMonth() - 6);
+            } else {
+              periodStart.setFullYear(today.getFullYear() - 1);
+            }
             
             // 找到开始周的星期天
-            const startDate = new Date(oneYearAgo);
+            const startDate = new Date(periodStart);
             startDate.setDate(startDate.getDate() - startDate.getDay() + 1); // 下周一
             
             let currentMonth = startDate.getMonth();
             let weekCount = 0;
             
-            for (let week = 0; week < 53; week++) {
+            for (let week = 0; week < weeksToShow; week++) {
               const weekStartDate = new Date(startDate);
               weekStartDate.setDate(startDate.getDate() + week * 7);
               const weekMonth = weekStartDate.getMonth();
