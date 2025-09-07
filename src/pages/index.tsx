@@ -259,7 +259,8 @@ export default function Home() {
                   </div>
                   <div className="text-[0.6875rem] text-[rgba(255,255,255,0.8)] leading-relaxed">
                     <p className="mb-[0.25rem]">
-                      This section is currently being developed and will feature exciting new content.
+                      This section is currently being developed and will feature
+                      exciting new content.
                     </p>
                     <p className="text-[0.625rem] text-[rgba(255,255,255,0.6)]">
                       Stay tuned for updates! 🚀
@@ -267,28 +268,42 @@ export default function Home() {
                   </div>
                   <div className="mt-[0.75rem] flex gap-[0.25rem]">
                     <div className="w-[0.5rem] h-[0.5rem] bg-[#4a90c2] rounded-full animate-pulse"></div>
-                    <div className="w-[0.5rem] h-[0.5rem] bg-[#7db8d8] rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                    <div className="w-[0.5rem] h-[0.5rem] bg-[#3d85a9] rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                    <div
+                      className="w-[0.5rem] h-[0.5rem] bg-[#7db8d8] rounded-full animate-pulse"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                    <div
+                      className="w-[0.5rem] h-[0.5rem] bg-[#3d85a9] rounded-full animate-pulse"
+                      style={{ animationDelay: "0.4s" }}
+                    ></div>
                   </div>
                 </div>
-                
+
                 {/* Experience Section */}
                 <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] flex flex-col h-full shadow-lg overflow-hidden">
-                  <div className="relative flex flex-col h-full max-h-[400px] overflow-y-auto custom-scrollbar p-[0.375rem]">
+                  <div className="relative flex flex-col h-full max-h-[375px] overflow-y-auto custom-scrollbar p-[0.375rem]">
                     {/* Background timeline line */}
-                    <div className="absolute left-[0.71875rem] top-0 bottom-0 w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"></div>
+                    <div
+                      className="absolute left-[0.71875rem] top-[1.375rem] w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"
+                      style={{ height: `${express.length * 220}px` }}
+                    ></div>
 
                     {express.map((item, index) => (
-                      <div key={index} className={`relative flex items-start ${index !== express.length - 1 ? 'mb-[1.25rem]' : ''}`}>
+                      <div
+                        key={index}
+                        className={`relative flex items-start ${
+                          index !== express.length - 1 ? "mb-[1.25rem]" : ""
+                        }`}
+                      >
                         {/* 时间线左侧圆点 */}
                         <div className="relative flex flex-col items-center mr-[0.9375rem] z-10">
                           <div
                             className={`w-[0.875rem] h-[0.875rem] rounded-full border-2 border-white shadow-md ${
-                              index === express.length - 1
+                              index === 0
                                 ? "bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] animate-pulse"
                                 : "bg-gradient-to-br from-[#1b2c55] to-[#3d85a9]"
                             }`}
-                            style={{marginTop: '0.125rem'}}
+                            style={{ marginTop: "0.125rem" }}
                           ></div>
                         </div>
 
