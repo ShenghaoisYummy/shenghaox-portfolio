@@ -62,7 +62,7 @@ export const commentAPI = {
 };
 
 // 点赞相关API
-export const reactionAPI = {
+export const  reactionAPI = {
   // 获取所有类型的点赞数量 - 带默认值
   getReactions: () => requestWithDefault<ReactionCounts>("/reactions", DEFAULT_REACTIONS),
 

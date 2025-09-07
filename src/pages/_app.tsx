@@ -136,7 +136,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1] min-h-full"
         style={{
-          backgroundImage: `url('/images/starry-night.jpg')`,
+          backgroundImage: `url('/images/starry-night2.jpg')`,
           opacity: theme === "dark" ? 1 : 0,
         }}
       />
@@ -144,8 +144,8 @@ function Layout({ children }: { children: React.ReactNode }) {
       {/* 点赞按钮 */}
 
       {!isChatPage && (
-        <div className="fixed bottom-30 right-8 z-10">
-          <div className="flex justify-start text-1xl items-center shadow-xl z-10 bg-black/20 dark:bg-[#191818] gap-2 p-2 rounded-full transition-transform duration-300 hover:scale-105">
+        <div className="fixed top-72 right-4 z-10">
+          <div className="flex flex-col justify-start text-1xl items-center shadow-xl z-10 bg-black/20 dark:bg-[#191818] gap-2 p-2 rounded-2xl transition-transform duration-300 hover:scale-105">
             <button
               onClick={() => handleReaction("like")}
               disabled={hasReacted.like}
@@ -162,13 +162,13 @@ function Layout({ children }: { children: React.ReactNode }) {
             >
               {/* 谢谢你动画 */}
               {showThanks.like && (
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                  <div className="text-white text-sm font-bold shadow-lg animate-pulse w-[100px]">
-                    谢谢你
+                <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
+                  <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
+                    Thanks
                   </div>
                 </div>
               )}
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none">
                 Like{" "}
                 {reactionCounts.like > 0 &&
                   `(${formatCount(reactionCounts.like)})`}
@@ -192,13 +192,13 @@ function Layout({ children }: { children: React.ReactNode }) {
             >
               {/* 谢谢你动画 */}
               {showThanks.cheer && (
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                  <div className="text-white text-sm font-bold shadow-lg animate-pulse w-[100px]">
-                    谢谢你
+                <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
+                  <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
+                    谢啦
                   </div>
                 </div>
               )}
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none">
                 Cheer{" "}
                 {reactionCounts.cheer > 0 &&
                   `(${formatCount(reactionCounts.cheer)})`}
@@ -222,13 +222,13 @@ function Layout({ children }: { children: React.ReactNode }) {
             >
               {/* 谢谢你动画 */}
               {showThanks.celebrate && (
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                  <div className="text-white text-sm font-bold shadow-lg animate-pulse w-[100px]">
-                    谢谢你
+                <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
+                  <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
+                    Thanks
                   </div>
                 </div>
               )}
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none">
                 Celebrate{" "}
                 {reactionCounts.celebrate > 0 &&
                   `(${formatCount(reactionCounts.celebrate)})`}
@@ -252,13 +252,13 @@ function Layout({ children }: { children: React.ReactNode }) {
             >
               {/* 谢谢你动画 */}
               {showThanks.appreciate && (
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                  <div className="text-white text-sm font-bold shadow-lg animate-pulse w-[100px]">
-                    谢谢你
+                <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
+                  <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
+                    谢啦
                   </div>
                 </div>
               )}
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none">
                 Appreciate{" "}
                 {reactionCounts.appreciate > 0 &&
                   `(${formatCount(reactionCounts.appreciate)})`}
@@ -282,13 +282,13 @@ function Layout({ children }: { children: React.ReactNode }) {
             >
               {/* 谢谢你动画 */}
               {showThanks.smile && (
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                  <div className="text-white text-sm font-bold shadow-lg animate-pulse w-[100px]">
-                    谢谢你
+                <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
+                  <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
+                    Thanks
                   </div>
                 </div>
               )}
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black dark:bg-white dark:text-black text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none">
                 Smile{" "}
                 {reactionCounts.smile > 0 &&
                   `(${formatCount(reactionCounts.smile)})`}
@@ -304,7 +304,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <button
           onClick={handleCommentClick}
           className={`
-          fixed bottom-52 right-10 z-10
+          fixed bottom-48 right-4 z-10
           bg-[#5D676B] hover:bg-[#2C363F] text-white
           shadow-lg hover:shadow-xl
           transition-all duration-300 ease-out
