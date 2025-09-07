@@ -33,15 +33,15 @@ body {
 
 /* Enhanced text shadow utility */
 .text-shadow-lg {
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.4), 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
 }
 
 /* Improved glass morphism effect */
 .glass-effect {
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  backdrop-filter: blur(0.75rem) saturate(180%);
+  -webkit-backdrop-filter: blur(0.75rem) saturate(180%);
   background-color: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.125);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.125);
 }
 
 /* Gradient border animation */
@@ -63,8 +63,8 @@ body {
 
 /* Enhanced hover glow effects */
 .hover-glow:hover {
-  box-shadow: 0 0 20px rgba(74, 144, 194, 0.3),
-    0 0 40px rgba(125, 184, 216, 0.2);
+  box-shadow: 0 0 1.25rem rgba(74, 144, 194, 0.3),
+    0 0 2.5rem rgba(125, 184, 216, 0.2);
 }
 
 /* 自定义滚动条样式 */
@@ -74,17 +74,17 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 0.5rem;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  border-radius: 0.25rem;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #1b2c55, #3d85a9);
-  border-radius: 4px;
+  border-radius: 0.25rem;
   transition: all 0.3s ease;
 }
 
@@ -115,7 +115,7 @@ body {
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(0.625rem);
   }
   to {
     opacity: 1;
@@ -130,7 +130,7 @@ body {
 @keyframes slide-in-right {
   0% {
     opacity: 0;
-    transform: translateX(20px) translateY(-50%);
+    transform: translateX(1.25rem) translateY(-50%);
   }
   20% {
     opacity: 1;
@@ -142,7 +142,7 @@ body {
   }
   100% {
     opacity: 0;
-    transform: translateX(-10px) translateY(-50%);
+    transform: translateX(-0.625rem) translateY(-50%);
   }
 }
 
@@ -163,11 +163,11 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 20px;
-  height: 20px;
-  border: solid 2px var(--color);
+  width: 1.25rem;
+  height: 1.25rem;
+  border: solid 0.125rem var(--color);
   border-radius: 50%;
-  margin: 0 10px;
+  margin: 0 0.625rem;
   background-color: transparent;
   animation: circle-keys var(--animation);
 }
@@ -175,8 +175,8 @@ body {
 .loader .circle .dot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
   background-color: var(--color);
   animation: dot-keys var(--animation);
@@ -185,8 +185,8 @@ body {
 .loader .circle .outline {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: 50%;
   animation: outline-keys var(--animation);
 }
@@ -277,7 +277,7 @@ body {
 @keyframes outline-keys {
   0% {
     transform: scale(0);
-    outline: solid 20px var(--color);
+    outline: solid 1.25rem var(--color);
     outline-offset: 0;
     opacity: 1;
   }
@@ -285,15 +285,15 @@ body {
   100% {
     transform: scale(1);
     outline: solid 0 transparent;
-    outline-offset: 20px;
+    outline-offset: 1.25rem;
     opacity: 0;
   }
 }
 
 .pt-safe-top {
   /* 使用动态视口高度单位 */
-  padding-top: calc(100vh - 100dvh + env(safe-area-inset-top, 0px));
-  min-padding-top: env(safe-area-inset-top, 0px);
+  padding-top: calc(100vh - 100dvh + env(safe-area-inset-top, 0rem));
+  min-padding-top: env(safe-area-inset-top, 0rem);
 }
 
 /* Loading Animation Styles */
@@ -308,18 +308,18 @@ body {
 }
 
 .loading-animation-loader svg {
-  width: 48px;
-  height: 48px;
+  width: 3rem;
+  height: 3rem;
 }
 
 .loading-animation-space-separator {
-  width: 20px;
-  height: 48px;
+  width: 1.25rem;
+  height: 3rem;
   flex-shrink: 0;
 }
 
 .loading-animation-cyberpunk-x {
-  filter: drop-shadow(0 0 5px #4a90e2);
+  filter: drop-shadow(0 0 0.3125rem #4a90e2);
 }
 
 .loading-animation-cyberpunk-glow {
@@ -328,36 +328,36 @@ body {
 
 @media (max-width: 768px) {
   .loading-animation-loader svg {
-    width: 36px;
-    height: 36px;
+    width: 2.25rem;
+    height: 2.25rem;
   }
   .loading-animation-space-separator {
-    width: 15px;
-    height: 36px;
+    width: 0.9375rem;
+    height: 2.25rem;
   }
   .loading-animation-cyberpunk-x {
-    width: 43px !important;
-    height: 43px !important;
-    font-size: 43px !important;
+    width: 2.6875rem !important;
+    height: 2.6875rem !important;
+    font-size: 2.6875rem !important;
   }
 }
 
 @media (max-width: 480px) {
   .loading-animation-loader svg {
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
   }
   .loading-animation-loader {
     gap: 0.05em;
   }
   .loading-animation-space-separator {
-    width: 12px;
-    height: 32px;
+    width: 0.75rem;
+    height: 2rem;
   }
   .loading-animation-cyberpunk-x {
-    width: 38px !important;
-    height: 38px !important;
-    font-size: 38px !important;
+    width: 2.375rem !important;
+    height: 2.375rem !important;
+    font-size: 2.375rem !important;
   }
 }
 

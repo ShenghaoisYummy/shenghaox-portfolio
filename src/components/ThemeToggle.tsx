@@ -47,7 +47,7 @@ export default function ThemeToggle() {
           bottom: 0;
           background-color: #f4f4f5;
           transition: 0.4s;
-          border-radius: 30px;
+          border-radius: 1.875rem;
         }
 
         .slider:before {
@@ -55,7 +55,7 @@ export default function ThemeToggle() {
           content: "";
           height: var(--size-of-icon, 1.4em);
           width: var(--size-of-icon, 1.4em);
-          border-radius: 20px;
+          border-radius: 1.25rem;
           left: var(--slider-offset, 0.3em);
           top: 50%;
           transform: translateY(-50%);
@@ -73,8 +73,8 @@ export default function ThemeToggle() {
           );
           background: #303136;
           /* change the value of second inset in box-shadow to change the angle and direction of the moon */
-          box-shadow: inset -3px -2px 5px -2px #8983f7,
-            inset -10px -4px 0 0 #a3dafb;
+          box-shadow: inset -0.1875rem -0.125rem 0.3125rem -0.125rem #8983f7,
+            inset -0.625rem -0.25rem 0 0 #a3dafb;
         }
       `}</style>
     </div>

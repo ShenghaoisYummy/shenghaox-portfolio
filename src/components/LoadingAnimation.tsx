@@ -329,18 +329,18 @@ const LoadingAnimation: React.FC<LoadingAnimationProps> = ({ isVisible }) => {
         }
         
         .loader svg {
-          width: 48px;
-          height: 48px;
+          width: 3rem;
+          height: 3rem;
         }
         
         .space-separator {
-          width: 20px;
-          height: 48px;
+          width: 1.25rem;
+          height: 3rem;
           flex-shrink: 0;
         }
         
         .cyberpunk-x {
-          filter: drop-shadow(0 0 8px #4A90E2);
+          filter: drop-shadow(0 0 0.5rem #4A90E2);
         }
         
         .cyberpunk-glow {
@@ -350,26 +350,26 @@ const LoadingAnimation: React.FC<LoadingAnimationProps> = ({ isVisible }) => {
         
         @media (max-width: 768px) {
           .loader svg {
-            width: 36px;
-            height: 36px;
+            width: 2.25rem;
+            height: 2.25rem;
           }
           .space-separator {
-            width: 15px;
-            height: 36px;
+            width: 0.9375rem;
+            height: 2.25rem;
           }
         }
         
         @media (max-width: 480px) {
           .loader svg {
-            width: 32px;
-            height: 32px;
+            width: 2rem;
+            height: 2rem;
           }
           .loader {
             gap: 0.05em;
           }
           .space-separator {
-            width: 12px;
-            height: 32px;
+            width: 0.75rem;
+            height: 2rem;
           }
         }
 

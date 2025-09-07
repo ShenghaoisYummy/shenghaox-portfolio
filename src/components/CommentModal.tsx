@@ -215,12 +215,12 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
             >
               {comment.nickname || "匿名用户"}
               {isAuthorComment && (
-                <span className="ml-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-full">
+                <span className="ml-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400 px-[0.125rem] py-[0.03125rem] rounded-full">
                   作者
                 </span>
               )}
               {isReply && (
-                <span className="ml-1 text-xs bg-gray-100 dark:bg-gray-900 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full cursor-pointer hidden sm:inline-block">
+                <span className="ml-1 text-xs bg-gray-100 dark:bg-gray-900 text-blue-600 dark:text-blue-400 px-[0.125rem] py-[0.03125rem] rounded-full cursor-pointer hidden sm:inline-block">
                   回复
                 </span>
               )}
@@ -245,7 +245,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                   setReplyNicknameError("");
                   setReplyContentError("");
                 }}
-                className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 px-[0.125rem] py-[0.0625rem] rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
               >
                 {replyingTo === comment.id ? "取消" : "回复"}
               </button>
@@ -275,7 +275,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                 onChange={handleReplyNicknameChange}
                 disabled={loading}
                 maxLength={10}
-                className={`w-full px-3 py-2 text-sm border rounded-lg bg-white/80 dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`w-full px-[0.1875rem] py-[0.125rem] text-sm border rounded-lg bg-white/80 dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                   replyNicknameError
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 dark:border-gray-500 focus:ring-blue-500"
@@ -295,7 +295,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                 onChange={handleReplyContentChange}
                 disabled={loading}
                 maxLength={200}
-                className={`w-full px-3 py-2 pr-16 text-sm border rounded-lg bg-white/80 dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`w-full px-[0.1875rem] py-[0.125rem] pr-[1rem] text-sm border rounded-lg bg-white/80 dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                   replyContentError
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 dark:border-gray-500 focus:ring-blue-500"
@@ -313,7 +313,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                   replyNicknameError !== "" ||
                   replyContentError !== ""
                 }
-                className="absolute right-1 top-1 px-2 py-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded text-xs font-medium transition-colors disabled:cursor-not-allowed"
+                className="absolute right-[0.0625rem] top-[0.0625rem] px-[0.125rem] py-[0.0625rem] bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded text-xs font-medium transition-colors disabled:cursor-not-allowed"
               >
                 {loading ? "发送中" : "发送"}
               </button>
@@ -334,7 +334,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
         {/* 底部装饰线 */}
         <div className="mt-3 pl-11">
           <div
-            className={`h-px bg-gradient-to-r to-transparent ${
+            className={`h-[0.0625rem] bg-gradient-to-r to-transparent ${
               isAuthorComment
                 ? "from-orange-200 dark:from-orange-700"
                 : "from-gray-200 dark:from-gray-700"
@@ -557,7 +557,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
         </div>
 
         {/* 头部 */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-[0.375rem] py-[0.1875rem] border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-500 dark:text-white">
             欢迎留言
           </h2>
@@ -583,7 +583,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
 
         {/* 输入区域 */}
         {/* 输入区域 */}
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-[0.375rem] py-[0.25rem] border-b border-gray-200 dark:border-gray-700">
           <div className="mb-3">
             <div className="relative">
               <input
@@ -593,7 +593,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                 onChange={handleNicknameChange}
                 disabled={loading}
                 maxLength={10}
-                className={`w-full px-4 py-3 border rounded-xl bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`w-full px-[0.25rem] py-[0.1875rem] border rounded-xl bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                   nicknameError
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 dark:border-gray-600 focus:ring-gray-500"
@@ -616,7 +616,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
               onKeyDown={handleSubmit}
               disabled={loading}
               maxLength={200}
-              className={`w-full px-4 py-3 pr-20 border rounded-xl bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`w-full px-[0.25rem] py-[0.1875rem] pr-[1.25rem] border rounded-xl bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                 contentError
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 dark:border-gray-600 focus:ring-gray-500"
@@ -639,7 +639,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                 nicknameError !== "" ||
                 contentError !== ""
               }
-              className="absolute right-2 top-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed flex items-center gap-1"
+              className="absolute right-[0.125rem] top-[0.125rem] px-[0.1875rem] py-[0.125rem] bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed flex items-center gap-1"
             >
               {loading ? (
                 <>
@@ -669,7 +669,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
         </div>
 
         {/* 评论列表 */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 h-[calc(100%-300px)] custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-[0.375rem] py-[0.25rem] h-[calc(100%-18.75rem)] custom-scrollbar">
           <div className="space-y-4">
             {comments
               .filter((comment) => !comment.parentId) // 只显示顶级评论

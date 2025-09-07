@@ -157,14 +157,14 @@ export default function Home() {
         >
           <div className="flex flex-col w-full max-w-4xl lg:max-w-5xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-8 md:pb-0 hide-scrollbar">
             {/* Header area - avatar and basic info */}
-            <div className="flex gap-[6px] md:gap-[8px] flex-col md:flex-row mb-1 ml-[30px] mb-[15px]">
-              <div className="relative w-full md:w-[250px] flex justify-center items-center mx-auto md:mx-0">
+            <div className="flex gap-[0.375rem] md:gap-[0.5rem] flex-col md:flex-row mb-1 ml-[1.875rem] mb-[0.9375rem]">
+              <div className="relative w-full md:w-[15.625rem] flex justify-center items-center mx-auto md:mx-0">
                 <Image
                   src="/images/avatar.jpg"
                   alt="Logo"
                   width={200}
                   height={200}
-                  className="rounded-[50%] shadow-lg w-[150px] h-[150px] md:w-[200px] md:h-[200px]"
+                  className="rounded-[50%] shadow-lg w-[9.375rem] h-[9.375rem] md:w-[12.5rem] md:h-[12.5rem]"
                 />
                 {theme !== "dark" ? (
                   <Image
@@ -172,14 +172,14 @@ export default function Home() {
                     alt="Logo"
                     width={200}
                     height={200}
-                    className="top-[-135px] md:top-[-180px] left-[50%] translate-x-[-50%] absolute w-[150px] h-[150px] md:w-[200px] md:h-[200px]"
+                    className="top-[-8.4375rem] md:top-[-11.25rem] left-[50%] translate-x-[-50%] absolute w-[9.375rem] h-[9.375rem] md:w-[12.5rem] md:h-[12.5rem]"
                   />
                 ) : (
                   ""
                 )}
               </div>
-              <div className="flex flex-col gap-[3px] md:gap-[5px] text-center md:text-left px-4 md:px-0 md:translate-x-5 lg:translate-x-10">
-                <div className="text-[28px] md:text-[42px] font-bold text-[#fff] text-shadow-lg leading-tight mb-[1.5rem]">
+              <div className="flex flex-col gap-[0.1875rem] md:gap-[0.3125rem] text-center md:text-left px-4 md:px-0 md:translate-x-5 lg:translate-x-10">
+                <div className="text-[1.75rem] md:text-[2.625rem] font-bold text-[#fff] text-shadow-lg leading-tight mb-[1.5rem]">
                   <span className="inline-block">
                     {displayText.split(" ").map((word, wordIndex) => {
                       if (word === "austin") {
@@ -204,21 +204,21 @@ export default function Home() {
                     <span className="animate-pulse text-[#3d85a9]">|</span>
                   </span>
                 </div>
-                <div className="text-shadow-sm text-[#fff] text-[15px] md:text-[18px]">
-                  <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[17px] md:text-[20px] font-semibold">
+                <div className="text-shadow-sm text-[#fff] text-[0.9375rem] md:text-[1.125rem]">
+                  <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[1.0625rem] md:text-[1.25rem] font-semibold">
                     Full-Stack & AI Developer
                   </span>{" "}
                 </div>
 
-                <div className="text-shadow-sm text-[rgba(255,255,255,0.9)] text-[14px] md:text-[16px]">
-                  <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[16px] md:text-[18px] font-semibold">
+                <div className="text-shadow-sm text-[rgba(255,255,255,0.9)] text-[0.875rem] md:text-[1rem]">
+                  <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[1rem] md:text-[1.125rem] font-semibold">
                     2.5
                   </span>{" "}
                   years work experience
                 </div>
-                <div className="flex mt-[3px] gap-[5px] justify-center md:justify-start">
+                <div className="flex mt-[0.1875rem] gap-[0.3125rem] justify-center md:justify-start">
                   <div
-                    className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[8px] p-[8px] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
+                    className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[0.5rem] p-[0.5rem] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
                     onClick={handleGithubClick}
                   >
                     <SvgIcon
@@ -229,7 +229,7 @@ export default function Home() {
                     />
                   </div>
                   <div
-                    className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[8px] p-[8px] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
+                    className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[0.5rem] p-[0.5rem] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
                     onClick={handleQQClick}
                   >
                     <SvgIcon name="qq" width={18} height={18} color="#fff" />
@@ -239,20 +239,20 @@ export default function Home() {
             </div>
 
             {/* Content area - vertical layout below 800px */}
-            <div className="flex gap-[6px] md:gap-[10px] flex-col lg:grid lg:grid-cols-[250px_1fr] px-4 md:px-8 lg:px-8">
+            <div className="flex gap-[0.375rem] md:gap-[0.625rem] flex-col lg:grid lg:grid-cols-[15.625rem_1fr] px-4 md:px-8 lg:px-8">
               {/* Left/center area */}
               <div className="order-2 lg:order-1">
-                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[6px] text-[#fff] text-[14px] gap-[6px] flex flex-col h-full shadow-lg">
+                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] p-[0.375rem] text-[#fff] text-[0.875rem] gap-[0.375rem] flex flex-col h-full shadow-lg">
                   <div className="relative flex flex-col justify-between h-full">
                     {/* Background timeline line */}
-                    <div className="absolute left-[5px] top-[6px] bottom-[6px] w-[3px] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"></div>
+                    <div className="absolute left-[0.3125rem] top-[0.375rem] bottom-[0.375rem] w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"></div>
 
                     {express.map((item, index) => (
                       <div key={index} className="relative flex items-start">
                         {/* 时间线左侧圆点 */}
-                        <div className="relative flex flex-col items-center mr-[15px] z-10 mt-[2px]">
+                        <div className="relative flex flex-col items-center mr-[0.9375rem] z-10 mt-[0.125rem]">
                           <div
-                            className={`w-[14px] h-[14px] rounded-full border-2 border-white shadow-md ${
+                            className={`w-[0.875rem] h-[0.875rem] rounded-full border-2 border-white shadow-md ${
                               index === express.length - 1
                                 ? "bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] animate-pulse"
                                 : "bg-gradient-to-br from-[#1b2c55] to-[#3d85a9]"
@@ -261,16 +261,16 @@ export default function Home() {
                         </div>
 
                         <div className="flex-1">
-                          <div className="font-bold bg-gradient-to-r from-[#60a5fa] to-[#93c5fd] bg-clip-text text-transparent mb-[3px] text-[13px] md:text-[14px] uppercase tracking-wider drop-shadow-lg">
+                          <div className="font-bold bg-gradient-to-r from-[#60a5fa] to-[#93c5fd] bg-clip-text text-transparent mb-[0.1875rem] text-[0.8125rem] md:text-[0.875rem] uppercase tracking-wider drop-shadow-lg">
                             {item.name}
                           </div>
-                          <div className="text-[11px] md:text-[12px] text-[#60a5fa] mb-[4px] font-bold italic drop-shadow-md">
+                          <div className="text-[0.6875rem] md:text-[0.75rem] text-[#60a5fa] mb-[0.25rem] font-bold italic drop-shadow-md">
                             {item.position}
                           </div>
-                          <div className="text-[10px] md:text-[11px] text-[rgba(255,255,255,0.9)] mb-[4px] drop-shadow-sm">
+                          <div className="text-[0.625rem] md:text-[0.6875rem] text-[rgba(255,255,255,0.9)] mb-[0.25rem] drop-shadow-sm">
                             {item.date}
                           </div>
-                          <div className="text-[11px] md:text-[12px] text-[rgba(255,255,255,0.95)] leading-relaxed drop-shadow-sm">
+                          <div className="text-[0.6875rem] md:text-[0.75rem] text-[rgba(255,255,255,0.95)] leading-relaxed drop-shadow-sm">
                             {item.description}
                           </div>
                         </div>
@@ -280,19 +280,19 @@ export default function Home() {
                 </div>
               </div>
               {/* Right/bottom area */}
-              <div className="flex flex-col gap-[6px] md:gap-[10px] order-1 lg:order-2">
+              <div className="flex flex-col gap-[0.375rem] md:gap-[0.625rem] order-1 lg:order-2">
                 {/* GitHub contribution heatmap */}
                 <GitHubHeatmap username="shenghaoisyummy" />
 
-                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[16px] p-[32px] text-[#fff] text-[18px] gap-[32px] flex flex-col flex-1 shadow-lg">
-                  <div className="font-bold text-[24px] flex items-center gap-[12px]">
+                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[1rem] p-[2rem] text-[#fff] text-[1.125rem] gap-[2rem] flex flex-col flex-1 shadow-lg">
+                  <div className="font-bold text-[1.5rem] flex items-center gap-[0.75rem]">
                     <SvgIcon name="site" width={28} height={28} color="#fff" />
                     <div className="flex flex-col">Navigation</div>
                   </div>
-                  <div className="flex gap-[20px] md:gap-[24px] flex-col sm:flex-row">
+                  <div className="flex gap-[1.25rem] md:gap-[1.5rem] flex-col sm:flex-row">
                     <Link
                       href="/works"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[14px] text-[#fff] text-[16px] gap-[8px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] hover:scale-[1.02] transition-all duration-300 group"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[0.75rem] p-[0.875rem] text-[#fff] text-[1rem] gap-[0.5rem] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Projects</span>
@@ -305,13 +305,13 @@ export default function Home() {
                           />
                         </div>
                       </div>
-                      <span className="text-[14px] text-[rgba(255,255,255,0.8)]">
+                      <span className="text-[0.875rem] text-[rgba(255,255,255,0.8)]">
                         Full-Stack projects
                       </span>
                     </Link>
                     <Link
                       href="/blog"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[14px] text-[#fff] text-[16px] gap-[8px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] hover:scale-[1.02] transition-all duration-300 group"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[0.75rem] p-[0.875rem] text-[#fff] text-[1rem] gap-[0.5rem] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Articles</span>
@@ -324,13 +324,13 @@ export default function Home() {
                           />
                         </div>
                       </div>
-                      <span className="text-[14px] text-[rgba(255,255,255,0.8)]">
+                      <span className="text-[0.875rem] text-[rgba(255,255,255,0.8)]">
                         Full-Stack & AI knowledges
                       </span>
                     </Link>
                     <Link
                       href="/chat"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[12px] p-[14px] text-[#fff] text-[16px] gap-[8px] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(255,107,53,0.15)] hover:border-[#ff6b35] hover:shadow-lg hover:shadow-[rgba(255,107,53,0.2)] hover:scale-[1.02] transition-all duration-300 group"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[0.75rem] p-[0.875rem] text-[#fff] text-[1rem] gap-[0.5rem] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(255,107,53,0.15)] hover:border-[#ff6b35] hover:shadow-lg hover:shadow-[rgba(255,107,53,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Chat Room</span>
@@ -343,12 +343,12 @@ export default function Home() {
                           />
                         </div>
                       </div>
-                      <span className="text-[14px] text-[rgba(255,255,255,0.8)]">
+                      <span className="text-[0.875rem] text-[rgba(255,255,255,0.8)]">
                         Real-time chat
                       </span>
                     </Link>
                   </div>
-                  <div className="text-[14px] md:text-[16px] text-[rgba(255,255,255,0.7)]">
+                  <div className="text-[0.875rem] md:text-[1rem] text-[rgba(255,255,255,0.7)]">
                     Continuously updating since 2025...
                   </div>
                 </div>
@@ -360,7 +360,7 @@ export default function Home() {
           <div className="fixed bottom-8 right-8 z-10">
             <Link
               href="/works"
-              className="bg-[rgba(0,0,0,.6)] hover:bg-[rgba(0,0,0,.8)] border border-[rgba(255,255,255,0.1)] rounded-[10px] p-[12px] cursor-pointer transition-all duration-300 flex items-center gap-2 text-white backdrop-blur-md shadow-lg hover:shadow-xl hover:scale-105"
+              className="bg-[rgba(0,0,0,.6)] hover:bg-[rgba(0,0,0,.8)] border border-[rgba(255,255,255,0.1)] rounded-[0.625rem] p-[0.75rem] cursor-pointer transition-all duration-300 flex items-center gap-2 text-white backdrop-blur-md shadow-lg hover:shadow-xl hover:scale-105"
             >
               <span className="text-sm">Portfolio</span>
               <SvgIcon name="right" width={20} height={20} color="#fff" />
