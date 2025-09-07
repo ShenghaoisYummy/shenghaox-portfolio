@@ -116,8 +116,8 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Home - austin&apos;s web</title>
-        <meta name="description" content="austin's personal website homepage" />
+        <title>Home - Austin&apos;s web</title>
+        <meta name="description" content="Austin's personal website homepage" />
       </Head>
       <div className="relative">
         {/* Modal components */}
@@ -155,9 +155,9 @@ export default function Home() {
         <div
           className={`${geistSans.className} ${geistMono.className} min-h-screen font-[family-name:var(--font-geist-sans)] flex justify-center items-center px-4 md:px-8 w-full`}
         >
-          <div className="flex flex-col w-full max-w-4xl lg:max-w-5xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-8 md:pb-0 hide-scrollbar">
+          <div className="flex flex-col w-full max-w-4xl lg:max-w-5xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-8 md:pb-0 hide-scrollbar mt-[-0.5px]">
             {/* Header area - avatar and basic info */}
-            <div className="flex gap-[0.375rem] md:gap-[0.5rem] flex-col md:flex-row mb-1 ml-[1.875rem] mb-[0.9375rem]">
+            <div className="flex gap-[0.375rem] md:gap-[0.5rem] flex-col md:flex-row mb-1 ml-[1.875rem] mb-[0.4rem]">
               <div className="relative w-full md:w-[15.625rem] flex justify-center items-center mx-auto md:mx-0">
                 <Image
                   src="/images/avatar.jpg"
