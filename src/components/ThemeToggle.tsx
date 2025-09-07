@@ -21,9 +21,9 @@ export default function ThemeToggle() {
           --width-of-switch: 3em;
           --height-of-switch: 1.5em;
           /* size of sliding icon -- sun and moon */
-          --size-of-icon: 1em;
+          --size-of-icon: 1.1em;
           /* it is like a inline-padding of switch */
-          --slider-offset: 0.3em;
+          --slider-offset: 0.2em;
           position: relative;
           width: var(--width-of-switch);
           height: var(--height-of-switch);
@@ -53,10 +53,10 @@ export default function ThemeToggle() {
         .slider:before {
           position: absolute;
           content: "";
-          height: var(--size-of-icon, 1.4em);
-          width: var(--size-of-icon, 1.4em);
-          border-radius: 1.25rem;
-          left: var(--slider-offset, 0.3em);
+          height: calc(var(--height-of-switch) - 0.4em);
+          width: calc(var(--height-of-switch) - 0.4em);
+          border-radius: 50%;
+          left: var(--slider-offset, 0.2em);
           top: 50%;
           transform: translateY(-50%);
           background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
@@ -64,12 +64,12 @@ export default function ThemeToggle() {
         }
 
         input:checked + .slider {
-          background-color: #303136;
+          background-color: #4a90e2;
         }
 
         input:checked + .slider:before {
           left: calc(
-            100% - (var(--size-of-icon, 1.4em) + var(--slider-offset, 0.3em))
+            100% - (calc(var(--height-of-switch) - 0.4em) + var(--slider-offset, 0.2em))
           );
           background: #303136;
           /* change the value of second inset in box-shadow to change the angle and direction of the moon */
