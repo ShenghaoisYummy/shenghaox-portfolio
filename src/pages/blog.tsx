@@ -708,10 +708,10 @@ export default function Blog() {
         }}
       >
         {/* 导航按钮 */}
-        <div className="fixed top-4 left-4 z-10 flex gap-2">
+        <div className="fixed top-4 left-4 z-10 gap-2 hidden md:flex">
           <Link
             href="/works"
-            className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
+            className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm hidden"
           >
             <SvgIcon name="left" width={16} height={16} color="#fff" />
             <span className="text-sm">Portfolio</span>
