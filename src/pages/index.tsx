@@ -241,22 +241,54 @@ export default function Home() {
             {/* Content area - vertical layout below 800px */}
             <div className="flex gap-[0.375rem] md:gap-[0.625rem] flex-col lg:grid lg:grid-cols-[15.625rem_1fr] px-4 md:px-8 lg:px-8">
               {/* Left/center area */}
-              <div className="order-2 lg:order-1">
-                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] p-[0.375rem] text-[#fff] text-[0.875rem] gap-[0.375rem] flex flex-col h-full shadow-lg">
-                  <div className="relative flex flex-col justify-between h-full">
+              <div className="order-2 lg:order-1 flex flex-col gap-[0.375rem]">
+                {/* Placeholder Section */}
+                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] shadow-lg p-[0.375rem]">
+                  <div className="flex items-center gap-[0.75rem] mb-[1rem]">
+                    <div className="w-[2rem] h-[2rem] bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] rounded-full flex items-center justify-center shadow-md">
+                      <div className="w-[0.75rem] h-[0.75rem] bg-white rounded-full animate-pulse"></div>
+                    </div>
+                    <div className="flex flex-col">
+                      <h2 className="text-[1rem] font-bold bg-gradient-to-r from-[#60a5fa] to-[#93c5fd] bg-clip-text text-transparent mb-[0.1875rem]">
+                        Coming Soon
+                      </h2>
+                      <p className="text-[0.6875rem] text-[rgba(255,255,255,0.7)]">
+                        New section under development
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-[0.6875rem] text-[rgba(255,255,255,0.8)] leading-relaxed">
+                    <p className="mb-[0.25rem]">
+                      This section is currently being developed and will feature exciting new content.
+                    </p>
+                    <p className="text-[0.625rem] text-[rgba(255,255,255,0.6)]">
+                      Stay tuned for updates! 🚀
+                    </p>
+                  </div>
+                  <div className="mt-[0.75rem] flex gap-[0.25rem]">
+                    <div className="w-[0.5rem] h-[0.5rem] bg-[#4a90c2] rounded-full animate-pulse"></div>
+                    <div className="w-[0.5rem] h-[0.5rem] bg-[#7db8d8] rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                    <div className="w-[0.5rem] h-[0.5rem] bg-[#3d85a9] rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                  </div>
+                </div>
+                
+                {/* Experience Section */}
+                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] flex flex-col h-full shadow-lg overflow-hidden">
+                  <div className="relative flex flex-col h-full max-h-[400px] overflow-y-auto custom-scrollbar p-[0.375rem]">
                     {/* Background timeline line */}
-                    <div className="absolute left-[0.3125rem] top-[0.375rem] bottom-[0.375rem] w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"></div>
+                    <div className="absolute left-[0.71875rem] top-0 bottom-0 w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"></div>
 
                     {express.map((item, index) => (
-                      <div key={index} className="relative flex items-start">
+                      <div key={index} className={`relative flex items-start ${index !== express.length - 1 ? 'mb-[1.25rem]' : ''}`}>
                         {/* 时间线左侧圆点 */}
-                        <div className="relative flex flex-col items-center mr-[0.9375rem] z-10 mt-[0.125rem]">
+                        <div className="relative flex flex-col items-center mr-[0.9375rem] z-10">
                           <div
                             className={`w-[0.875rem] h-[0.875rem] rounded-full border-2 border-white shadow-md ${
                               index === express.length - 1
                                 ? "bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] animate-pulse"
                                 : "bg-gradient-to-br from-[#1b2c55] to-[#3d85a9]"
                             }`}
+                            style={{marginTop: '0.125rem'}}
                           ></div>
                         </div>
 
