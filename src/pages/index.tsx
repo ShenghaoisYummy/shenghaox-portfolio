@@ -241,8 +241,16 @@ export default function Home() {
             {/* Content area - vertical layout below 800px */}
             <div className="flex gap-[0.375rem] md:gap-[0.625rem] flex-col lg:grid lg:grid-cols-[15.625rem_1fr] px-4 md:px-8 lg:px-8">
               {/* Left/center area */}
-              <div className="order-2 lg:order-1">
-                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] p-[0.375rem] text-[#fff] text-[0.875rem] gap-[0.375rem] flex flex-col h-full shadow-lg">
+              <div className="order-2 lg:order-1 flex flex-col gap-[0.375rem]">
+                {/* Placeholder section */}
+                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] p-[0.375rem] text-[#fff] text-[0.875rem] flex flex-col h-[33%] shadow-lg">
+                  <div className="flex items-center justify-center h-full text-[rgba(255,255,255,0.5)]">
+                    <span className="text-sm">Placeholder Section</span>
+                  </div>
+                </div>
+                
+                {/* Experience section - now 2/3 height */}
+                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] p-[0.375rem] text-[#fff] text-[0.875rem] gap-[0.375rem] flex flex-col h-[67%] shadow-lg">
                   <div className="relative flex flex-col justify-between h-full">
                     {/* Background timeline line */}
                     <div className="absolute left-[0.3125rem] top-[0.375rem] bottom-[0.375rem] w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"></div>
@@ -253,7 +261,7 @@ export default function Home() {
                         <div className="relative flex flex-col items-center mr-[0.9375rem] z-10 mt-[0.125rem]">
                           <div
                             className={`w-[0.875rem] h-[0.875rem] rounded-full border-2 border-white shadow-md ${
-                              index === express.length - 1
+                              index === 0
                                 ? "bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] animate-pulse"
                                 : "bg-gradient-to-br from-[#1b2c55] to-[#3d85a9]"
                             }`}
@@ -310,11 +318,11 @@ export default function Home() {
                       </span>
                     </Link>
                     <Link
-                      href="/blog"
+                      href="https://personal-blog-jade-five.vercel.app/"
                       className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[0.75rem] p-[0.875rem] text-[#fff] text-[1rem] gap-[0.5rem] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] hover:scale-[1.02] transition-all duration-300 group"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold">Articles</span>
+                        <span className="font-semibold">Blog</span>
                         <div className="group-hover:scale-110 transition-transform duration-300">
                           <SvgIcon
                             name="docs"
