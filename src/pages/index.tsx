@@ -155,16 +155,16 @@ export default function Home() {
         <div
           className={`${geistSans.className} ${geistMono.className} min-h-screen font-[family-name:var(--font-geist-sans)] flex justify-center items-center px-4 md:px-8 w-full`}
         >
-          <div className="flex flex-col w-full max-w-4xl lg:max-w-5xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-8 md:pb-0 hide-scrollbar">
+          <div className="flex flex-col w-full max-w-4xl lg:max-w-5xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-8 md:pb-0 hide-scrollbar pt-2">
             {/* Header area - avatar and basic info */}
-            <div className="flex gap-[0.375rem] md:gap-[0.5rem] flex-col md:flex-row mb-1 ml-[1.875rem] mb-[0.9375rem]">
+            <div className="flex gap-[0.375rem] md:gap-[0.5rem] flex-col md:flex-row mb-1 ml-[1.875rem]">
               <div className="relative w-full md:w-[15.625rem] flex justify-center items-center mx-auto md:mx-0">
                 <Image
                   src="/images/avatar.jpg"
                   alt="Logo"
                   width={200}
                   height={200}
-                  className="rounded-[50%] shadow-lg w-[9.375rem] h-[9.375rem] md:w-[12.5rem] md:h-[12.5rem]"
+                  className="rounded-[50%] shadow-lg w-[9.375rem] h-[9.375rem] md:w-[12.5rem] md:h-[12.5rem] float-animation"
                 />
                 {theme !== "dark" ? (
                   <Image
@@ -331,7 +331,7 @@ export default function Home() {
                 {/* GitHub contribution heatmap */}
                 <GitHubHeatmap username="shenghaoisyummy" />
 
-                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[1rem] p-[2rem] text-[#fff] text-[1.125rem] gap-[2rem] flex flex-col flex-1 shadow-lg">
+                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[1rem] p-[1rem] text-[#fff] text-[1.125rem] gap-[2rem] flex flex-col flex-1 shadow-lg">
                   <div className="font-bold text-[1.5rem] flex items-center gap-[0.75rem]">
                     <SvgIcon name="site" width={28} height={28} color="#fff" />
                     <div className="flex flex-col">Navigation</div>

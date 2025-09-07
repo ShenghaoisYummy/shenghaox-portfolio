@@ -363,3 +363,18 @@ body {
 .loading-animation-dash {
   animation: dashArray 2s ease-in-out infinite, dashOffset 2s linear infinite;
 }
+
+/* Avatar floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.float-animation {
+  animation: float 3.5s ease-in-out infinite;
+}
+
