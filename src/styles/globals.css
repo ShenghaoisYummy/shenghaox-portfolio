@@ -22,7 +22,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow-x: hidden; /* 防止横向滚动条，允许纵向滚动 */
+  overflow: hidden; /* 防止 body 产生滚动条 */
 }
 
 /* 确保主题切换时的平滑过渡 */
@@ -125,6 +125,29 @@ body {
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
+}
+
+@keyframes slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(20px) translateY(-50%);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(0) translateY(-50%);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(0) translateY(-50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-10px) translateY(-50%);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 2s ease-out forwards;
 }
 
 .loader {
