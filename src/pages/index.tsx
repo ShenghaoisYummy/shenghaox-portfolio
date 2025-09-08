@@ -7,7 +7,7 @@ import TechStack from "@/components/TechStack";
 import ImageModal from "@/components/ImageModal";
 import MusicModal from "@/components/MusicModal";
 import VideoModal from "@/components/VideoModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { experienceData } from "@/data/experience";
@@ -94,6 +94,113 @@ export default function Home() {
 
     return () => clearTimeout(timer);
   }, [currentIndex, isDeleting, fullText]);
+
+  // Refs for height synchronization
+  const githubHeatmapRef = useRef<HTMLDivElement>(null);
+  const navigationRef = useRef<HTMLDivElement>(null);
+  const experienceRef = useRef<HTMLDivElement>(null);
+  const techStackRef = useRef<HTMLDivElement>(null);
+
+  // Height synchronization effect
+  useEffect(() => {
+    const syncHeights = () => {
+      if (
+        githubHeatmapRef.current &&
+        navigationRef.current &&
+        experienceRef.current &&
+        techStackRef.current
+      ) {
+        // Reset experience height to auto to get accurate measurements
+        experienceRef.current.style.height = "auto";
+
+        // Force a reflow
+        void experienceRef.current.offsetHeight;
+
+        // Get the computed gap value (0.5rem = 8px or 0.625rem = 10px)
+        const parentElement = navigationRef.current.parentElement;
+        const computedStyle = parentElement
+          ? window.getComputedStyle(parentElement)
+          : null;
+        const gapValue = computedStyle ? parseInt(computedStyle.gap) || 10 : 10;
+
+        // Get the height of GitHub heatmap
+        const githubHeight = githubHeatmapRef.current.offsetHeight;
+
+        // Get the height of navigation section
+        const navigationHeight = navigationRef.current.offsetHeight;
+
+        // Get the height of tech stack section
+        const techStackHeight = techStackRef.current.offsetHeight;
+
+        // Goal 1: Navigation height should match GitHub Heatmap height
+        // Goal 2: Experience height should match TechStack height
+
+        // Set Navigation height to match GitHub Heatmap
+        navigationRef.current.style.height = `${githubHeight}px`;
+        navigationRef.current.style.minHeight = `${githubHeight}px`;
+
+        // Set Experience height to match TechStack
+        experienceRef.current.style.height = `${techStackHeight}px`;
+        experienceRef.current.style.minHeight = `${techStackHeight}px`;
+
+        console.log("Heights set:", {
+          navigationHeight: githubHeight,
+          experienceHeight: techStackHeight,
+          githubHeight,
+          techStackHeight,
+        });
+      }
+    };
+
+    // Multiple sync attempts to handle async loading
+    const syncWithDelay = (delay: number) => setTimeout(syncHeights, delay);
+
+    const timers = [
+      syncWithDelay(100), // Quick initial sync
+      syncWithDelay(500), // After components mount
+      syncWithDelay(1000), // After data loads
+      syncWithDelay(2000), // Final sync
+    ];
+
+    // Sync on window resize with debouncing
+    let resizeTimer: NodeJS.Timeout;
+    const debouncedSync = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(syncHeights, 100);
+    };
+
+    window.addEventListener("resize", debouncedSync);
+
+    // Use MutationObserver to detect content changes
+    const observer = new MutationObserver(() => {
+      setTimeout(syncHeights, 100);
+    });
+
+    // Observe changes in the GitHub heatmap and tech stack containers
+    if (githubHeatmapRef.current) {
+      observer.observe(githubHeatmapRef.current, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+      });
+    }
+
+    if (techStackRef.current) {
+      observer.observe(techStackRef.current, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+      });
+    }
+
+    // Cleanup
+    return () => {
+      timers.forEach(clearTimeout);
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", debouncedSync);
+      observer.disconnect();
+    };
+  }, []);
 
   // Add GitHub and QQ click handler functions
   const handleGithubClick = () => {
@@ -244,8 +351,12 @@ export default function Home() {
               {/* Left/center area */}
               <div className="order-2 lg:order-1 flex flex-col gap-[0.5rem] md:gap-[0.625rem]">
                 {/* Navigation Section */}
-                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[12px] text-[#fff] shadow-lg">
-                  <div className="mb-[8px]">
+                <div
+                  ref={navigationRef}
+                  className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[12px] text-[#fff] shadow-lg flex flex-col"
+                  style={{ boxSizing: "border-box" }}
+                >
+                  <div className="mb-[8px] flex-shrink-0">
                     <h3 className="text-[18px] font-semibold mb-[1px] flex items-center gap-2">
                       <SvgIcon
                         name="site"
@@ -256,7 +367,7 @@ export default function Home() {
                       Navigation
                     </h3>
                   </div>
-                  <div className="flex flex-col gap-[6px]">
+                  <div className="flex flex-col gap-[6px] flex-1 justify-center">
                     <Link
                       href="/works"
                       className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[8px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] transition-all duration-300 group"
@@ -323,8 +434,12 @@ export default function Home() {
                 </div>
 
                 {/* Experience Section */}
-                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] flex flex-col h-full shadow-lg overflow-hidden">
-                  <div className="p-[12px] pb-0">
+                <div
+                  ref={experienceRef}
+                  className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] flex flex-col shadow-lg overflow-hidden"
+                  style={{ boxSizing: "border-box" }}
+                >
+                  <div className="p-[12px] pb-0 flex-shrink-0">
                     <div className="mb-[8px]">
                       <h3 className="text-[18px] font-semibold mb-[1px] flex items-center gap-2">
                         <SvgIcon
@@ -337,7 +452,7 @@ export default function Home() {
                       </h3>
                     </div>
                   </div>
-                  <div className="relative flex flex-col h-full max-h-[375px] overflow-y-auto custom-scrollbar px-[12px] pb-[12px]">
+                  <div className="relative flex flex-col flex-1 overflow-y-auto custom-scrollbar px-[12px] pb-[12px] min-h-0">
                     {/* Background timeline line */}
                     <div
                       className="absolute left-[1.1rem] top-[0.95rem] w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"
@@ -385,10 +500,14 @@ export default function Home() {
               {/* Right/bottom area */}
               <div className="flex flex-col gap-[0.5rem] md:gap-[0.75rem] order-1 lg:order-2">
                 {/* GitHub contribution heatmap */}
-                <GitHubHeatmap username="shenghaoisyummy" />
+                <div ref={githubHeatmapRef}>
+                  <GitHubHeatmap username="shenghaoisyummy" />
+                </div>
 
                 {/* Tech Stack Section */}
-                <TechStack />
+                <div ref={techStackRef}>
+                  <TechStack />
+                </div>
               </div>
             </div>
           </div>
