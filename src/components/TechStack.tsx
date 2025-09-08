@@ -9,6 +9,7 @@ interface TechIcon {
   hoverColor: string;
   isCustomIcon?: boolean;
   isMainTech?: boolean;
+  isSecTech?: boolean;
 }
 
 const TechStack: React.FC = () => {
@@ -31,7 +32,7 @@ const TechStack: React.FC = () => {
       className: "devicon-nextjs-original-wordmark",
       category: "Frontend",
       displayName: "Next.js",
-      hoverColor: "#000000",
+      hoverColor: "#FFFFFF",
       isMainTech: true,
     },
     {
@@ -56,6 +57,7 @@ const TechStack: React.FC = () => {
       category: "Frontend",
       displayName: "HTML5",
       hoverColor: "#E34F26",
+      isSecTech: true,
     },
     {
       name: "css3",
@@ -63,6 +65,7 @@ const TechStack: React.FC = () => {
       category: "Frontend",
       displayName: "CSS3",
       hoverColor: "#1572B6",
+      isSecTech: true,
     },
     {
       name: "tailwindcss",
@@ -70,6 +73,7 @@ const TechStack: React.FC = () => {
       category: "Frontend",
       displayName: "Tailwind CSS",
       hoverColor: "#06B6D4",
+      isSecTech: true,
     },
     {
       name: "sass",
@@ -77,6 +81,7 @@ const TechStack: React.FC = () => {
       category: "Frontend",
       displayName: "SASS",
       hoverColor: "#CC6699",
+      isSecTech: true,
     },
     {
       name: "redux",
@@ -84,6 +89,7 @@ const TechStack: React.FC = () => {
       category: "Frontend",
       displayName: "Redux",
       hoverColor: "#764ABC",
+      isSecTech: true,
     },
 
     // Backend & Languages
@@ -100,7 +106,8 @@ const TechStack: React.FC = () => {
       className: "devicon-express-original",
       category: "Backend",
       displayName: "Express.js",
-      hoverColor: "#000000",
+      hoverColor: "#FFFFFF",
+      isSecTech: true,
     },
     {
       name: "python",
@@ -132,6 +139,7 @@ const TechStack: React.FC = () => {
       category: "Backend",
       displayName: "PHP",
       hoverColor: "#777BB4",
+      isSecTech: true,
     },
 
     // Database
@@ -149,6 +157,7 @@ const TechStack: React.FC = () => {
       category: "Database",
       displayName: "MySQL",
       hoverColor: "#4479A1",
+      isSecTech: true,
     },
     {
       name: "mongodb",
@@ -156,6 +165,7 @@ const TechStack: React.FC = () => {
       category: "Database",
       displayName: "MongoDB",
       hoverColor: "#47A248",
+      isSecTech: true,
     },
     {
       name: "graphql",
@@ -173,6 +183,7 @@ const TechStack: React.FC = () => {
       category: "AI/ML",
       displayName: "PyTorch",
       hoverColor: "#EE4C2C",
+      isSecTech: true,
     },
     {
       name: "huggingface",
@@ -180,6 +191,7 @@ const TechStack: React.FC = () => {
       category: "AI/ML",
       displayName: "Hugging Face",
       hoverColor: "#FFD21E",
+      isSecTech: true,
     },
     {
       name: "claude",
@@ -187,6 +199,7 @@ const TechStack: React.FC = () => {
       displayName: "Claude",
       hoverColor: "#D97706",
       isCustomIcon: true,
+      isMainTech: true,
     },
 
     // Cloud & DevOps
@@ -204,6 +217,7 @@ const TechStack: React.FC = () => {
       category: "Cloud",
       displayName: "Azure",
       hoverColor: "#0078D4",
+      isSecTech: true,
     },
     {
       name: "docker",
@@ -215,7 +229,7 @@ const TechStack: React.FC = () => {
     },
     {
       name: "githubactions",
-      className: "devicon-github-original",
+      className: "devicon-githubactions-plain",
       category: "DevOps",
       displayName: "GitHub Actions",
       hoverColor: "#2088FF",
@@ -236,7 +250,7 @@ const TechStack: React.FC = () => {
       className: "devicon-github-original",
       category: "Tools",
       displayName: "GitHub",
-      hoverColor: "#181717",
+      hoverColor: "#FFFFFF",
       isMainTech: true,
     },
     {
@@ -251,7 +265,7 @@ const TechStack: React.FC = () => {
       className: "devicon-prisma-original",
       category: "Tools",
       displayName: "Prisma",
-      hoverColor: "#2D3748",
+      hoverColor: "#5A67D8",
       isMainTech: true,
     },
   ];
@@ -271,11 +285,18 @@ const TechStack: React.FC = () => {
     }
   }, [containerHeight]);
 
-  const handleCategoryClick = (category: string) => {
+  const handleCategoryClick = (category: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (selectedCategory === category) {
       setSelectedCategory(null);
     } else {
       setSelectedCategory(category);
+    }
+  };
+
+  const handleContainerClick = () => {
+    if (selectedCategory) {
+      setSelectedCategory(null);
     }
   };
 
@@ -319,7 +340,10 @@ const TechStack: React.FC = () => {
   };
 
   return (
-    <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] shadow-lg p-[16px]">
+    <div
+      className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] shadow-lg p-[16px]"
+      onClick={handleContainerClick}
+    >
       {/* Header */}
       <div className="flex items-center gap-[0.5rem] mb-[1rem]">
         <i className="devicon-devicon-plain text-white text-[1rem]"></i>
@@ -327,11 +351,11 @@ const TechStack: React.FC = () => {
       </div>
 
       {/* Categories */}
-      <div className="text-[0.6875rem] text-[rgba(255,255,255,0.8)] flex flex-wrap gap-[0.625rem] justify-center mb-[1rem]">
+      <div className="text-[0.6875rem] text-[rgba(255,255,255,0.8)] flex flex-wrap gap-[0.625rem] justify-center mb-[2rem]">
         {categories.map((category) => (
           <span
             key={category}
-            onClick={() => handleCategoryClick(category)}
+            onClick={(e) => handleCategoryClick(category, e)}
             className={`px-[0.5rem] py-[0.25rem] rounded-full transition-all duration-200 shadow-sm cursor-pointer select-none ${
               selectedCategory === category
                 ? `bg-[${getCategoryHoverColor(
@@ -371,6 +395,16 @@ const TechStack: React.FC = () => {
           const isMainTech =
             Boolean(tech.isMainTech) ||
             Boolean(selectedCategory && tech.category === selectedCategory);
+          const isSecTech = Boolean(tech.isSecTech);
+
+          // Helper function to convert hex color to rgba with opacity
+          const hexToRgba = (hex: string, opacity: number) => {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          };
+
           return (
             <div
               key={tech.name}
@@ -380,25 +414,50 @@ const TechStack: React.FC = () => {
                 <CustomTechIcons
                   name={tech.name as "claude" | "cursor"}
                   size="1.75rem"
-                  hoverColor={isMainTech ? tech.hoverColor : "#6B7280"}
+                  hoverColor={tech.hoverColor}
+                  initialColor={
+                    isMainTech
+                      ? tech.hoverColor
+                      : isSecTech
+                      ? hexToRgba(tech.hoverColor, 0.5)
+                      : undefined
+                  }
                 />
               ) : (
                 <i
                   className={`${
                     tech.className
                   } text-[1.75rem] md:text-[2.25rem] transition-colors duration-300 group-hover:scale-110 filter drop-shadow-sm ${
-                    isMainTech
-                      ? "group-hover:text-[var(--hover-color)]"
-                      : "text-gray-600 group-hover:text-gray-400"
+                    isMainTech || isSecTech ? "" : "text-gray-600"
                   }`}
                   style={
                     isMainTech
                       ? ({
                           color: tech.hoverColor,
-                          "--hover-color": tech.hoverColor,
                         } as React.CSSProperties)
-                      : {}
+                      : isSecTech
+                      ? ({
+                          color: hexToRgba(tech.hoverColor, 0.5),
+                        } as React.CSSProperties)
+                      : ({
+                          color: "#6B7280",
+                        } as React.CSSProperties)
                   }
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = tech.hoverColor;
+                  }}
+                  onMouseLeave={(e) => {
+                    if (isMainTech) {
+                      e.currentTarget.style.color = tech.hoverColor;
+                    } else if (isSecTech) {
+                      e.currentTarget.style.color = hexToRgba(
+                        tech.hoverColor,
+                        0.5
+                      );
+                    } else {
+                      e.currentTarget.style.color = "#6B7280";
+                    }
+                  }}
                 ></i>
               )}
               {/* Tooltip */}
