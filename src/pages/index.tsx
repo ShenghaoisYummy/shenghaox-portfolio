@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { useTheme } from "@/contexts/ThemeContext";
 import SvgIcon from "@/components/SvgIcon";
 import GitHubHeatmap from "@/components/GitHubHeatmap";
+import TechStack from "@/components/TechStack";
 import ImageModal from "@/components/ImageModal";
 import MusicModal from "@/components/MusicModal";
 import VideoModal from "@/components/VideoModal";
@@ -239,52 +240,107 @@ export default function Home() {
             </div>
 
             {/* Content area - vertical layout below 800px */}
-            <div className="flex gap-[0.375rem] md:gap-[0.625rem] flex-col lg:grid lg:grid-cols-[15.625rem_1fr] px-4 md:px-8 lg:px-8">
+            <div className="flex gap-[0.5rem] md:gap-[0.75rem] flex-col lg:grid lg:grid-cols-[16rem_1fr] px-4 md:px-6 lg:px-8">
               {/* Left/center area */}
-              <div className="order-2 lg:order-1 flex flex-col gap-[0.375rem]">
-                {/* Placeholder Section */}
-                <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] shadow-lg p-[0.375rem]">
-                  <div className="flex items-center gap-[0.75rem] mb-[1rem]">
-                    <div className="w-[2rem] h-[2rem] bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] rounded-full flex items-center justify-center shadow-md">
-                      <div className="w-[0.75rem] h-[0.75rem] bg-white rounded-full animate-pulse"></div>
-                    </div>
-                    <div className="flex flex-col">
-                      <h2 className="text-[1rem] font-bold bg-gradient-to-r from-[#60a5fa] to-[#93c5fd] bg-clip-text text-transparent mb-[0.1875rem]">
-                        Coming Soon
-                      </h2>
-                      <p className="text-[0.6875rem] text-[rgba(255,255,255,0.7)]">
-                        New section under development
-                      </p>
-                    </div>
+              <div className="order-2 lg:order-1 flex flex-col gap-[0.5rem] md:gap-[0.625rem]">
+                {/* Navigation Section */}
+                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[12px] text-[#fff] shadow-lg">
+                  <div className="mb-[8px]">
+                    <h3 className="text-[18px] font-semibold mb-[1px] flex items-center gap-2">
+                      <SvgIcon
+                        name="site"
+                        width={16}
+                        height={16}
+                        color="#fff"
+                      />
+                      Navigation
+                    </h3>
                   </div>
-                  <div className="text-[0.6875rem] text-[rgba(255,255,255,0.8)] leading-relaxed">
-                    <p className="mb-[0.25rem]">
-                      This section is currently being developed and will feature
-                      exciting new content.
-                    </p>
-                    <p className="text-[0.625rem] text-[rgba(255,255,255,0.6)]">
-                      Stay tuned for updates! 🚀
-                    </p>
-                  </div>
-                  <div className="mt-[0.75rem] flex gap-[0.25rem]">
-                    <div className="w-[0.5rem] h-[0.5rem] bg-[#4a90c2] rounded-full animate-pulse"></div>
-                    <div
-                      className="w-[0.5rem] h-[0.5rem] bg-[#7db8d8] rounded-full animate-pulse"
-                      style={{ animationDelay: "0.2s" }}
-                    ></div>
-                    <div
-                      className="w-[0.5rem] h-[0.5rem] bg-[#3d85a9] rounded-full animate-pulse"
-                      style={{ animationDelay: "0.4s" }}
-                    ></div>
+                  <div className="flex flex-col gap-[6px]">
+                    <Link
+                      href="/works"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[8px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] transition-all duration-300 group"
+                    >
+                      <div className="group-hover:rotate-12 transition-transform duration-300 mr-[8px]">
+                        <SvgIcon
+                          name="zuopin"
+                          width={18}
+                          height={18}
+                          color="#fff"
+                        />
+                      </div>
+                      <div className="flex flex-col text-sm">
+                        <span className="font-semibold text-[16px]">
+                          Projects
+                        </span>
+                        <span className="text-[11px] text-[rgba(255,255,255,0.7)]">
+                          Full-Stack projects
+                        </span>
+                      </div>
+                    </Link>
+                    <Link
+                      href="https://personal-blog-jade-five.vercel.app/"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[6px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] transition-all duration-300 group"
+                    >
+                      <div className="group-hover:scale-110 transition-transform duration-300 mr-[6px]">
+                        <SvgIcon
+                          name="docs"
+                          width={18}
+                          height={18}
+                          color="#fff"
+                        />
+                      </div>
+                      <div className="flex flex-col text-sm">
+                        <span className="font-semibold text-[16px]">Blog</span>
+                        <span className="text-[11px] text-[rgba(255,255,255,0.7)]">
+                          Full-Stack & AI knowledges
+                        </span>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/chat"
+                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[8px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(255,107,53,0.15)] hover:border-[#ff6b35] hover:shadow-lg hover:shadow-[rgba(255,107,53,0.2)] transition-all duration-300 group"
+                    >
+                      <div className="group-hover:animate-pulse transition-all duration-300 mr-[8px]">
+                        <SvgIcon
+                          name="comment"
+                          width={18}
+                          height={18}
+                          color="#fff"
+                        />
+                      </div>
+
+                      <div className="flex flex-col text-sm">
+                        <span className="font-semibold text-[16px]">
+                          Chat Room
+                        </span>
+                        <span className="text-[11px] text-[rgba(255,255,255,0.7)]">
+                          Real-time chat
+                        </span>
+                      </div>
+                    </Link>
                   </div>
                 </div>
 
                 {/* Experience Section */}
                 <div className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] flex flex-col h-full shadow-lg overflow-hidden">
-                  <div className="relative flex flex-col h-full max-h-[375px] overflow-y-auto custom-scrollbar p-[0.375rem]">
+                  <div className="p-[12px] pb-0">
+                    <div className="mb-[8px]">
+                      <h3 className="text-[18px] font-semibold mb-[1px] flex items-center gap-2">
+                        <SvgIcon
+                          name="work"
+                          width={16}
+                          height={16}
+                          color="#fff"
+                        />
+                        Experience
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="relative flex flex-col h-full max-h-[375px] overflow-y-auto custom-scrollbar px-[12px] pb-[12px]">
                     {/* Background timeline line */}
                     <div
-                      className="absolute left-[0.71875rem] top-[1.375rem] w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"
+                      className="absolute left-[1.1rem] top-[0.95rem] w-[0.1875rem] bg-gradient-to-b from-[#4a90c2] via-[#3d85a9] to-[#7db8d8] rounded-full shadow-sm"
                       style={{ height: `${express.length * 220}px` }}
                     ></div>
 
@@ -296,7 +352,7 @@ export default function Home() {
                         }`}
                       >
                         {/* 时间线左侧圆点 */}
-                        <div className="relative flex flex-col items-center mr-[0.9375rem] z-10">
+                        <div className="relative flex flex-col items-center mr-[1.40625rem] z-10">
                           <div
                             className={`w-[0.875rem] h-[0.875rem] rounded-full border-2 border-white shadow-md ${
                               index === 0
@@ -327,78 +383,12 @@ export default function Home() {
                 </div>
               </div>
               {/* Right/bottom area */}
-              <div className="flex flex-col gap-[0.375rem] md:gap-[0.625rem] order-1 lg:order-2">
+              <div className="flex flex-col gap-[0.5rem] md:gap-[0.75rem] order-1 lg:order-2">
                 {/* GitHub contribution heatmap */}
                 <GitHubHeatmap username="shenghaoisyummy" />
 
-                <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[1rem] p-[1rem] text-[#fff] text-[1.125rem] gap-[2rem] flex flex-col flex-1 shadow-lg">
-                  <div className="font-bold text-[1.5rem] flex items-center gap-[0.75rem]">
-                    <SvgIcon name="site" width={28} height={28} color="#fff" />
-                    <div className="flex flex-col">Navigation</div>
-                  </div>
-                  <div className="flex gap-[1.25rem] md:gap-[1.5rem] flex-col sm:flex-row">
-                    <Link
-                      href="/works"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[0.75rem] p-[0.875rem] text-[#fff] text-[1rem] gap-[0.5rem] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] hover:scale-[1.02] transition-all duration-300 group"
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="font-semibold">Projects</span>
-                        <div className="group-hover:rotate-12 transition-transform duration-300">
-                          <SvgIcon
-                            name="zuopin"
-                            width={30}
-                            height={30}
-                            color="#fff"
-                          />
-                        </div>
-                      </div>
-                      <span className="text-[0.875rem] text-[rgba(255,255,255,0.8)]">
-                        Full-Stack projects
-                      </span>
-                    </Link>
-                    <Link
-                      href="https://personal-blog-jade-five.vercel.app/"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[0.75rem] p-[0.875rem] text-[#fff] text-[1rem] gap-[0.5rem] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] hover:scale-[1.02] transition-all duration-300 group"
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="font-semibold">Blog</span>
-                        <div className="group-hover:scale-110 transition-transform duration-300">
-                          <SvgIcon
-                            name="docs"
-                            width={30}
-                            height={30}
-                            color="#fff"
-                          />
-                        </div>
-                      </div>
-                      <span className="text-[0.875rem] text-[rgba(255,255,255,0.8)]">
-                        Full-Stack & AI knowledges
-                      </span>
-                    </Link>
-                    <Link
-                      href="/chat"
-                      className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[0.75rem] p-[0.875rem] text-[#fff] text-[1rem] gap-[0.5rem] flex flex-col cursor-pointer flex-1 hover:bg-[rgba(255,107,53,0.15)] hover:border-[#ff6b35] hover:shadow-lg hover:shadow-[rgba(255,107,53,0.2)] hover:scale-[1.02] transition-all duration-300 group"
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="font-semibold">Chat Room</span>
-                        <div className="group-hover:animate-pulse transition-all duration-300">
-                          <SvgIcon
-                            name="comment"
-                            width={30}
-                            height={30}
-                            color="#fff"
-                          />
-                        </div>
-                      </div>
-                      <span className="text-[0.875rem] text-[rgba(255,255,255,0.8)]">
-                        Real-time chat
-                      </span>
-                    </Link>
-                  </div>
-                  <div className="text-[0.875rem] md:text-[1rem] text-[rgba(255,255,255,0.7)]">
-                    Continuously updating since 2025...
-                  </div>
-                </div>
+                {/* Tech Stack Section */}
+                <TechStack />
               </div>
             </div>
           </div>
