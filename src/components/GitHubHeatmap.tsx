@@ -38,10 +38,10 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
     };
 
     checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    
+    window.addEventListener("resize", checkIsMobile);
+
     return () => {
-      window.removeEventListener('resize', checkIsMobile);
+      window.removeEventListener("resize", checkIsMobile);
     };
   }, []);
 
@@ -128,7 +128,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
 
         const currentYear = today.getFullYear();
         const previousYear = currentYear - 1;
-        
+
         // 需要获取的年份数据
         const yearsToFetch = [previousYear, currentYear];
         const allContributions: ContributionDay[] = [];
@@ -136,7 +136,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         // 获取所需年份的数据
         for (const year of yearsToFetch) {
           let yearData: GitHubContributionsData | null = null;
-          
+
           // 尝试从缓存获取
           const cachedData = getCachedData(username, year);
           if (cachedData) {
@@ -164,10 +164,15 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         });
 
         // 按日期排序
-        filteredData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        filteredData.sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
 
         // 计算总贡献数
-        const total = filteredData.reduce((sum: number, day: ContributionDay) => sum + day.count, 0);
+        const total = filteredData.reduce(
+          (sum: number, day: ContributionDay) => sum + day.count,
+          0
+        );
 
         setContributions(filteredData);
         setTotalContributions(total);
@@ -205,7 +210,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
     // 计算显示的周数（移动端约26周，桌面端53周）
     const weeksToShow = isMobile ? 26 : 53;
     const monthsBack = isMobile ? 6 : 12;
-    
+
     const today = new Date();
     const periodStart = new Date(today);
     if (monthsBack === 6) {
@@ -225,13 +230,13 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
     // 生成对应周数的网格
     for (let week = 0; week < weeksToShow; week++) {
       const currentWeek: ContributionDay[] = [];
-      
+
       for (let day = 0; day < 7; day++) {
-        const dateStr = currentDate.toISOString().split('T')[0];
-        
+        const dateStr = currentDate.toISOString().split("T")[0];
+
         // 查找是否有该日期的贡献数据
-        const contribution = contributions.find(c => c.date === dateStr);
-        
+        const contribution = contributions.find((c) => c.date === dateStr);
+
         if (contribution) {
           currentWeek.push(contribution);
         } else if (currentDate >= periodStart && currentDate <= today) {
@@ -241,10 +246,10 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
           // 超出范围，填充空白
           currentWeek.push({ date: "", count: 0, level: 0 });
         }
-        
+
         currentDate.setDate(currentDate.getDate() + 1);
       }
-      
+
       weeks.push(currentWeek);
     }
 
@@ -293,12 +298,13 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
   return (
     <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[16px] text-[#fff] overflow-x-auto custom-scrollbar shadow-lg">
       <div className="mb-[12px]">
-        <h3 className="text-[16px] font-semibold mb-[1px] flex items-center gap-2">
+        <h3 className="text-[18px] font-semibold mb-[1px] flex items-center gap-2">
           <SvgIcon name="github" width={20} height={20} color="#fff" />
-          Past {isMobile ? '6' : '12'} Months GitHub Commits
+          Past {isMobile ? "6" : "12"} Months GitHub Commits
         </h3>
         <p className="text-[12px] text-[rgba(255,255,255,0.7)]">
-          {totalContributions} contributions in the last {isMobile ? '6' : '12'} months
+          {totalContributions} contributions in the last {isMobile ? "6" : "12"}{" "}
+          months
         </p>
       </div>
 
@@ -310,26 +316,26 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
             const today = new Date();
             const monthsBack = isMobile ? 6 : 12;
             const weeksToShow = isMobile ? 26 : 53;
-            
+
             const periodStart = new Date(today);
             if (monthsBack === 6) {
               periodStart.setMonth(today.getMonth() - 6);
             } else {
               periodStart.setFullYear(today.getFullYear() - 1);
             }
-            
+
             // 找到开始周的星期天
             const startDate = new Date(periodStart);
             startDate.setDate(startDate.getDate() - startDate.getDay() + 1); // 下周一
-            
+
             let currentMonth = startDate.getMonth();
             let weekCount = 0;
-            
+
             for (let week = 0; week < weeksToShow; week++) {
               const weekStartDate = new Date(startDate);
               weekStartDate.setDate(startDate.getDate() + week * 7);
               const weekMonth = weekStartDate.getMonth();
-              
+
               if (week === 0 || weekMonth !== currentMonth) {
                 if (week > 0) {
                   // 添加前一个月的标签
@@ -351,7 +357,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
                 weekCount++;
               }
             }
-            
+
             // 添加最后一个月
             if (weekCount > 0) {
               monthLabels.push(
@@ -366,7 +372,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
                 </div>
               );
             }
-            
+
             return monthLabels;
           })()}
         </div>
