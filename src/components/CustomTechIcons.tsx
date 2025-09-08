@@ -4,23 +4,36 @@ interface CustomIconProps {
   name: 'claude' | 'cursor';
   size?: string;
   hoverColor?: string;
+  initialColor?: string;
 }
 
-const CustomTechIcons: React.FC<CustomIconProps> = ({ name, size = '1.75rem', hoverColor }) => {
-  const baseClasses = `transition-colors duration-300 group-hover:scale-110 filter drop-shadow-sm text-gray-500 group-hover:text-[var(--hover-color)]`;
+const CustomTechIcons: React.FC<CustomIconProps> = ({ name, size = '1.75rem', hoverColor, initialColor }) => {
+  const baseClasses = `transition-colors duration-300 group-hover:scale-110 filter drop-shadow-sm`;
   
   const iconStyle = {
-    '--hover-color': hoverColor,
+    color: initialColor || '#6B7280',
     width: size,
     height: size,
     fontSize: size,
   } as React.CSSProperties;
+
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    if (hoverColor) {
+      e.currentTarget.style.color = hoverColor;
+    }
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    e.currentTarget.style.color = initialColor || '#6B7280';
+  };
 
   if (name === 'claude') {
     return (
       <div 
         className={baseClasses}
         style={iconStyle}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <svg 
           viewBox="0 0 24 24" 
@@ -39,6 +52,8 @@ const CustomTechIcons: React.FC<CustomIconProps> = ({ name, size = '1.75rem', ho
       <div 
         className={baseClasses}
         style={iconStyle}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <svg 
           viewBox="0 0 24 24" 
