@@ -286,10 +286,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               className="ml-2 cursor-pointer transition-all duration-300 rounded-lg p-2 w-18 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-[oklch(71.5%_0.143_215.221)] hover:border-[oklch(71.5%_0.143_215.221)] flex items-center justify-center group"
               onClick={() => window.open("/works", "_self")}
             >
-              <span className="text-xs font-bold text-white group-hover:hidden">
+              <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
                 Resume
               </span>
-              <span className="text-xs font-bold text-white hidden group-hover:block">
+              <span className="text-xs font-bold bg-gradient-to-r from-[#93c5fd] to-[#60a5fa] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
                 View
               </span>
             </div>
