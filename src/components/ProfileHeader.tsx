@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useTheme } from "@/contexts/ThemeContext";
 import SvgIcon from "@/components/SvgIcon";
@@ -20,17 +20,122 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   onTiktokClick,
 }) => {
   const { theme } = useTheme();
+  const [showEmailInfo, setShowEmailInfo] = useState(false);
+  const [showPhoneInfo, setShowPhoneInfo] = useState(false);
+  const [emailModalPosition, setEmailModalPosition] = useState({ top: 0, left: 0 });
+  const [phoneModalPosition, setPhoneModalPosition] = useState({ top: 0, left: 0 });
+  const emailIconRef = useRef<HTMLDivElement>(null);
+  const phoneIconRef = useRef<HTMLDivElement>(null);
 
   const { displayText } = useTypewriter({
-    text: "Hello, I'm Austin",
+    text: "Hello, I'm AustinX",
     speed: 150,
     delay: 0,
     pauseDuration: 2000,
     loop: true,
   });
 
+  const getModalPosition = (iconRef: React.RefObject<HTMLDivElement | null>) => {
+    if (!iconRef.current) return { top: 0, left: 0 };
+    
+    const rect = iconRef.current.getBoundingClientRect();
+    return {
+      top: rect.top - 150, // Show modal above the icon
+      left: Math.max(10, rect.left - 100), // Center modal relative to icon, but keep it on screen
+    };
+  };
+
+  // Close modals when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowEmailInfo(false);
+      setShowPhoneInfo(false);
+    };
+
+    if (showEmailInfo || showPhoneInfo) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showEmailInfo, showPhoneInfo]);
+
   return (
-    <div className="flex gap-[0.375rem] md:gap-[0.5rem] flex-col md:flex-row mb-1 ml-[1.875rem]">
+    <>
+      {/* Email Modal - Positioned near email icon */}
+      {showEmailInfo && (
+        <div 
+          className="fixed w-[280px] bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[#fff] text-sm p-4 z-[9999] shadow-lg"
+          style={{ 
+            top: `${emailModalPosition.top}px`, 
+            left: `${emailModalPosition.left}px` 
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mb-3 font-semibold text-center">Contact Information</div>
+          <div className="mb-2 flex items-center gap-2">
+            <span>📧</span>
+            <span className="truncate">shenghaoxu.austin@gmail.com</span>
+          </div>
+          <div className="text-gray-300 mb-3 text-xs">Available for collaboration</div>
+          <div className="flex gap-2 mt-3">
+            <button 
+              onClick={() => {
+                window.open("mailto:shenghaoxu.austin@gmail.com", "_blank");
+                setShowEmailInfo(false);
+              }}
+              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+            >
+              Send Email
+            </button>
+            <button 
+              onClick={() => setShowEmailInfo(false)}
+              className="bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Phone Modal - Positioned near phone icon */}
+      {showPhoneInfo && (
+        <div 
+          className="fixed w-[280px] bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[#fff] text-sm p-4 z-[9999] shadow-lg"
+          style={{ 
+            top: `${phoneModalPosition.top}px`, 
+            left: `${phoneModalPosition.left}px` 
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mb-3 font-semibold text-center">Phone Information</div>
+          <div className="mb-2 flex items-center gap-2">
+            <span>📱</span>
+            <span>+61 451 234 567</span>
+          </div>
+          <div className="text-gray-300 mb-3 text-xs">Available: 9AM - 6PM AEST</div>
+          <div className="flex gap-2 mt-3">
+            <button 
+              onClick={() => {
+                window.open("tel:+61451234567", "_blank");
+                setShowPhoneInfo(false);
+              }}
+              className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+            >
+              Call Now
+            </button>
+            <button 
+              onClick={() => setShowPhoneInfo(false)}
+              className="bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-[0.375rem] md:gap-[0.5rem] flex-col md:flex-row mb-1 ml-[1.875rem]">
       <div className="relative w-full md:w-[15.625rem] flex justify-center items-center mx-auto md:mx-0">
         <Image
           src="/images/avatar.jpg"
@@ -55,7 +160,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         <div className="text-[1.75rem] md:text-[2.625rem] font-bold text-[#fff] text-shadow-lg leading-tight mb-[1.5rem]">
           <span className="inline-block">
             {displayText.split(" ").map((word, wordIndex) => {
-              if (word === "austin") {
+              if (word.toLowerCase() === "austinx") {
                 return (
                   <span
                     key={wordIndex}
@@ -128,18 +233,32 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
           {/* Email */}
           <div
-            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-red-500 backdrop-blur-md border border-red-500 hover:shadow-lg hover:scale-105 hover:bg-red-600 hover:border-red-600 flex items-center justify-center"
-            onClick={() =>
-              window.open("mailto:your.email@example.com", "_blank")
-            }
+            ref={emailIconRef}
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-red-500 backdrop-blur-md border border-red-500 hover:shadow-lg hover:scale-105 hover:bg-red-600 hover:border-red-600 flex items-center justify-center relative"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!showEmailInfo) {
+                const position = getModalPosition(emailIconRef);
+                setEmailModalPosition(position);
+              }
+              setShowEmailInfo(!showEmailInfo);
+            }}
           >
             <SvgIcon name="email" width={16} height={16} color="#fff" />
           </div>
 
           {/* Phone */}
           <div
-            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-green-500 backdrop-blur-md border border-green-500 hover:shadow-lg hover:scale-105 hover:bg-green-600 hover:border-green-600 flex items-center justify-center"
-            onClick={() => window.open("tel:+1234567890", "_blank")}
+            ref={phoneIconRef}
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-green-500 backdrop-blur-md border border-green-500 hover:shadow-lg hover:scale-105 hover:bg-green-600 hover:border-green-600 flex items-center justify-center relative"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!showPhoneInfo) {
+                const position = getModalPosition(phoneIconRef);
+                setPhoneModalPosition(position);
+              }
+              setShowPhoneInfo(!showPhoneInfo);
+            }}
           >
             <SvgIcon name="phone" width={16} height={16} color="#fff" />
           </div>
@@ -155,6 +274,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         </div>
       </div>
     </div>
+    </>
   );
 };
 
