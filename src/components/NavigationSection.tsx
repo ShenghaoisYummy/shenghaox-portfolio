@@ -6,7 +6,7 @@ const NavigationSection = forwardRef<HTMLDivElement>((props, ref) => {
   return (
     <div
       ref={ref}
-      className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[12px] text-[#fff] shadow-lg flex flex-col"
+      className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[12px] text-[#fff] card-depth flex flex-col card-enter"
       style={{ boxSizing: "border-box" }}
     >
       <div className="mb-[8px] flex-shrink-0">
@@ -23,9 +23,9 @@ const NavigationSection = forwardRef<HTMLDivElement>((props, ref) => {
       <div className="flex flex-col gap-[6px] flex-1 justify-center">
         <Link
           href="/works"
-          className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[8px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] transition-all duration-300 group"
+          className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[8px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(74,144,194,0.15)] hover:border-[#4a90c2] hover:shadow-lg hover:shadow-[rgba(74,144,194,0.2)] transition-all duration-300 group card-enter-delay-1 hover:-translate-y-1 hover:scale-[1.02] card-depth-hover"
         >
-          <div className="group-hover:rotate-12 transition-transform duration-300 mr-[8px]">
+          <div className="icon-bounce mr-[8px]">
             <SvgIcon
               name="zuopin"
               width={18}
@@ -44,9 +44,9 @@ const NavigationSection = forwardRef<HTMLDivElement>((props, ref) => {
         </Link>
         <Link
           href="https://personal-blog-jade-five.vercel.app/"
-          className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[6px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] transition-all duration-300 group"
+          className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[6px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(32,178,170,0.15)] hover:border-[#20b2aa] hover:shadow-lg hover:shadow-[rgba(32,178,170,0.2)] transition-all duration-300 group card-enter-delay-2 hover:-translate-y-1 hover:scale-[1.02] card-depth-hover"
         >
-          <div className="group-hover:scale-110 transition-transform duration-300 mr-[6px]">
+          <div className="icon-swing mr-[6px]">
             <SvgIcon
               name="docs"
               width={18}
@@ -63,9 +63,9 @@ const NavigationSection = forwardRef<HTMLDivElement>((props, ref) => {
         </Link>
         <Link
           href="/chat"
-          className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[8px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(255,107,53,0.15)] hover:border-[#ff6b35] hover:shadow-lg hover:shadow-[rgba(255,107,53,0.2)] transition-all duration-300 group"
+          className="bg-[rgba(0,0,0,.3)] backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[6px] p-[8px] text-[#fff] flex items-center cursor-pointer hover:bg-[rgba(255,107,53,0.15)] hover:border-[#ff6b35] hover:shadow-lg hover:shadow-[rgba(255,107,53,0.2)] transition-all duration-300 group card-enter-delay-2 hover:-translate-y-1 hover:scale-[1.02] card-depth-hover"
         >
-          <div className="group-hover:animate-pulse transition-all duration-300 mr-[8px]">
+          <div className="breathing mr-[8px]">
             <SvgIcon
               name="comment"
               width={18}
