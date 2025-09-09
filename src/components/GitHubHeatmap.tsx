@@ -276,10 +276,53 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
   if (loading) {
     return (
       <div className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] p-[16px] text-[#fff] w-full max-w-full shadow-lg">
-        <div className="animate-pulse flex items-center gap-2">
-          <div className="w-4 h-4 bg-[#3d85a9] rounded animate-spin"></div>
-          <span>加载GitHub贡献图...</span>
+        <div className="flex flex-col items-center justify-center py-8">
+          <div className="heatmap-loading-animation mb-4">
+            {/* GitHub icon with loading animation */}
+            <div className="relative">
+              <SvgIcon name="github" width={32} height={32} color="#4A90E2" />
+              <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#4A90E2] animate-spin"></div>
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-sm font-medium mb-1">Loading GitHub Contributions</div>
+            <div className="text-xs text-[rgba(255,255,255,0.7)]">
+              Fetching your coding activity...
+            </div>
+          </div>
         </div>
+        
+        <style jsx>{`
+          .heatmap-loading-animation {
+            position: relative;
+            display: inline-block;
+          }
+          
+          .heatmap-loading-animation::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: #4A90E2;
+            border-right-color: #4A90E2;
+            animation: heatmap-pulse 2s ease-in-out infinite;
+          }
+          
+          @keyframes heatmap-pulse {
+            0%, 100% {
+              opacity: 1;
+              transform: scale(1);
+            }
+            50% {
+              opacity: 0.5;
+              transform: scale(1.1);
+            }
+          }
+        `}</style>
       </div>
     );
   }

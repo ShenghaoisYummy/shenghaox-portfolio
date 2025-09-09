@@ -119,7 +119,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   const isChatPage = router.pathname === "/chat";
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen mb-8">
       {/* 主题切换按钮 */}
       <ThemeToggle />
 
