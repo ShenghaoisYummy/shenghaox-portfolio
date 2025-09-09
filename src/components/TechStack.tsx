@@ -36,52 +36,20 @@ const TechStack: React.FC = () => {
       isMainTech: true,
     },
     {
-      name: "typescript",
-      className: "devicon-typescript-plain",
-      category: "Frontend",
-      displayName: "TypeScript",
-      hoverColor: "#3178C6",
-      isMainTech: true,
-    },
-    {
-      name: "javascript",
-      className: "devicon-javascript-plain",
-      category: "Frontend",
-      displayName: "JavaScript",
-      hoverColor: "#F7DF1E",
-      isMainTech: true,
-    },
-    {
-      name: "html5",
-      className: "devicon-html5-plain",
-      category: "Frontend",
-      displayName: "HTML5",
-      hoverColor: "#E34F26",
-      isSecTech: true,
-    },
-    {
-      name: "css3",
-      className: "devicon-css3-plain",
-      category: "Frontend",
-      displayName: "CSS3",
-      hoverColor: "#1572B6",
-      isSecTech: true,
-    },
-    {
       name: "tailwindcss",
       className: "devicon-tailwindcss-plain",
       category: "Frontend",
       displayName: "Tailwind CSS",
       hoverColor: "#06B6D4",
-      isSecTech: true,
+      isMainTech: true,
     },
     {
-      name: "sass",
-      className: "devicon-sass-original",
+      name: "shadcn",
       category: "Frontend",
-      displayName: "SASS",
-      hoverColor: "#CC6699",
-      isSecTech: true,
+      displayName: "shadcn/ui",
+      hoverColor: "#FFFFFF",
+      isCustomIcon: true,
+      isMainTech: true,
     },
     {
       name: "redux",
@@ -92,7 +60,15 @@ const TechStack: React.FC = () => {
       isSecTech: true,
     },
 
-    // Backend & Languages
+    // Backend
+    {
+      name: "dotnetcore",
+      className: "devicon-dot-net-plain",
+      category: "Backend",
+      displayName: ".NET Core",
+      hoverColor: "#512BD4",
+      isMainTech: true,
+    },
     {
       name: "nodejs",
       className: "devicon-nodejs-plain",
@@ -110,6 +86,51 @@ const TechStack: React.FC = () => {
       isSecTech: true,
     },
     {
+      name: "php",
+      className: "devicon-php-plain",
+      category: "Backend",
+      displayName: "PHP",
+      hoverColor: "#777BB4",
+      isSecTech: true,
+    },
+
+    // AI & ML
+
+    {
+      name: "claude",
+      category: "AI/ML",
+      displayName: "Claude Code",
+      hoverColor: "#D97706",
+      isCustomIcon: true,
+      isMainTech: true,
+    },
+    {
+      name: "cursor",
+      category: "AI/ML",
+      displayName: "Cursor",
+      hoverColor: "#000000",
+      isCustomIcon: true,
+    },
+
+    {
+      name: "pytorch",
+      className: "devicon-pytorch-original",
+      category: "AI/ML",
+      displayName: "PyTorch",
+      hoverColor: "#EE4C2C",
+      isSecTech: true,
+    },
+    {
+      name: "huggingface",
+      category: "AI/ML",
+      displayName: "Hugging Face",
+      hoverColor: "#FFD21E",
+      isCustomIcon: true,
+      isSecTech: true,
+    },
+
+    // Languages
+    {
       name: "python",
       className: "devicon-python-plain",
       category: "Backend",
@@ -126,19 +147,35 @@ const TechStack: React.FC = () => {
       isMainTech: true,
     },
     {
-      name: "dotnetcore",
-      className: "devicon-dot-net-plain",
-      category: "Backend",
-      displayName: ".NET Core",
-      hoverColor: "#512BD4",
+      name: "javascript",
+      className: "devicon-javascript-plain",
+      category: "Frontend",
+      displayName: "JavaScript",
+      hoverColor: "#F7DF1E",
       isMainTech: true,
     },
     {
-      name: "php",
-      className: "devicon-php-plain",
-      category: "Backend",
-      displayName: "PHP",
-      hoverColor: "#777BB4",
+      name: "typescript",
+      className: "devicon-typescript-plain",
+      category: "Frontend",
+      displayName: "TypeScript",
+      hoverColor: "#3178C6",
+      isMainTech: true,
+    },
+    {
+      name: "html5",
+      className: "devicon-html5-plain",
+      category: "Frontend",
+      displayName: "HTML5",
+      hoverColor: "#E34F26",
+      isSecTech: true,
+    },
+    {
+      name: "css3",
+      className: "devicon-css3-plain",
+      category: "Frontend",
+      displayName: "CSS3",
+      hoverColor: "#1572B6",
       isSecTech: true,
     },
 
@@ -175,33 +212,14 @@ const TechStack: React.FC = () => {
       hoverColor: "#E10098",
       isMainTech: true,
     },
-
-    // AI & ML
     {
-      name: "pytorch",
-      className: "devicon-pytorch-original",
-      category: "AI/ML",
-      displayName: "PyTorch",
-      hoverColor: "#EE4C2C",
-      isSecTech: true,
-    },
-    {
-      name: "huggingface",
-      className: "devicon-python-plain",
-      category: "AI/ML",
-      displayName: "Hugging Face",
-      hoverColor: "#FFD21E",
-      isSecTech: true,
-    },
-    {
-      name: "claude",
-      category: "AI/ML",
-      displayName: "Claude",
-      hoverColor: "#D97706",
-      isCustomIcon: true,
+      name: "prisma",
+      className: "devicon-prisma-original",
+      category: "Database",
+      displayName: "Prisma",
+      hoverColor: "#5A67D8",
       isMainTech: true,
     },
-
     // Cloud & DevOps
     {
       name: "aws",
@@ -236,7 +254,7 @@ const TechStack: React.FC = () => {
       isMainTech: true,
     },
 
-    // Tools
+    // Git
     {
       name: "git",
       className: "devicon-git-plain",
@@ -251,21 +269,6 @@ const TechStack: React.FC = () => {
       category: "Tools",
       displayName: "GitHub",
       hoverColor: "#FFFFFF",
-      isMainTech: true,
-    },
-    {
-      name: "cursor",
-      category: "Tools",
-      displayName: "Cursor",
-      hoverColor: "#000000",
-      isCustomIcon: true,
-    },
-    {
-      name: "prisma",
-      className: "devicon-prisma-original",
-      category: "Tools",
-      displayName: "Prisma",
-      hoverColor: "#5A67D8",
       isMainTech: true,
     },
   ];
@@ -302,39 +305,41 @@ const TechStack: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      Frontend: "rgba(59,130,246,0.25)",     // Blue - UI/interface
-      Backend: "rgba(34,197,94,0.25)",       // Green - server/nature
-      Database: "rgba(168,85,247,0.25)",     // Purple - data/storage
-      "AI/ML": "linear-gradient(135deg, rgba(59,130,246,0.25) 0%, rgba(236,72,153,0.25) 100%)", // Cyberpunk Gradient - AI/tech future
-      Cloud: "rgba(14,165,233,0.25)",        // Sky Blue - cloud/sky
-      DevOps: "rgba(245,158,11,0.25)",       // Amber - tools/automation
-      Tools: "rgba(107,114,128,0.25)",       // Gray - utilities/neutral
+      Frontend: "rgba(59,130,246,0.25)", // Blue - UI/interface
+      Backend: "rgba(34,197,94,0.25)", // Green - server/nature
+      Database: "rgba(168,85,247,0.25)", // Purple - data/storage
+      "AI/ML":
+        "linear-gradient(135deg, rgba(59,130,246,0.25) 0%, rgba(236,72,153,0.25) 100%)", // Cyberpunk Gradient - AI/tech future
+      Cloud: "rgba(14,165,233,0.25)", // Sky Blue - cloud/sky
+      DevOps: "rgba(245,158,11,0.25)", // Amber - tools/automation
+      Tools: "rgba(107,114,128,0.25)", // Gray - utilities/neutral
     };
     return colors[category as keyof typeof colors] || "rgba(128,128,128,0.25)";
   };
 
   const getCategoryHoverColor = (category: string) => {
     const colors = {
-      Frontend: "rgba(59,130,246,0.35)",     // Blue - UI/interface
-      Backend: "rgba(34,197,94,0.35)",       // Green - server/nature
-      Database: "rgba(168,85,247,0.35)",     // Purple - data/storage
-      "AI/ML": "linear-gradient(135deg, rgba(59,130,246,0.35) 0%, rgba(236,72,153,0.35) 100%)", // Cyberpunk Gradient - AI/tech future
-      Cloud: "rgba(14,165,233,0.35)",        // Sky Blue - cloud/sky
-      DevOps: "rgba(245,158,11,0.35)",       // Amber - tools/automation
-      Tools: "rgba(107,114,128,0.35)",       // Gray - utilities/neutral
+      Frontend: "rgba(59,130,246,0.35)", // Blue - UI/interface
+      Backend: "rgba(34,197,94,0.35)", // Green - server/nature
+      Database: "rgba(168,85,247,0.35)", // Purple - data/storage
+      "AI/ML":
+        "linear-gradient(135deg, rgba(59,130,246,0.35) 0%, rgba(236,72,153,0.35) 100%)", // Cyberpunk Gradient - AI/tech future
+      Cloud: "rgba(14,165,233,0.35)", // Sky Blue - cloud/sky
+      DevOps: "rgba(245,158,11,0.35)", // Amber - tools/automation
+      Tools: "rgba(107,114,128,0.35)", // Gray - utilities/neutral
     };
     return colors[category as keyof typeof colors] || "rgba(128,128,128,0.35)";
   };
 
   const getCategoryBorderColor = (category: string) => {
     const colors = {
-      Frontend: "rgba(59,130,246,0.3)",      // Blue - UI/interface
-      Backend: "rgba(34,197,94,0.3)",        // Green - server/nature
-      Database: "rgba(168,85,247,0.3)",      // Purple - data/storage
-      "AI/ML": "linear-gradient(135deg, rgba(59,130,246,0.3) 0%, rgba(236,72,153,0.3) 100%)", // Cyberpunk Gradient - AI/tech future
-      Cloud: "rgba(14,165,233,0.3)",         // Sky Blue - cloud/sky
-      DevOps: "rgba(245,158,11,0.3)",        // Amber - tools/automation
-      Tools: "rgba(107,114,128,0.3)",        // Gray - utilities/neutral
+      Frontend: "rgba(59,130,246,0.3)", // Blue - UI/interface
+      Backend: "rgba(34,197,94,0.3)", // Green - server/nature
+      Database: "rgba(168,85,247,0.3)", // Purple - data/storage
+      "AI/ML": "rgba(147,51,234,0.3)", // Purple border for gradient - AI/tech future
+      Cloud: "rgba(14,165,233,0.3)", // Sky Blue - cloud/sky
+      DevOps: "rgba(245,158,11,0.3)", // Amber - tools/automation
+      Tools: "rgba(107,114,128,0.3)", // Gray - utilities/neutral
     };
     return colors[category as keyof typeof colors] || "rgba(128,128,128,0.3)";
   };
@@ -368,6 +373,10 @@ const TechStack: React.FC = () => {
                   : getCategoryColor(category),
               border: `2px solid ${getCategoryBorderColor(category)}`,
               padding: "0.25rem 0.5rem",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "2rem",
             }}
           >
             {category}
@@ -404,7 +413,9 @@ const TechStack: React.FC = () => {
             >
               {tech.isCustomIcon ? (
                 <CustomTechIcons
-                  name={tech.name as "claude" | "cursor"}
+                  name={
+                    tech.name as "claude" | "cursor" | "huggingface" | "shadcn"
+                  }
                   size="1.75rem"
                   hoverColor={tech.hoverColor}
                   initialColor={
