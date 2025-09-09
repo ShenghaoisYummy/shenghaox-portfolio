@@ -67,6 +67,10 @@ function getColorFilter(color: string): string {
     "#ff0000":
       "invert(13%) sepia(99%) saturate(7404%) hue-rotate(4deg) brightness(97%) contrast(118%)",
     red: "invert(13%) sepia(99%) saturate(7404%) hue-rotate(4deg) brightness(97%) contrast(118%)",
+    "#F76D57": // Location pin red
+      "invert(65%) sepia(85%) saturate(565%) hue-rotate(315deg) brightness(96%) contrast(96%)",
+    "#f76d57": // Location pin red (lowercase)
+      "invert(65%) sepia(85%) saturate(565%) hue-rotate(315deg) brightness(96%) contrast(96%)",
     
     // Social media brand colors
     "#0077b5": // LinkedIn blue
