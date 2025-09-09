@@ -378,3 +378,124 @@ body {
   animation: float 3.5s ease-in-out infinite;
 }
 
+/* Enhanced Navigation Card Animations */
+@keyframes cardEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cardHover {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(-4px) scale(1.02);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes iconBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes iconSwing {
+  20% {
+    transform: rotate3d(0, 0, 1, 15deg);
+  }
+  40% {
+    transform: rotate3d(0, 0, 1, -10deg);
+  }
+  60% {
+    transform: rotate3d(0, 0, 1, 5deg);
+  }
+  80% {
+    transform: rotate3d(0, 0, 1, -5deg);
+  }
+  100% {
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* Navigation Card Utility Classes */
+.card-depth {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  will-change: box-shadow, transform;
+}
+
+.card-depth-hover {
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  will-change: box-shadow, transform;
+}
+
+.card-enter {
+  animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+.card-enter-delay-1 {
+  animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  will-change: opacity, transform;
+}
+
+.card-enter-delay-2 {
+  animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  will-change: opacity, transform;
+}
+
+.icon-bounce:hover {
+  animation: iconBounce 0.6s ease-in-out;
+  will-change: transform;
+}
+
+.icon-swing:hover {
+  animation: iconSwing 0.8s ease-in-out;
+  will-change: transform;
+}
+
+.breathing {
+  animation: breathe 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
