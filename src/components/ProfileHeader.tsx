@@ -143,6 +143,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           >
             <SvgIcon name="phone" width={16} height={16} color="#fff" />
           </div>
+
+          {/* Projects */}
+          <div
+            className="ml-2 cursor-pointer transition-all duration-300 rounded-lg p-2 w-18 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-[oklch(78.9%_0.154_211.53)] hover:border-[oklch(78.9%_0.154_211.53)] flex items-center justify-center"
+            onClick={() => window.open("/works", "_self")}
+          >
+            <span className="text-xs font-bold text-white">Resume</span>
+          </div>
         </div>
       </div>
     </div>
