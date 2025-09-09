@@ -302,39 +302,39 @@ const TechStack: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      Frontend: "rgba(74,144,194,0.25)",
-      Backend: "rgba(125,184,216,0.25)",
-      Database: "rgba(61,133,169,0.25)",
-      "AI/ML": "rgba(238,76,44,0.25)",
-      Cloud: "rgba(255,153,0,0.25)",
-      DevOps: "rgba(36,150,237,0.25)",
-      Tools: "rgba(96,165,250,0.25)",
+      Frontend: "rgba(59,130,246,0.25)",     // Blue - UI/interface
+      Backend: "rgba(34,197,94,0.25)",       // Green - server/nature
+      Database: "rgba(168,85,247,0.25)",     // Purple - data/storage
+      "AI/ML": "linear-gradient(135deg, rgba(59,130,246,0.25) 0%, rgba(236,72,153,0.25) 100%)", // Cyberpunk Gradient - AI/tech future
+      Cloud: "rgba(14,165,233,0.25)",        // Sky Blue - cloud/sky
+      DevOps: "rgba(245,158,11,0.25)",       // Amber - tools/automation
+      Tools: "rgba(107,114,128,0.25)",       // Gray - utilities/neutral
     };
     return colors[category as keyof typeof colors] || "rgba(128,128,128,0.25)";
   };
 
   const getCategoryHoverColor = (category: string) => {
     const colors = {
-      Frontend: "rgba(74,144,194,0.35)",
-      Backend: "rgba(125,184,216,0.35)",
-      Database: "rgba(61,133,169,0.35)",
-      "AI/ML": "rgba(238,76,44,0.35)",
-      Cloud: "rgba(255,153,0,0.35)",
-      DevOps: "rgba(36,150,237,0.35)",
-      Tools: "rgba(96,165,250,0.35)",
+      Frontend: "rgba(59,130,246,0.35)",     // Blue - UI/interface
+      Backend: "rgba(34,197,94,0.35)",       // Green - server/nature
+      Database: "rgba(168,85,247,0.35)",     // Purple - data/storage
+      "AI/ML": "linear-gradient(135deg, rgba(59,130,246,0.35) 0%, rgba(236,72,153,0.35) 100%)", // Cyberpunk Gradient - AI/tech future
+      Cloud: "rgba(14,165,233,0.35)",        // Sky Blue - cloud/sky
+      DevOps: "rgba(245,158,11,0.35)",       // Amber - tools/automation
+      Tools: "rgba(107,114,128,0.35)",       // Gray - utilities/neutral
     };
     return colors[category as keyof typeof colors] || "rgba(128,128,128,0.35)";
   };
 
   const getCategoryBorderColor = (category: string) => {
     const colors = {
-      Frontend: "rgba(74,144,194,0.3)",
-      Backend: "rgba(125,184,216,0.3)",
-      Database: "rgba(61,133,169,0.3)",
-      "AI/ML": "rgba(238,76,44,0.3)",
-      Cloud: "rgba(255,153,0,0.3)",
-      DevOps: "rgba(36,150,237,0.3)",
-      Tools: "rgba(96,165,250,0.3)",
+      Frontend: "rgba(59,130,246,0.3)",      // Blue - UI/interface
+      Backend: "rgba(34,197,94,0.3)",        // Green - server/nature
+      Database: "rgba(168,85,247,0.3)",      // Purple - data/storage
+      "AI/ML": "linear-gradient(135deg, rgba(59,130,246,0.3) 0%, rgba(236,72,153,0.3) 100%)", // Cyberpunk Gradient - AI/tech future
+      Cloud: "rgba(14,165,233,0.3)",         // Sky Blue - cloud/sky
+      DevOps: "rgba(245,158,11,0.3)",        // Amber - tools/automation
+      Tools: "rgba(107,114,128,0.3)",        // Gray - utilities/neutral
     };
     return colors[category as keyof typeof colors] || "rgba(128,128,128,0.3)";
   };
@@ -356,26 +356,18 @@ const TechStack: React.FC = () => {
           <span
             key={category}
             onClick={(e) => handleCategoryClick(category, e)}
-            className={`px-[0.5rem] py-[0.25rem] rounded-full transition-all duration-200 shadow-sm cursor-pointer select-none ${
+            className={`rounded-full transition-all duration-300 cursor-pointer select-none ${
               selectedCategory === category
-                ? `bg-[${getCategoryHoverColor(
-                    category
-                  )}] border-2 border-[${getCategoryBorderColor(
-                    category
-                  )}] ring-2 ring-white ring-opacity-30`
-                : `bg-[${getCategoryColor(
-                    category
-                  )}] hover:bg-[${getCategoryHoverColor(
-                    category
-                  )}] border border-[${getCategoryBorderColor(category)}]`
+                ? "ring-2 ring-white ring-opacity-50 shadow-lg font-semibold text-white"
+                : "hover:shadow-md font-medium"
             }`}
             style={{
-              backgroundColor:
+              background:
                 selectedCategory === category
                   ? getCategoryHoverColor(category)
                   : getCategoryColor(category),
-              borderColor: getCategoryBorderColor(category),
-              borderWidth: selectedCategory === category ? "2px" : "1px",
+              border: `2px solid ${getCategoryBorderColor(category)}`,
+              padding: "0.25rem 0.5rem",
             }}
           >
             {category}
