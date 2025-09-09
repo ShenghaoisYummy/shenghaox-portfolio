@@ -10,6 +10,7 @@ interface SvgIconProps {
   color?: string;
   lightColor?: string; // 浅色主题下的颜色
   darkColor?: string; // 深色主题下的颜色
+  hoverColor?: string; // 悬停时的颜色
 }
 
 export default function SvgIcon({
@@ -20,6 +21,7 @@ export default function SvgIcon({
   color = "currentColor",
   lightColor,
   darkColor,
+  hoverColor,
 }: SvgIconProps) {
   const { theme } = useTheme();
   // 根据主题选择颜色
@@ -65,7 +67,18 @@ function getColorFilter(color: string): string {
     "#ff0000":
       "invert(13%) sepia(99%) saturate(7404%) hue-rotate(4deg) brightness(97%) contrast(118%)",
     red: "invert(13%) sepia(99%) saturate(7404%) hue-rotate(4deg) brightness(97%) contrast(118%)",
-    // 可以添加更多预定义颜色
+    
+    // Social media brand colors
+    "#0077b5": // LinkedIn blue
+      "invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)",
+    "#1da1f2": // X (Twitter) blue  
+      "invert(64%) sepia(88%) saturate(1018%) hue-rotate(169deg) brightness(97%) contrast(89%)",
+    "#e4405f": // Instagram gradient (main pink)
+      "invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%)",
+    "#ff0050": // TikTok pink/red
+      "invert(9%) sepia(100%) saturate(7426%) hue-rotate(321deg) brightness(118%) contrast(115%)",
+    "#25f4ee": // TikTok cyan
+      "invert(92%) sepia(58%) saturate(200%) hue-rotate(137deg) brightness(91%) contrast(80%)",
   };
 
   return colorMap[color.toLowerCase()] || "invert(50%)";

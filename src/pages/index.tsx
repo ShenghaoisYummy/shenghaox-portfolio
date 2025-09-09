@@ -63,21 +63,25 @@ export default function Home() {
     techStackRef,
   });
 
-  // Add GitHub and QQ click handler functions
+  // Social media click handler functions
   const handleGithubClick = () => {
     window.open("https://github.com/ShenghaoisYummy", "_blank");
   };
 
-  const handleQQClick = () => {
-    setImageModal({
-      isOpen: true,
-      title: "QQ",
-      images: ["/images/qq.jpg"],
-      danmakuText: "Contact Me",
-      enableDanmaku: true,
-      imageWidth: 500,
-      imageHeight: 500,
-    });
+  const handleLinkedinClick = () => {
+    window.open("https://linkedin.com/in/yourprofile", "_blank");
+  };
+
+  const handleXClick = () => {
+    window.open("https://x.com/yourhandle", "_blank");
+  };
+
+  const handleInstagramClick = () => {
+    window.open("https://instagram.com/yourhandle", "_blank");
+  };
+
+  const handleTiktokClick = () => {
+    window.open("https://tiktok.com/@yourhandle", "_blank");
   };
 
   return (
@@ -125,7 +129,10 @@ export default function Home() {
           <div className="flex flex-col w-full max-w-4xl lg:max-w-5xl md:h-auto overflow-y-auto md:overflow-y-visible custom-scrollbar pb-8 md:pb-0 hide-scrollbar pt-2">
             <ProfileHeader
               onGithubClick={handleGithubClick}
-              onQQClick={handleQQClick}
+              onLinkedinClick={handleLinkedinClick}
+              onXClick={handleXClick}
+              onInstagramClick={handleInstagramClick}
+              onTiktokClick={handleTiktokClick}
             />
 
             {/* Content area - vertical layout below 800px */}

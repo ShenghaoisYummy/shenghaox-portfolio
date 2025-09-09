@@ -5,11 +5,20 @@ import SvgIcon from "@/components/SvgIcon";
 import { useTypewriter } from "@/hooks/useTypewriter";
 
 interface ProfileHeaderProps {
-  onQQClick: () => void;
   onGithubClick: () => void;
+  onLinkedinClick: () => void;
+  onXClick: () => void;
+  onInstagramClick: () => void;
+  onTiktokClick: () => void;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onQQClick, onGithubClick }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
+  onGithubClick, 
+  onLinkedinClick, 
+  onXClick, 
+  onInstagramClick, 
+  onTiktokClick 
+}) => {
   const { theme } = useTheme();
   
   const { displayText } = useTypewriter({
@@ -78,23 +87,70 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onQQClick, onGithubClick 
           </span>{" "}
           years work experience
         </div>
-        <div className="flex mt-[0.1875rem] gap-[0.3125rem] justify-center md:justify-start">
+        <div className="flex mt-[0.5rem] gap-[0.3125rem] justify-center md:justify-start flex-wrap">
+          {/* GitHub */}
           <div
-            className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[0.5rem] p-[0.5rem] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-gray-400 hover:text-white hover:border-gray-400 flex items-center justify-center"
             onClick={onGithubClick}
           >
             <SvgIcon
               name="github"
-              width={18}
-              height={18}
+              width={16}
+              height={16}
               color="#fff"
             />
           </div>
+          
+          {/* LinkedIn */}
           <div
-            className="bg-[rgba(0,0,0,.6)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)] rounded-[0.5rem] p-[0.5rem] cursor-pointer hover:bg-[rgba(0,0,0,.8)] transition-all duration-300 shadow-md"
-            onClick={onQQClick}
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-blue-600 hover:text-white hover:border-blue-600 flex items-center justify-center"
+            onClick={onLinkedinClick}
           >
-            <SvgIcon name="qq" width={18} height={18} color="#fff" />
+            <SvgIcon
+              name="linkedin"
+              width={16}
+              height={16}
+              color="#fff"
+            />
+          </div>
+          
+          {/* X (Twitter) */}
+          <div
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-blue-400 hover:text-white hover:border-blue-400 flex items-center justify-center"
+            onClick={onXClick}
+          >
+            <SvgIcon
+              name="x"
+              width={16}
+              height={16}
+              color="#fff"
+            />
+          </div>
+          
+          {/* Instagram */}
+          <div
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-gradient-to-r hover:from-purple-500 hover:via-pink-500 hover:to-red-500 hover:text-white hover:border-transparent flex items-center justify-center"
+            onClick={onInstagramClick}
+          >
+            <SvgIcon
+              name="instagram"
+              width={16}
+              height={16}
+              color="#fff"
+            />
+          </div>
+          
+          {/* TikTok */}
+          <div
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-black hover:text-white hover:border-black flex items-center justify-center"
+            onClick={onTiktokClick}
+          >
+            <SvgIcon
+              name="tiktok"
+              width={16}
+              height={16}
+              color="#fff"
+            />
           </div>
         </div>
       </div>
