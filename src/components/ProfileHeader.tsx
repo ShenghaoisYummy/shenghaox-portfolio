@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import Image from "next/image";
 import { useTheme } from "@/contexts/ThemeContext";
 import SvgIcon from "@/components/SvgIcon";
@@ -12,21 +12,21 @@ interface ProfileHeaderProps {
   onTiktokClick: () => void;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
-  onGithubClick, 
-  onLinkedinClick, 
-  onXClick, 
-  onInstagramClick, 
-  onTiktokClick 
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({
+  onGithubClick,
+  onLinkedinClick,
+  onXClick,
+  onInstagramClick,
+  onTiktokClick,
 }) => {
   const { theme } = useTheme();
-  
+
   const { displayText } = useTypewriter({
     text: "Hello, I'm Austin",
     speed: 150,
     delay: 0,
     pauseDuration: 2000,
-    loop: true
+    loop: true,
   });
 
   return (
@@ -76,81 +76,72 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           </span>
         </div>
         <div className="text-shadow-sm text-[#fff] text-[0.9375rem] md:text-[1.125rem]">
-          <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[1.0625rem] md:text-[1.25rem] font-semibold">
+          <span className="bg-gradient-to-r from-[#2196f3] to-[#1976d2] bg-clip-text text-transparent text-[1.0625rem] md:text-[1.25rem] font-black drop-shadow-lg">
             Full-Stack & AI Developer
           </span>{" "}
         </div>
 
-        <div className="text-shadow-sm text-[rgba(255,255,255,0.9)] text-[0.875rem] md:text-[1rem]">
-          <span className="bg-gradient-to-br from-[#4a90c2] to-[#7db8d8] bg-clip-text text-transparent text-[1rem] md:text-[1.125rem] font-semibold">
-            2.5
-          </span>{" "}
-          years work experience
+        <div className="text-shadow-sm text-[rgba(255,255,255,0.9)] text-[1rem] md:text-[rem] flex items-center gap-2">
+          <SvgIcon name="location" width={18} height={18} />
+          Sydney,Australia
         </div>
-        <div className="flex mt-[0.5rem] gap-[0.3125rem] justify-center md:justify-start flex-wrap">
+        <div className="flex mt-[0.8rem] gap-[0.3125rem] justify-center md:justify-start flex-wrap">
           {/* GitHub */}
           <div
             className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-gray-400 hover:text-white hover:border-gray-400 flex items-center justify-center"
             onClick={onGithubClick}
           >
-            <SvgIcon
-              name="github"
-              width={16}
-              height={16}
-              color="#fff"
-            />
+            <SvgIcon name="github" width={16} height={16} color="#fff" />
           </div>
-          
+
           {/* LinkedIn */}
           <div
             className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-blue-600 hover:text-white hover:border-blue-600 flex items-center justify-center"
             onClick={onLinkedinClick}
           >
-            <SvgIcon
-              name="linkedin"
-              width={16}
-              height={16}
-              color="#fff"
-            />
+            <SvgIcon name="linkedin" width={16} height={16} color="#fff" />
           </div>
-          
+
           {/* X (Twitter) */}
           <div
             className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-blue-400 hover:text-white hover:border-blue-400 flex items-center justify-center"
             onClick={onXClick}
           >
-            <SvgIcon
-              name="x"
-              width={16}
-              height={16}
-              color="#fff"
-            />
+            <SvgIcon name="x" width={16} height={16} color="#fff" />
           </div>
-          
+
           {/* Instagram */}
           <div
             className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-gradient-to-r hover:from-purple-500 hover:via-pink-500 hover:to-red-500 hover:text-white hover:border-transparent flex items-center justify-center"
             onClick={onInstagramClick}
           >
-            <SvgIcon
-              name="instagram"
-              width={16}
-              height={16}
-              color="#fff"
-            />
+            <SvgIcon name="instagram" width={16} height={16} color="#fff" />
           </div>
-          
+
           {/* TikTok */}
           <div
             className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-black hover:text-white hover:border-black flex items-center justify-center"
             onClick={onTiktokClick}
           >
-            <SvgIcon
-              name="tiktok"
-              width={16}
-              height={16}
-              color="#fff"
-            />
+            <SvgIcon name="tiktok" width={16} height={16} color="#fff" />
+          </div>
+
+          {/* Email */}
+          <div
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-red-500 backdrop-blur-md border border-red-500 hover:shadow-lg hover:scale-105 hover:bg-red-600 hover:border-red-600 flex items-center justify-center"
+            onClick={() =>
+              window.open("mailto:your.email@example.com", "_blank")
+            }
+          >
+            <SvgIcon name="email" width={16} height={16} color="#fff" />
+          </div>
+
+          {/* Phone */}
+          <div
+            className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-green-500 backdrop-blur-md border border-green-500 hover:shadow-lg hover:scale-105 hover:bg-green-600 hover:border-green-600 flex items-center justify-center"
+            onClick={() => window.open("tel:+1234567890", "_blank")}
+          >
+            <SvgIcon name="phone" width={16} height={16} color="#fff" />
           </div>
         </div>
       </div>
