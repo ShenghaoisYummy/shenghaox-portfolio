@@ -69,15 +69,15 @@ export default function Home() {
   };
 
   const handleLinkedinClick = () => {
-    window.open("https://linkedin.com/in/yourprofile", "_blank");
+    window.open("https://www.linkedin.com/in/austin-xu-272586160/", "_blank");
   };
 
   const handleXClick = () => {
-    window.open("https://x.com/yourhandle", "_blank");
+    window.open("https://x.com/praisesunshinee?s=21", "_blank");
   };
 
   const handleInstagramClick = () => {
-    window.open("https://instagram.com/yourhandle", "_blank");
+    window.open("https://www.instagram.com/shenghaoyummy", "_blank");
   };
 
   const handleTiktokClick = () => {
