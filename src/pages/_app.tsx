@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { LoadingProvider, useLoading } from "@/contexts/LoadingContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
 import ThemeToggle from "@/components/ThemeToggle";
 import CommentModal from "@/components/CommentModal";
@@ -329,27 +330,45 @@ function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App({ Component, pageProps }: AppProps) {
-  const [isLoading, setIsLoading] = useState(true);
+// Inner App component that uses loading context
+function AppContent({ Component, pageProps }: AppProps) {
+  const [isMinTimeElapsed, setIsMinTimeElapsed] = useState(false);
+  const { isMainLoadingComplete } = useLoading();
+  const router = useRouter();
 
+  // Minimum loading time of 1 second
   useEffect(() => {
-    // 模拟加载时间，3秒后隐藏加载动画
     const timer = setTimeout(() => {
-      setIsLoading(false);
+      setIsMinTimeElapsed(true);
     }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
 
+  // Show loading animation until both minimum time has elapsed AND heatmap is loaded
+  // Only wait for heatmap on the home page
+  const isHomePage = router.pathname === '/';
+  const shouldShowLoading = !isMinTimeElapsed || (isHomePage && !isMainLoadingComplete());
+
   return (
-    <ThemeProvider>
+    <>
       {/* 全局加载动画 */}
-      <LoadingAnimation isVisible={isLoading} />
+      <LoadingAnimation isVisible={shouldShowLoading} />
 
       {/* 布局组件包装页面内容 */}
       <Layout>
         <Component {...pageProps} />
       </Layout>
+    </>
+  );
+}
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <ThemeProvider>
+      <LoadingProvider>
+        <AppContent Component={Component} pageProps={pageProps} />
+      </LoadingProvider>
     </ThemeProvider>
   );
 }

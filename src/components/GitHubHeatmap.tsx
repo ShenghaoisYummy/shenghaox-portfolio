@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SvgIcon from "./SvgIcon";
+import { useLoading } from "@/contexts/LoadingContext";
 
 // GitHub贡献数据类型定义
 interface ContributionDay {
@@ -30,6 +31,16 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
   const [totalContributions, setTotalContributions] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  
+  // Use loading context if available, but don't crash if not
+  let setHeatmapLoaded: ((loaded: boolean) => void) | null = null;
+  try {
+    const loadingContext = useLoading();
+    setHeatmapLoaded = loadingContext.setHeatmapLoaded;
+  } catch (e) {
+    // Loading context not available, which is fine for non-home pages
+    setHeatmapLoaded = null;
+  }
 
   // 检测移动设备
   useEffect(() => {
@@ -183,6 +194,10 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         setTotalContributions(0);
       } finally {
         setLoading(false);
+        // Notify that heatmap has finished loading (if loading context is available)
+        if (setHeatmapLoaded) {
+          setHeatmapLoaded(true);
+        }
       }
     };
 
