@@ -15,7 +15,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onQQClick, onGithubClick 
   const { displayText } = useTypewriter({
     text: "Hello, I'm Austin",
     speed: 150,
-    delay: 0
+    delay: 0,
+    pauseDuration: 2000,
+    loop: true
   });
 
   return (
