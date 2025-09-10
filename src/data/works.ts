@@ -1,4 +1,4 @@
-// Works data type definition
+// Base work item interface
 export interface WorkItem {
   title: string;
   description: string;
@@ -16,10 +16,69 @@ export interface WorkItem {
   }[];
 }
 
-// Works data
-export const worksData: WorkItem[] = [
+// Manual project item (existing static projects)
+export interface ManualProjectItem extends WorkItem {
+  source: 'manual';
+  priority?: number; // For ordering manual projects first
+}
+
+// GitHub project item (fetched from GitHub API)
+export interface GitHubProjectItem extends Omit<WorkItem, 'image' | 'features' | 'function'> {
+  source: 'github';
+  // GitHub-specific data
+  repoName: string;
+  stars: number;
+  forks: number;
+  language: string;
+  languageColor: string;
+  topics: string[];
+  lastUpdated: string;
+  createdAt: string;
+  homepage?: string;
+  // Auto-generated fields
+  image: string; // Will be generated or use default
+  features: string[]; // Will be derived from topics/language
+}
+
+// Combined project display item
+export type ProjectDisplayItem = ManualProjectItem | GitHubProjectItem;
+
+// Configuration for GitHub integration
+export interface GitHubConfig {
+  username: string;
+  // Specific repositories to include (if empty, fetches all public repos)
+  includeRepos?: string[];
+  // Repositories to exclude
+  excludeRepos?: string[];
+  // Maximum number of GitHub projects to show
+  maxRepos?: number;
+  // Minimum stars required to show a project
+  minStars?: number;
+  // Whether to show archived repositories
+  showArchived?: boolean;
+  // Whether to show forked repositories
+  showForks?: boolean;
+}
+
+// GitHub configuration
+export const githubConfig: GitHubConfig = {
+  username: 'ShenghaoisYummy', // Your GitHub username
+  excludeRepos: [
+    'personal-web', // Exclude this website itself since it's manually added
+    'ShenghaoisYummy', // Exclude profile README repo
+  ],
+  maxRepos: 6, // Show maximum 6 GitHub projects
+  minStars: 0, // Show projects with any number of stars
+  showArchived: false,
+  showForks: false,
+};
+
+// Manual works data (static projects)
+export const manualWorksData: ManualProjectItem[] = [
   {
-    title: "austin's web",
+    source: 'manual',
+    priority: 1,
+    title: "Austin's web",
     description:
       "Personal introduction website based on Next.js development, simply introducing myself, with great songs and videos!!!!.",
     image: "/images/work1.jpg",
@@ -28,3 +87,6 @@ export const worksData: WorkItem[] = [
     features: ["Personal Introduction", "Portfolio", "Interests", "Comments"],
   },
 ];
+
+// Legacy export for backward compatibility
+export const worksData: WorkItem[] = manualWorksData;

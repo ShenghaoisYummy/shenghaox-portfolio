@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import ImageModal from "@/components/ImageModal";
 import Head from "next/head";
 import Link from "next/link";
-import { worksData } from "@/data/works";
+import { manualWorksData, ProjectDisplayItem, GitHubProjectItem } from "@/data/works";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -50,7 +50,16 @@ export default function Works() {
   // Add drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
-  const works = worksData;
+  
+  // GitHub projects state
+  const [githubProjects, setGithubProjects] = useState<GitHubProjectItem[]>([]);
+  const [loadingGithub, setLoadingGithub] = useState(true);
+  const [githubError, setGithubError] = useState<string | null>(null);
+  const [showGithubProjects, setShowGithubProjects] = useState(true);
+  
+  // Combine manual and GitHub projects
+  const [allProjects, setAllProjects] = useState<ProjectDisplayItem[]>(manualWorksData);
+  const works = allProjects;
 
   // Listen to scroll events, update current section
   useEffect(() => {
@@ -66,6 +75,56 @@ export default function Works() {
     scrollContainer.addEventListener("scroll", handleScroll);
     return () => scrollContainer.removeEventListener("scroll", handleScroll);
   }, [scrollContainer]);
+
+  // Fetch GitHub projects
+  useEffect(() => {
+    const fetchGithubProjects = async () => {
+      try {
+        setLoadingGithub(true);
+        setGithubError(null);
+        
+        const response = await fetch('/api/github-projects');
+        const data = await response.json();
+        
+        if (data.success && data.projects) {
+          setGithubProjects(data.projects);
+        } else {
+          throw new Error(data.error || 'Failed to fetch GitHub projects');
+        }
+      } catch (error) {
+        console.error('Error fetching GitHub projects:', error);
+        setGithubError(error instanceof Error ? error.message : 'Failed to load GitHub projects');
+        setGithubProjects([]);
+      } finally {
+        setLoadingGithub(false);
+      }
+    };
+
+    fetchGithubProjects();
+  }, []);
+
+  // Update combined projects when GitHub projects change or toggle changes
+  useEffect(() => {
+    const combinedProjects: ProjectDisplayItem[] = [
+      ...manualWorksData,
+      ...(showGithubProjects ? githubProjects : [])
+    ];
+    
+    // Sort by priority (manual projects first, then by stars for GitHub projects)
+    combinedProjects.sort((a, b) => {
+      if (a.source === 'manual' && b.source === 'github') return -1;
+      if (a.source === 'github' && b.source === 'manual') return 1;
+      if (a.source === 'manual' && b.source === 'manual') {
+        return (a.priority || 0) - (b.priority || 0);
+      }
+      if (a.source === 'github' && b.source === 'github') {
+        return b.stars - a.stars; // Sort by stars descending
+      }
+      return 0;
+    });
+    
+    setAllProjects(combinedProjects);
+  }, [githubProjects, showGithubProjects]);
 
   // Scroll to specified section
   const scrollToSection = (index: number) => {
@@ -374,8 +433,9 @@ export default function Works() {
       )}
 
       <div className="relative">
-        {/* Back to homepage button */}
-        <div className="fixed top-2 md:top-4 left-2 md:left-4 z-10 font-[family-name:var(--font-geist-sans)]">
+        {/* Top navigation controls */}
+        <div className="fixed top-2 md:top-4 left-2 md:left-4 z-10 font-[family-name:var(--font-geist-sans)] flex flex-col gap-2">
+          {/* Back to homepage button */}
           <Link
             href="/"
             className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[6px] md:p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-1 md:gap-2 text-white backdrop-blur-sm"
@@ -389,6 +449,40 @@ export default function Works() {
             />
             <span className="text-xs md:text-sm">Back to Home</span>
           </Link>
+          
+          {/* GitHub projects toggle */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowGithubProjects(!showGithubProjects)}
+              className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[6px] md:p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-1 md:gap-2 text-white backdrop-blur-sm"
+              title={`${showGithubProjects ? 'Hide' : 'Show'} GitHub projects`}
+            >
+              <SvgIcon
+                name="github"
+                width={16}
+                height={16}
+                color={showGithubProjects ? "#4A90E2" : "#fff"}
+                className="md:w-5 md:h-5"
+              />
+              <span className="text-xs md:text-sm">
+                GitHub ({githubProjects.length})
+              </span>
+            </button>
+            
+            {/* Loading indicator for GitHub projects */}
+            {loadingGithub && (
+              <div className="bg-[rgba(0,0,0,.5)] rounded-[5px] p-[6px] md:p-[8px] backdrop-blur-sm">
+                <div className="w-4 h-4 border-2 border-transparent border-t-[#4A90E2] animate-spin rounded-full"></div>
+              </div>
+            )}
+            
+            {/* Error indicator */}
+            {githubError && (
+              <div className="bg-[rgba(220,38,38,.5)] rounded-[5px] p-[6px] md:p-[8px] backdrop-blur-sm" title={githubError}>
+                <SvgIcon name="close" width={16} height={16} color="#fff" className="md:w-5 md:h-5" />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right navigation indicator */}
@@ -434,8 +528,17 @@ export default function Works() {
                   }`}
                 >
                   <div className="space-y-3 md:space-y-4">
-                    <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
-                      Project {index + 1} / {works.length}
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
+                        Project {index + 1} / {works.length}
+                      </div>
+                      {/* GitHub project indicator */}
+                      {work.source === 'github' && (
+                        <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.6)]">
+                          <SvgIcon name="github" width={14} height={14} color="#4A90E2" />
+                          <span>GitHub Project</span>
+                        </div>
+                      )}
                     </div>
                     <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#fff] text-shadow-sm">
                       {work.title.split(" ").map((word, wordIndex) => (
@@ -453,6 +556,30 @@ export default function Works() {
                         </span>
                       ))}
                     </h1>
+                    
+                    {/* GitHub stats for GitHub projects */}
+                    {work.source === 'github' && (
+                      <div className="flex items-center gap-4 text-xs md:text-sm">
+                        <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                          <span>⭐</span>
+                          <span>{work.stars}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                          <span>🔗</span>
+                          <span>{work.forks}</span>
+                        </div>
+                        {work.language && (
+                          <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: work.languageColor }}
+                            />
+                            <span>{work.language}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed">
                       {work.description}
                     </p>
@@ -564,12 +691,51 @@ export default function Works() {
                     className="relative h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
                     onClick={() => openImageModal(work)}
                   >
-                    <Image
-                      src={work.image}
-                      alt={work.title}
-                      fill
-                      className="object-cover"
-                    />
+                    {work.source === 'github' ? (
+                      // GitHub project placeholder with tech stack visualization
+                      <div className="relative w-full h-full bg-gradient-to-br from-[#1a1a1a] via-[#2d2d2d] to-[#1a1a1a] flex flex-col items-center justify-center p-6">
+                        <div className="absolute inset-0 opacity-10" style={{
+                          backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 2px, transparent 2px), radial-gradient(circle at 75% 75%, #4A90E2 2px, transparent 2px)`,
+                          backgroundSize: '40px 40px'
+                        }}></div>
+                        <div className="relative z-10 text-center">
+                          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-2xl flex items-center justify-center">
+                            <SvgIcon name="github" width={32} height={32} color="#fff" />
+                          </div>
+                          <h3 className="text-xl font-bold text-white mb-2">{work.title}</h3>
+                          <div className="flex flex-wrap gap-2 justify-center mb-4">
+                            {work.tech.slice(0, 3).map((tech, i) => (
+                              <span key={i} className="bg-[rgba(255,255,255,0.1)] text-white text-xs px-2 py-1 rounded-full">
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                          {work.source === 'github' && (
+                            <div className="flex items-center justify-center gap-4 text-sm text-[rgba(255,255,255,0.8)]">
+                              <div className="flex items-center gap-1">
+                                <span>⭐</span>
+                                <span>{work.stars}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <span>🔗</span>
+                                <span>{work.forks}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <Image
+                        src={work.image}
+                        alt={work.title}
+                        fill
+                        className="object-cover"
+                        onError={(e) => {
+                          // Fallback to placeholder for manual projects too
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
                   </div>
 
