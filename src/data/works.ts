@@ -18,13 +18,14 @@ export interface WorkItem {
 
 // Manual project item (existing static projects)
 export interface ManualProjectItem extends WorkItem {
-  source: 'manual';
+  source: "manual";
   priority?: number; // For ordering manual projects first
 }
 
 // GitHub project item (fetched from GitHub API)
-export interface GitHubProjectItem extends Omit<WorkItem, 'image' | 'features' | 'function'> {
-  source: 'github';
+export interface GitHubProjectItem
+  extends Omit<WorkItem, "image" | "features" | "function"> {
+  source: "github";
   // GitHub-specific data
   repoName: string;
   stars: number;
@@ -62,31 +63,19 @@ export interface GitHubConfig {
 
 // GitHub configuration
 export const githubConfig: GitHubConfig = {
-  username: 'ShenghaoisYummy', // Your GitHub username
+  username: "ShenghaoisYummy", // Your GitHub username
   excludeRepos: [
-    'personal-web', // Exclude this website itself since it's manually added
-    'ShenghaoisYummy', // Exclude profile README repo
+    "personal-web", // Exclude this website itself since it's manually added
+    "ShenghaoisYummy", // Exclude profile README repo
   ],
-  maxRepos: 6, // Show maximum 6 GitHub projects
+  maxRepos: 8, // Show maximum 10 GitHub projects
   minStars: 0, // Show projects with any number of stars
   showArchived: false,
   showForks: false,
 };
 
 // Manual works data (static projects)
-export const manualWorksData: ManualProjectItem[] = [
-  {
-    source: 'manual',
-    priority: 1,
-    title: "Austin's web",
-    description:
-      "Personal introduction website based on Next.js development, simply introducing myself, with great songs and videos!!!!.",
-    image: "/images/work1.jpg",
-    tech: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
-    link: "#",
-    features: ["Personal Introduction", "Portfolio", "Interests", "Comments"],
-  },
-];
+export const manualWorksData: ManualProjectItem[] = [];
 
 // Legacy export for backward compatibility
 export const worksData: WorkItem[] = manualWorksData;

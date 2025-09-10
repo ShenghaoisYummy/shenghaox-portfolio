@@ -1,6 +1,27 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { ProcessedRepo } from '@/services/github';
-import { GitHubProjectItem, githubConfig } from '@/data/works';
+import type { NextApiRequest, NextApiResponse } from "next";
+import { ProcessedRepo } from "@/services/github";
+import { GitHubProjectItem, githubConfig } from "@/data/works";
+
+// GitHub API response type
+interface ProcessedRepoAPI {
+  name: string;
+  description: string | null;
+  html_url: string;
+  homepage: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  language: string | null;
+  fork: boolean;
+  topics: string[];
+  created_at: string;
+  updated_at: string;
+  pushed_at: string;
+  size: number;
+  default_branch: string;
+  archived: boolean;
+  disabled: boolean;
+  private: boolean;
+}
 
 // Response type
 interface GitHubProjectsResponse {
@@ -12,42 +33,168 @@ interface GitHubProjectsResponse {
 }
 
 // Cache for server-side
-const serverCache = new Map<string, { data: GitHubProjectItem[]; timestamp: number }>();
+const serverCache = new Map<
+  string,
+  { data: GitHubProjectItem[]; timestamp: number }
+>();
 const CACHE_EXPIRY = 10 * 60 * 1000; // 10 minutes
 
+// Helper function to get project image with multiple fallback options
+async function getProjectImage(
+  username: string,
+  repoName: string
+): Promise<string> {
+  // Priority 1: Custom image in local directory (try multiple formats)
+  const customImageFormats = ["jpg", "jpeg", "png", "webp"];
+  for (const format of customImageFormats) {
+    const customImagePath = `/images/github-projects/${repoName.toLowerCase()}.${format}`;
+    // Note: We can't check file existence on the server side easily in Next.js
+    // The frontend will handle the fallback if the image doesn't exist
+
+    // For now, we'll prioritize .jpg as the default format
+    if (format === "jpg") {
+      // Try to get README image first, if that fails, use custom path
+      const readmeImage = await getRepoImage(username, repoName);
+      if (readmeImage) {
+        return readmeImage;
+      }
+      // Return custom image path (frontend will handle fallback if it doesn't exist)
+      return customImagePath;
+    }
+  }
+
+  // For now, return the custom path as default and let frontend handle the fallback
+  const readmeImage = await getRepoImage(username, repoName);
+  if (readmeImage) {
+    return readmeImage;
+  }
+
+  // Return custom image path - frontend will show placeholder if this fails
+  return `/images/github-projects/${repoName.toLowerCase()}.jpg`;
+}
+
+// Helper function to extract first image from README
+async function getRepoImage(
+  username: string,
+  repoName: string
+): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${username}/${repoName}/readme`,
+      {
+        headers: {
+          Accept: "application/vnd.github.v3+json",
+          "User-Agent": "personal-portfolio",
+          ...(process.env.GITHUB_TOKEN && {
+            Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          }),
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const readme = await response.json();
+    const content = Buffer.from(readme.content, "base64").toString();
+
+    // Extract images from markdown - look for both markdown ![alt](url) and HTML <img src="url"> patterns
+    const markdownImageRegex = /!\[.*?\]\((.*?)\)/g;
+    const htmlImageRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/g;
+
+    // First try markdown format
+    let matches = content.match(markdownImageRegex);
+    let imageUrl = null;
+
+    if (matches && matches.length > 0) {
+      // Get the first image URL from markdown
+      const firstImageMatch = matches[0];
+      const urlMatch = firstImageMatch.match(/\((.*?)\)/);
+
+      if (urlMatch && urlMatch[1]) {
+        imageUrl = urlMatch[1];
+      }
+    }
+
+    // If no markdown images found, try HTML img tags
+    if (!imageUrl) {
+      matches = content.match(htmlImageRegex);
+      if (matches && matches.length > 0) {
+        // Get the first image URL from HTML
+        const firstImageMatch = matches[0];
+        const urlMatch = firstImageMatch.match(/src=["']([^"']+)["']/);
+
+        if (urlMatch && urlMatch[1]) {
+          imageUrl = urlMatch[1];
+        }
+      }
+    }
+
+    if (imageUrl) {
+      // Convert relative URLs to absolute GitHub URLs
+      if (
+        imageUrl.startsWith("./") ||
+        imageUrl.startsWith("../") ||
+        (!imageUrl.startsWith("http") && !imageUrl.startsWith("//"))
+      ) {
+        // Remove leading ./ if present
+        imageUrl = imageUrl.replace(/^\.\//, "");
+        // Create absolute URL
+        imageUrl = `https://raw.githubusercontent.com/${username}/${repoName}/main/${imageUrl}`;
+      }
+
+      return imageUrl;
+    }
+
+    return null;
+  } catch (error) {
+    console.warn(
+      `Failed to fetch README image for ${username}/${repoName}:`,
+      error
+    );
+    return null;
+  }
+}
+
 // Convert ProcessedRepo to GitHubProjectItem
-function convertToGitHubProjectItem(repo: ProcessedRepo): GitHubProjectItem {
+async function convertToGitHubProjectItem(
+  repo: ProcessedRepo
+): Promise<GitHubProjectItem> {
   // Generate features from topics and language
   const features: string[] = [];
-  
+
   // Add language as a feature if available
   if (repo.language) {
     features.push(repo.language);
   }
-  
+
   // Add topics as features (limit to 4 most relevant)
   if (repo.topics && repo.topics.length > 0) {
     features.push(...repo.topics.slice(0, 4));
   }
-  
+
   // If no features, add some defaults based on common patterns
   if (features.length === 0) {
-    if (repo.name.toLowerCase().includes('web') || repo.name.toLowerCase().includes('site')) {
-      features.push('Website');
+    if (
+      repo.name.toLowerCase().includes("web") ||
+      repo.name.toLowerCase().includes("site")
+    ) {
+      features.push("Website");
     }
-    if (repo.name.toLowerCase().includes('app')) {
-      features.push('Application');
+    if (repo.name.toLowerCase().includes("app")) {
+      features.push("Application");
     }
-    if (repo.name.toLowerCase().includes('api')) {
-      features.push('API');
+    if (repo.name.toLowerCase().includes("api")) {
+      features.push("API");
     }
-    if (repo.name.toLowerCase().includes('tool')) {
-      features.push('Tool');
+    if (repo.name.toLowerCase().includes("tool")) {
+      features.push("Tool");
     }
-    
+
     // Fallback
     if (features.length === 0) {
-      features.push('Project');
+      features.push("Project");
     }
   }
 
@@ -56,51 +203,62 @@ function convertToGitHubProjectItem(repo: ProcessedRepo): GitHubProjectItem {
   if (repo.language) {
     tech.push(repo.language);
   }
-  
+
   // Add related technologies based on topics
-  repo.topics?.forEach(topic => {
+  repo.topics?.forEach((topic) => {
     const topicLower = topic.toLowerCase();
-    if (topicLower.includes('react')) tech.push('React');
-    if (topicLower.includes('vue')) tech.push('Vue');
-    if (topicLower.includes('angular')) tech.push('Angular');
-    if (topicLower.includes('nextjs') || topicLower.includes('next-js')) tech.push('Next.js');
-    if (topicLower.includes('nodejs') || topicLower.includes('node')) tech.push('Node.js');
-    if (topicLower.includes('typescript')) tech.push('TypeScript');
-    if (topicLower.includes('javascript')) tech.push('JavaScript');
-    if (topicLower.includes('python')) tech.push('Python');
-    if (topicLower.includes('docker')) tech.push('Docker');
-    if (topicLower.includes('kubernetes')) tech.push('Kubernetes');
-    if (topicLower.includes('aws')) tech.push('AWS');
-    if (topicLower.includes('firebase')) tech.push('Firebase');
-    if (topicLower.includes('mongodb')) tech.push('MongoDB');
-    if (topicLower.includes('postgresql') || topicLower.includes('postgres')) tech.push('PostgreSQL');
-    if (topicLower.includes('mysql')) tech.push('MySQL');
-    if (topicLower.includes('redis')) tech.push('Redis');
-    if (topicLower.includes('graphql')) tech.push('GraphQL');
-    if (topicLower.includes('rest-api') || topicLower.includes('restful')) tech.push('REST API');
-    if (topicLower.includes('machine-learning') || topicLower.includes('ml')) tech.push('Machine Learning');
-    if (topicLower.includes('ai') || topicLower.includes('artificial-intelligence')) tech.push('AI');
-    if (topicLower.includes('blockchain')) tech.push('Blockchain');
-    if (topicLower.includes('mobile')) tech.push('Mobile');
-    if (topicLower.includes('ios')) tech.push('iOS');
-    if (topicLower.includes('android')) tech.push('Android');
-    if (topicLower.includes('flutter')) tech.push('Flutter');
-    if (topicLower.includes('react-native')) tech.push('React Native');
+    if (topicLower.includes("react")) tech.push("React");
+    if (topicLower.includes("vue")) tech.push("Vue");
+    if (topicLower.includes("angular")) tech.push("Angular");
+    if (topicLower.includes("nextjs") || topicLower.includes("next-js"))
+      tech.push("Next.js");
+    if (topicLower.includes("nodejs") || topicLower.includes("node"))
+      tech.push("Node.js");
+    if (topicLower.includes("typescript")) tech.push("TypeScript");
+    if (topicLower.includes("javascript")) tech.push("JavaScript");
+    if (topicLower.includes("python")) tech.push("Python");
+    if (topicLower.includes("docker")) tech.push("Docker");
+    if (topicLower.includes("kubernetes")) tech.push("Kubernetes");
+    if (topicLower.includes("aws")) tech.push("AWS");
+    if (topicLower.includes("firebase")) tech.push("Firebase");
+    if (topicLower.includes("mongodb")) tech.push("MongoDB");
+    if (topicLower.includes("postgresql") || topicLower.includes("postgres"))
+      tech.push("PostgreSQL");
+    if (topicLower.includes("mysql")) tech.push("MySQL");
+    if (topicLower.includes("redis")) tech.push("Redis");
+    if (topicLower.includes("graphql")) tech.push("GraphQL");
+    if (topicLower.includes("rest-api") || topicLower.includes("restful"))
+      tech.push("REST API");
+    if (topicLower.includes("machine-learning") || topicLower.includes("ml"))
+      tech.push("Machine Learning");
+    if (
+      topicLower.includes("ai") ||
+      topicLower.includes("artificial-intelligence")
+    )
+      tech.push("AI");
+    if (topicLower.includes("blockchain")) tech.push("Blockchain");
+    if (topicLower.includes("mobile")) tech.push("Mobile");
+    if (topicLower.includes("ios")) tech.push("iOS");
+    if (topicLower.includes("android")) tech.push("Android");
+    if (topicLower.includes("flutter")) tech.push("Flutter");
+    if (topicLower.includes("react-native")) tech.push("React Native");
   });
 
   // Remove duplicates and limit to reasonable number
   const uniqueTech = Array.from(new Set(tech)).slice(0, 6);
 
-  // Generate default image path (you might want to create these or use a service)
-  const image = `/images/github-projects/${repo.name.toLowerCase()}.jpg`;
+  // Try multiple image sources in order of preference
+  const image = await getProjectImage(githubConfig.username, repo.name);
 
   return {
-    source: 'github',
+    source: "github",
     repoName: repo.name,
-    title: repo.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+    title: repo.name
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (l) => l.toUpperCase()),
     description: repo.description,
     image,
-    tech: uniqueTech.length > 0 ? uniqueTech : [repo.language || 'Project'],
+    tech: uniqueTech.length > 0 ? uniqueTech : [repo.language || "Project"],
     link: repo.html_url,
     features,
     stars: repo.stargazers_count,
@@ -110,33 +268,82 @@ function convertToGitHubProjectItem(repo: ProcessedRepo): GitHubProjectItem {
     topics: repo.topics || [],
     lastUpdated: repo.updated_at,
     createdAt: repo.created_at,
-    homepage: repo.homepage,
+    homepage: repo.homepage || undefined,
     download_url: repo.homepage || undefined,
   };
 }
 
+// Helper function to get commit count for a repository
+async function getCommitCount(username: string, repoName: string): Promise<number> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${username}/${repoName}/commits?per_page=1`,
+      {
+        headers: {
+          Accept: "application/vnd.github.v3+json",
+          "User-Agent": "personal-portfolio",
+          ...(process.env.GITHUB_TOKEN && {
+            Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          }),
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return 0;
+    }
+
+    // Get total count from Link header
+    const linkHeader = response.headers.get("link");
+    if (linkHeader) {
+      const lastPageMatch = linkHeader.match(/page=(\d+)>; rel="last"/);
+      if (lastPageMatch) {
+        return parseInt(lastPageMatch[1], 10);
+      }
+    }
+
+    // If no pagination, count commits directly
+    const commits = await response.json();
+    return Array.isArray(commits) ? commits.length : 0;
+  } catch (error) {
+    console.warn(`Failed to get commit count for ${username}/${repoName}:`, error);
+    return 0;
+  }
+}
+
 // Server-side GitHub API calls
 async function fetchGitHubRepositories(): Promise<ProcessedRepo[]> {
-  const { username, excludeRepos = [], maxRepos = 10, minStars = 0, showArchived = false, showForks = false } = githubConfig;
-  
+  const {
+    username,
+    excludeRepos = [],
+    maxRepos = 10,
+    minStars = 0,
+    showArchived = false,
+    showForks = false,
+  } = githubConfig;
+
   try {
+    // Fetch more repos initially to have a good selection for sorting
     const params = new URLSearchParams({
-      sort: 'updated',
-      direction: 'desc',
-      per_page: String(Math.min(maxRepos * 2, 100)), // Fetch more to filter later
-      type: 'public'
+      sort: "updated",
+      direction: "desc",
+      per_page: "100", // Fetch more to get accurate commit counts
+      type: "public",
     });
 
-    const response = await fetch(`https://api.github.com/users/${username}/repos?${params}`, {
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'personal-portfolio',
-        // Add token if available in server environment
-        ...(process.env.GITHUB_TOKEN && {
-          'Authorization': `token ${process.env.GITHUB_TOKEN}`
-        })
+    const response = await fetch(
+      `https://api.github.com/users/${username}/repos?${params}`,
+      {
+        headers: {
+          Accept: "application/vnd.github.v3+json",
+          "User-Agent": "personal-portfolio",
+          // Add token if available in server environment
+          ...(process.env.GITHUB_TOKEN && {
+            Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          }),
+        },
       }
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -144,44 +351,62 @@ async function fetchGitHubRepositories(): Promise<ProcessedRepo[]> {
     }
 
     const repos = await response.json();
-    
-    // Process and filter repositories
-    const processedRepos: ProcessedRepo[] = repos
-      .filter((repo: any) => {
-        // Filter conditions
-        if (excludeRepos.includes(repo.name)) return false;
-        if (!showForks && repo.fork) return false;
-        if (!showArchived && repo.archived) return false;
-        if (repo.stargazers_count < minStars) return false;
-        return true;
+
+    // Filter repositories first
+    const filteredRepos = repos.filter((repo: ProcessedRepoAPI) => {
+      if (excludeRepos.includes(repo.name)) return false;
+      if (!showForks && repo.fork) return false;
+      if (!showArchived && repo.archived) return false;
+      if (repo.stargazers_count < minStars) return false;
+      return true;
+    });
+
+    // Get commit counts for all filtered repos in parallel
+    const reposWithCommits = await Promise.all(
+      filteredRepos.map(async (repo: ProcessedRepoAPI) => {
+        const commitCount = await getCommitCount(username, repo.name);
+        return {
+          ...repo,
+          commitCount,
+        };
       })
-      .slice(0, maxRepos) // Limit number of repos
-      .map((repo: any) => ({
-        name: repo.name,
-        description: repo.description || 'No description available',
-        html_url: repo.html_url,
-        homepage: repo.homepage,
-        stargazers_count: repo.stargazers_count || 0,
-        forks: repo.forks_count || 0,
-        language: repo.language || '',
-        languageColor: getLanguageColor(repo.language || ''),
-        allLanguages: repo.language ? [repo.language] : [],
-        allLanguageColors: repo.language ? { [repo.language]: getLanguageColor(repo.language) } : {},
-        fork: repo.fork || false,
-        topics: repo.topics || [],
-        created_at: repo.created_at,
-        updated_at: repo.updated_at,
-        pushed_at: repo.pushed_at,
-        size: repo.size || 0,
-        default_branch: repo.default_branch || 'main',
-        archived: repo.archived || false,
-        disabled: repo.disabled || false,
-        private: repo.private || false,
-      }));
+    );
+
+    // Sort by commit count (descending) and take top 10
+    const sortedRepos = reposWithCommits
+      .sort((a, b) => b.commitCount - a.commitCount)
+      .slice(0, maxRepos);
+
+    // Process and convert to the expected format
+    const processedRepos: ProcessedRepo[] = sortedRepos.map((repo) => ({
+      name: repo.name,
+      description: repo.description || "No description available",
+      html_url: repo.html_url,
+      homepage: repo.homepage,
+      stargazers_count: repo.stargazers_count || 0,
+      forks: repo.forks_count || 0,
+      language: repo.language || "",
+      languageColor: getLanguageColor(repo.language || ""),
+      allLanguages: repo.language ? [repo.language] : [],
+      allLanguageColors: repo.language
+        ? { [repo.language]: getLanguageColor(repo.language) }
+        : {},
+      fork: repo.fork || false,
+      topics: repo.topics || [],
+      created_at: repo.created_at,
+      updated_at: repo.updated_at,
+      pushed_at: repo.pushed_at,
+      size: repo.size || 0,
+      default_branch: repo.default_branch || "main",
+      archived: repo.archived || false,
+      disabled: repo.disabled || false,
+      private: repo.private || false,
+      commitCount: repo.commitCount, // Add commit count to the result
+    }));
 
     return processedRepos;
   } catch (error) {
-    console.error('Error fetching GitHub repositories:', error);
+    console.error("Error fetching GitHub repositories:", error);
     throw error;
   }
 }
@@ -189,29 +414,29 @@ async function fetchGitHubRepositories(): Promise<ProcessedRepo[]> {
 // Language colors (subset for server-side)
 function getLanguageColor(language: string): string {
   const colors: Record<string, string> = {
-    JavaScript: '#f1e05a',
-    TypeScript: '#3178c6',
-    Python: '#3572A5',
-    Java: '#b07219',
-    'C++': '#f34b7d',
-    C: '#555555',
-    'C#': '#239120',
-    PHP: '#4F5D95',
-    Ruby: '#701516',
-    Go: '#00ADD8',
-    Rust: '#dea584',
-    Swift: '#fa7343',
-    Kotlin: '#A97BFF',
-    Dart: '#00B4AB',
-    HTML: '#e34c26',
-    CSS: '#1572B6',
-    Vue: '#4FC08D',
-    Shell: '#89e051',
-    Docker: '#384d54',
-    YAML: '#cb171e',
-    Markdown: '#083fa1',
+    JavaScript: "#f1e05a",
+    TypeScript: "#3178c6",
+    Python: "#3572A5",
+    Java: "#b07219",
+    "C++": "#f34b7d",
+    C: "#555555",
+    "C#": "#239120",
+    PHP: "#4F5D95",
+    Ruby: "#701516",
+    Go: "#00ADD8",
+    Rust: "#dea584",
+    Swift: "#fa7343",
+    Kotlin: "#A97BFF",
+    Dart: "#00B4AB",
+    HTML: "#e34c26",
+    CSS: "#1572B6",
+    Vue: "#4FC08D",
+    Shell: "#89e051",
+    Docker: "#384d54",
+    YAML: "#cb171e",
+    Markdown: "#083fa1",
   };
-  return colors[language] || '#858585';
+  return colors[language] || "#858585";
 }
 
 export default async function handler(
@@ -219,37 +444,37 @@ export default async function handler(
   res: NextApiResponse<GitHubProjectsResponse>
 ) {
   // Only allow GET requests
-  if (req.method !== 'GET') {
+  if (req.method !== "GET") {
     return res.status(405).json({
       success: false,
-      error: 'Method not allowed'
+      error: "Method not allowed",
     });
   }
 
   const cacheKey = `github-projects-${githubConfig.username}`;
-  
+
   try {
     // Check server cache
     const cached = serverCache.get(cacheKey);
     const now = Date.now();
-    
-    if (cached && (now - cached.timestamp) < CACHE_EXPIRY) {
+
+    if (cached && now - cached.timestamp < CACHE_EXPIRY) {
       return res.status(200).json({
         success: true,
         projects: cached.data,
         cached: true,
-        timestamp: cached.timestamp
+        timestamp: cached.timestamp,
       });
     }
 
     // Fetch fresh data
     const repos = await fetchGitHubRepositories();
-    const projects = repos.map(convertToGitHubProjectItem);
+    const projects = await Promise.all(repos.map(convertToGitHubProjectItem));
 
     // Update server cache
     serverCache.set(cacheKey, {
       data: projects,
-      timestamp: now
+      timestamp: now,
     });
 
     // Return success response
@@ -257,12 +482,11 @@ export default async function handler(
       success: true,
       projects,
       cached: false,
-      timestamp: now
+      timestamp: now,
     });
-
   } catch (error) {
-    console.error('API Error:', error);
-    
+    console.error("API Error:", error);
+
     // Try to return cached data even if expired
     const cached = serverCache.get(cacheKey);
     if (cached) {
@@ -270,14 +494,17 @@ export default async function handler(
         success: true,
         projects: cached.data,
         cached: true,
-        timestamp: cached.timestamp
+        timestamp: cached.timestamp,
       });
     }
 
     // Return error response
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch GitHub projects'
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch GitHub projects",
     });
   }
 }
