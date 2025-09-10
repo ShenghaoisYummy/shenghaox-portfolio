@@ -1,4 +1,26 @@
 // GitHub API service for fetching repository data
+
+// GitHub API response type
+interface GitHubRepoAPI {
+  name: string;
+  description: string | null;
+  html_url: string;
+  homepage: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  language: string | null;
+  fork: boolean;
+  topics: string[];
+  created_at: string;
+  updated_at: string;
+  pushed_at: string;
+  size: number;
+  default_branch: string;
+  archived: boolean;
+  disabled: boolean;
+  private: boolean;
+}
+
 export interface ProcessedRepo {
   name: string;
   description: string;
@@ -20,6 +42,7 @@ export interface ProcessedRepo {
   archived: boolean;
   disabled: boolean;
   private: boolean;
+  commitCount?: number; // Optional commit count for sorting
 }
 
 // Language colors mapping (common languages)
@@ -273,8 +296,8 @@ export async function getUserRepositories(username: string, options?: {
     
     // Process each repository
     const processedRepos = repos
-      .filter((repo: any) => !repo.fork) // Exclude forks by default
-      .map((repo: any) => ({
+      .filter((repo: GitHubRepoAPI) => !repo.fork) // Exclude forks by default
+      .map((repo: GitHubRepoAPI) => ({
         name: repo.name,
         description: repo.description || 'No description available',
         html_url: repo.html_url,

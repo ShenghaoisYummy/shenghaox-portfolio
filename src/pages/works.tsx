@@ -35,6 +35,152 @@ interface Work {
   desc?: string;
 }
 
+// Component to handle GitHub project image loading with proper fallbacks
+function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
+  const [imageError, setImageError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [skipImageLoad, setSkipImageLoad] = useState(false);
+  const [validationComplete, setValidationComplete] = useState(false);
+
+  const handleImageLoad = () => {
+    setIsLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setIsLoading(false);
+    setImageError(true);
+  };
+
+  // Check if image exists using API to avoid 404 errors
+  useEffect(() => {
+    setValidationComplete(false);
+    
+    // Validate image path first
+    if (!work.image || work.image.length < 5 || work.image === '/images/' || work.image === '/images') {
+      setSkipImageLoad(true);
+      setIsLoading(false);
+      setImageError(true);
+      setValidationComplete(true);
+      return;
+    }
+    
+    if (work.source === 'github' && work.image.includes('/images/github-projects/')) {
+      // Check if the image exists server-side
+      fetch(`/api/check-image?imagePath=${encodeURIComponent(work.image)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.exists) {
+            // Image exists, load it normally
+            setSkipImageLoad(false);
+            setIsLoading(true);
+            setImageError(false);
+          } else {
+            // Image doesn't exist, skip loading and show placeholder
+            setSkipImageLoad(true);
+            setIsLoading(false);
+            setImageError(true);
+          }
+          setValidationComplete(true);
+        })
+        .catch(() => {
+          // On API error, default to showing placeholder
+          setSkipImageLoad(true);
+          setIsLoading(false);
+          setImageError(true);
+          setValidationComplete(true);
+        });
+    } else {
+      // For other images (README, manual projects), load normally
+      setSkipImageLoad(false);
+      setIsLoading(true);
+      setImageError(false);
+      setValidationComplete(true);
+    }
+  }, [work.image, work.source]);
+
+  const GitHubPlaceholder = () => (
+    <div className="relative w-full h-full bg-gradient-to-br from-[#1a1a1a] via-[#2d2d2d] to-[#1a1a1a] flex flex-col items-center justify-center p-6">
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 2px, transparent 2px), radial-gradient(circle at 75% 75%, #4A90E2 2px, transparent 2px)`,
+        backgroundSize: '40px 40px'
+      }}></div>
+      <div className="relative z-10 text-center">
+        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-2xl flex items-center justify-center">
+          <SvgIcon name="github" width={32} height={32} color="#fff" />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">{work.title}</h3>
+        <div className="flex flex-wrap gap-2 justify-center mb-4">
+          {work.tech.slice(0, 3).map((tech, i) => (
+            <span key={i} className="bg-[rgba(255,255,255,0.1)] text-white text-xs px-2 py-1 rounded-full">
+              {tech}
+            </span>
+          ))}
+        </div>
+        {work.source === 'github' && (
+          <div className="flex items-center justify-center gap-4 text-sm text-[rgba(255,255,255,0.8)]">
+            <div className="flex items-center gap-1">
+              <span>⭐</span>
+              <span>{work.stars}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>🔗</span>
+              <span>{work.forks}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // Show loading state until validation is complete
+  if (!validationComplete) {
+    return work.source === 'github' ? <GitHubPlaceholder /> : (
+      <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+  // If we determined to skip image loading, show placeholder immediately
+  if (skipImageLoad || (work.source === 'github' && imageError)) {
+    return <GitHubPlaceholder />;
+  }
+
+  return (
+    <>
+      {/* Only render Image component after validation and if not skipping */}
+      {validationComplete && !skipImageLoad && work.image && work.image.length > 5 && (
+        <div className="absolute inset-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-lg shadow-lg ring-1 ring-black/5 dark:ring-white/10">
+          <Image
+            src={work.image}
+            alt={work.title}
+            fill
+            className={`object-contain p-3 transition-all duration-300 ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'} hover:scale-105`}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            priority={false}
+          />
+        </div>
+      )}
+      
+      {/* Show placeholder while loading or on error for GitHub projects */}
+      {(isLoading || imageError) && work.source === 'github' && (
+        <div className={`absolute inset-0 transition-opacity duration-200 ${isLoading || imageError ? 'opacity-100' : 'opacity-0'}`}>
+          <GitHubPlaceholder />
+        </div>
+      )}
+
+      {/* For manual projects, just hide the image on error (no placeholder) */}
+      {imageError && work.source === 'manual' && (
+        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+          <span className="text-white text-lg">Image not found</span>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function Works() {
   const [currentSection, setCurrentSection] = useState(0);
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(
@@ -691,51 +837,7 @@ export default function Works() {
                     className="relative h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
                     onClick={() => openImageModal(work)}
                   >
-                    {work.source === 'github' ? (
-                      // GitHub project placeholder with tech stack visualization
-                      <div className="relative w-full h-full bg-gradient-to-br from-[#1a1a1a] via-[#2d2d2d] to-[#1a1a1a] flex flex-col items-center justify-center p-6">
-                        <div className="absolute inset-0 opacity-10" style={{
-                          backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 2px, transparent 2px), radial-gradient(circle at 75% 75%, #4A90E2 2px, transparent 2px)`,
-                          backgroundSize: '40px 40px'
-                        }}></div>
-                        <div className="relative z-10 text-center">
-                          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-2xl flex items-center justify-center">
-                            <SvgIcon name="github" width={32} height={32} color="#fff" />
-                          </div>
-                          <h3 className="text-xl font-bold text-white mb-2">{work.title}</h3>
-                          <div className="flex flex-wrap gap-2 justify-center mb-4">
-                            {work.tech.slice(0, 3).map((tech, i) => (
-                              <span key={i} className="bg-[rgba(255,255,255,0.1)] text-white text-xs px-2 py-1 rounded-full">
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
-                          {work.source === 'github' && (
-                            <div className="flex items-center justify-center gap-4 text-sm text-[rgba(255,255,255,0.8)]">
-                              <div className="flex items-center gap-1">
-                                <span>⭐</span>
-                                <span>{work.stars}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <span>🔗</span>
-                                <span>{work.forks}</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <Image
-                        src={work.image}
-                        alt={work.title}
-                        fill
-                        className="object-cover"
-                        onError={(e) => {
-                          // Fallback to placeholder for manual projects too
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    )}
+                    <GitHubProjectImage work={work} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
                   </div>
 
