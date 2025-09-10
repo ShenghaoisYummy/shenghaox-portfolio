@@ -160,8 +160,7 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
     <>
       {/* Only render Image component after validation and if not skipping */}
       {validationComplete && !skipImageLoad && work.image && work.image.length > 5 && (
-        <div className="absolute inset-1 bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-2xl ring-2 ring-gray-200/50 dark:ring-slate-700/50 border border-gray-100 dark:border-slate-700 transform hover:scale-[1.02] transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent rounded-xl"></div>
+        <div className="absolute inset-1 rounded-xl shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
           <Image
             src={work.image}
             alt={work.title}
@@ -927,7 +926,7 @@ export default function Works() {
                   }}
                 >
                   <div
-                    className="relative w-full rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
+                    className="relative w-full rounded-[12px] overflow-hidden shadow-lg group cursor-pointer bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.15)] p-[16px]"
                     onClick={() => openImageModal(work)}
                     style={{ 
                       height: textHeights[index] ? `${textHeights[index]}px` : '16rem'
