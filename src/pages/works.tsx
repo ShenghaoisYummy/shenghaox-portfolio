@@ -100,14 +100,15 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
   }, [work.image, work.source]);
 
   const GitHubPlaceholder = () => (
-    <div className="relative w-full h-full bg-gradient-to-br from-[#1a1a1a] via-[#2d2d2d] to-[#1a1a1a] flex flex-col items-center justify-center p-6">
-      <div className="absolute inset-0 opacity-10" style={{
-        backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 2px, transparent 2px), radial-gradient(circle at 75% 75%, #4A90E2 2px, transparent 2px)`,
-        backgroundSize: '40px 40px'
+    <div className="relative w-full h-full bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] flex flex-col items-center justify-center p-6 shadow-2xl border border-slate-700/50">
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 3px, transparent 3px), radial-gradient(circle at 75% 75%, #4A90E2 2px, transparent 2px)`,
+        backgroundSize: '50px 50px'
       }}></div>
-      <div className="relative z-10 text-center">
-        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-2xl flex items-center justify-center">
-          <SvgIcon name="github" width={32} height={32} color="#fff" />
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-500/5 to-transparent"></div>
+      <div className="relative z-10 text-center transform hover:scale-105 transition-all duration-300">
+        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#1b2c55] via-[#2d4a7a] to-[#3d85a9] rounded-3xl flex items-center justify-center shadow-xl ring-4 ring-blue-500/20 hover:ring-blue-400/40 transition-all duration-300">
+          <SvgIcon name="github" width={36} height={36} color="#fff" />
         </div>
         <h3 className="text-xl font-bold text-white mb-2">{work.title}</h3>
         <div className="flex flex-wrap gap-2 justify-center mb-4">
@@ -151,12 +152,13 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
     <>
       {/* Only render Image component after validation and if not skipping */}
       {validationComplete && !skipImageLoad && work.image && work.image.length > 5 && (
-        <div className="absolute inset-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-lg shadow-lg ring-1 ring-black/5 dark:ring-white/10">
+        <div className="absolute inset-1 bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-2xl ring-2 ring-gray-200/50 dark:ring-slate-700/50 border border-gray-100 dark:border-slate-700 transform hover:scale-[1.02] transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent rounded-xl"></div>
           <Image
             src={work.image}
             alt={work.title}
             fill
-            className={`object-contain p-3 transition-all duration-300 ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'} hover:scale-105`}
+            className={`object-contain p-2 transition-all duration-500 ${isLoading ? 'opacity-0 scale-90 blur-sm' : 'opacity-100 scale-100 blur-0'} hover:scale-110 drop-shadow-lg`}
             onLoad={handleImageLoad}
             onError={handleImageError}
             priority={false}
