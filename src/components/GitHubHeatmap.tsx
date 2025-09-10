@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import SvgIcon from "./SvgIcon";
 import { useLoading } from "@/contexts/LoadingContext";
 
-// GitHub贡献数据类型定义
+// GitHub contribution data type definition
 interface ContributionDay {
   date: string;
   count: number;
@@ -18,11 +18,11 @@ interface GitHubHeatmapProps {
   username: string;
 }
 
-// 缓存键生成函数
+// Cache key generation function
 const getCacheKey = (username: string, year: number) =>
   `github_contributions_${username}_${year}`;
 
-// 缓存过期时间（24小时）
+// Cache expiration time (24 hours)
 const CACHE_EXPIRY = 24 * 60 * 60 * 1000;
 
 const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
@@ -31,18 +31,18 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
   const [totalContributions, setTotalContributions] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   // Use loading context if available, but don't crash if not
   let setHeatmapLoaded: ((loaded: boolean) => void) | null = null;
   try {
     const loadingContext = useLoading();
     setHeatmapLoaded = loadingContext.setHeatmapLoaded;
-  } catch (e) {
+  } catch {
     // Loading context not available, which is fine for non-home pages
     setHeatmapLoaded = null;
   }
 
-  // 检测移动设备
+  // Detect mobile device
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -56,7 +56,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
     };
   }, []);
 
-  // 从本地存储获取缓存数据
+  // Get cached data from local storage
   const getCachedData = (username: string, year: number) => {
     try {
       const cacheKey = getCacheKey(username, year);
@@ -65,21 +65,21 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         const { data, timestamp } = JSON.parse(cached);
         const now = Date.now();
 
-        // 检查缓存是否过期
+        // Check if cache is expired
         if (now - timestamp < CACHE_EXPIRY) {
           return data;
         } else {
-          // 清除过期缓存
+          // Clear expired cache
           localStorage.removeItem(cacheKey);
         }
       }
     } catch (error) {
-      console.error("读取缓存失败:", error);
+      console.error("Failed to read cache:", error);
     }
     return null;
   };
 
-  // 保存数据到本地存储
+  // Save data to local storage
   const setCachedData = (
     username: string,
     year: number,
@@ -93,11 +93,11 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
       };
       localStorage.setItem(cacheKey, JSON.stringify(cacheData));
     } catch (error) {
-      console.error("保存缓存失败:", error);
+      console.error("Failed to save cache:", error);
     }
   };
 
-  // 使用 github-contributions-api 获取贡献数据
+  // Use github-contributions-api to fetch contribution data
   const fetchContributions = async (username: string, year: number) => {
     try {
       const response = await fetch(
@@ -110,12 +110,12 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
 
       const data: GitHubContributionsData = await response.json();
 
-      // 保存到缓存
+      // Save to cache
       setCachedData(username, year, data);
 
       return data;
     } catch (error) {
-      console.error("获取GitHub贡献数据失败:", error);
+      console.error("Failed to fetch GitHub contribution data:", error);
       throw error;
     }
   };
@@ -126,7 +126,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         setLoading(true);
         setError(null);
 
-        // 计算需要获取的日期范围（移动端6个月，桌面端12个月）
+        // Calculate date range to fetch (6 months for mobile, 12 months for desktop)
         const today = new Date();
         const monthsToShow = isMobile ? 6 : 12;
         const startDate = new Date(today);
@@ -135,30 +135,30 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         } else {
           startDate.setFullYear(today.getFullYear() - 1);
         }
-        startDate.setDate(today.getDate() + 1); // 从指定时间前的明天开始
+        startDate.setDate(today.getDate() + 1); // Start from the day after specified time
 
         const currentYear = today.getFullYear();
         const previousYear = currentYear - 1;
 
-        // 需要获取的年份数据
+        // Years of data to fetch
         const yearsToFetch = [previousYear, currentYear];
         const allContributions: ContributionDay[] = [];
 
-        // 获取所需年份的数据
+        // Fetch data for required years
         for (const year of yearsToFetch) {
           let yearData: GitHubContributionsData | null = null;
 
-          // 尝试从缓存获取
+          // Try to get from cache
           const cachedData = getCachedData(username, year);
           if (cachedData) {
-            console.log(`使用${year}年缓存数据`);
+            console.log(`Using cached data for ${year}`);
             yearData = cachedData;
           } else {
-            console.log(`从API获取${year}年数据`);
+            console.log(`Fetching ${year} data from API`);
             try {
               yearData = await fetchContributions(username, year);
             } catch (error) {
-              console.warn(`获取${year}年数据失败:`, error);
+              console.warn(`Failed to fetch ${year} data:`, error);
               continue;
             }
           }
@@ -168,18 +168,18 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
           }
         }
 
-        // 过滤出指定月数的数据
+        // Filter data for specified months
         const filteredData = allContributions.filter((day: ContributionDay) => {
           const dayDate = new Date(day.date);
           return dayDate >= startDate && dayDate <= today;
         });
 
-        // 按日期排序
+        // Sort by date
         filteredData.sort(
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
         );
 
-        // 计算总贡献数
+        // Calculate total contributions
         const total = filteredData.reduce(
           (sum: number, day: ContributionDay) => sum + day.count,
           0
@@ -188,8 +188,10 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
         setContributions(filteredData);
         setTotalContributions(total);
       } catch (error) {
-        console.error("获取GitHub数据失败:", error);
-        setError("获取GitHub数据失败，请检查用户名或网络连接");
+        console.error("Failed to fetch GitHub data:", error);
+        setError(
+          "Failed to fetch GitHub data. Please check username or network connection"
+        );
         setContributions([]);
         setTotalContributions(0);
       } finally {
@@ -206,23 +208,23 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
     }
   }, [username, isMobile]);
 
-  // 获取颜色
+  // Get color
   const getColor = (level: number): string => {
     const colors = {
-      0: "#161b22", // 无提交
-      1: "#0e4429", // 少量提交
-      2: "#006d32", // 中等提交
-      3: "#26a641", // 较多提交
-      4: "#39d353", // 大量提交
+      0: "#161b22", // No commits
+      1: "#0e4429", // Few commits
+      2: "#006d32", // Medium commits
+      3: "#26a641", // Many commits
+      4: "#39d353", // Lots of commits
     };
     return colors[level as keyof typeof colors] || colors[0];
   };
 
-  // 按周分组（移动端6个月，桌面端12个月滚动）
+  // Group by week (6 months for mobile, 12 months rolling for desktop)
   const getWeeks = () => {
     if (contributions.length === 0) return [];
 
-    // 计算显示的周数（移动端约26周，桌面端53周）
+    // Calculate weeks to display (approximately 26 weeks for mobile, 53 weeks for desktop)
     const weeksToShow = isMobile ? 26 : 53;
     const monthsBack = isMobile ? 6 : 12;
 
@@ -237,19 +239,19 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
 
     // 找到开始周的星期天
     const startDate = new Date(periodStart);
-    startDate.setDate(startDate.getDate() - startDate.getDay()); // 调整到周日
+    startDate.setDate(startDate.getDate() - startDate.getDay()); // Adjust to Sunday
 
     const weeks: ContributionDay[][] = [];
     const currentDate = new Date(startDate);
 
-    // 生成对应周数的网格
+    // Generate grid for corresponding weeks
     for (let week = 0; week < weeksToShow; week++) {
       const currentWeek: ContributionDay[] = [];
 
       for (let day = 0; day < 7; day++) {
         const dateStr = currentDate.toISOString().split("T")[0];
 
-        // 查找是否有该日期的贡献数据
+        // Check if there's contribution data for this date
         const contribution = contributions.find((c) => c.date === dateStr);
 
         if (contribution) {
@@ -300,21 +302,23 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
             </div>
           </div>
           <div className="text-center">
-            <div className="text-sm font-medium mb-1">Loading GitHub Contributions</div>
+            <div className="text-sm font-medium mb-1">
+              Loading GitHub Contributions
+            </div>
             <div className="text-xs text-[rgba(255,255,255,0.7)]">
               Fetching your coding activity...
             </div>
           </div>
         </div>
-        
+
         <style jsx>{`
           .heatmap-loading-animation {
             position: relative;
             display: inline-block;
           }
-          
+
           .heatmap-loading-animation::after {
-            content: '';
+            content: "";
             position: absolute;
             top: -4px;
             left: -4px;
@@ -322,13 +326,14 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
             bottom: -4px;
             border-radius: 50%;
             border: 2px solid transparent;
-            border-top-color: #4A90E2;
-            border-right-color: #4A90E2;
+            border-top-color: #4a90e2;
+            border-right-color: #4a90e2;
             animation: heatmap-pulse 2s ease-in-out infinite;
           }
-          
+
           @keyframes heatmap-pulse {
-            0%, 100% {
+            0%,
+            100% {
               opacity: 1;
               transform: scale(1);
             }

@@ -8,9 +8,9 @@ interface SvgIconProps {
   height?: number;
   className?: string;
   color?: string;
-  lightColor?: string; // 浅色主题下的颜色
-  darkColor?: string; // 深色主题下的颜色
-  hoverColor?: string; // 悬停时的颜色
+  lightColor?: string; // Color for light theme
+  darkColor?: string; // Color for dark theme
+  hoverColor?: string; // Color on hover
 }
 
 export default function SvgIcon({
@@ -21,10 +21,9 @@ export default function SvgIcon({
   color = "currentColor",
   lightColor,
   darkColor,
-  hoverColor,
-}: SvgIconProps) {
+}: Omit<SvgIconProps, 'hoverColor'>) {
   const { theme } = useTheme();
-  // 根据主题选择颜色
+  // Choose color based on theme
   const getThemeColor = () => {
     if (lightColor && darkColor) {
       return theme === "dark" ? darkColor : lightColor;
@@ -51,7 +50,7 @@ export default function SvgIcon({
   );
 }
 
-// 辅助函数：将颜色转换为 CSS filter
+// Helper function: Convert color to CSS filter
 function getColorFilter(color: string): string {
   const colorMap: Record<string, string> = {
     "#fff": "invert(100%)",
@@ -67,21 +66,28 @@ function getColorFilter(color: string): string {
     "#ff0000":
       "invert(13%) sepia(99%) saturate(7404%) hue-rotate(4deg) brightness(97%) contrast(118%)",
     red: "invert(13%) sepia(99%) saturate(7404%) hue-rotate(4deg) brightness(97%) contrast(118%)",
-    "#F76D57": // Location pin red
+    // Location pin red
+    "#F76D57":
       "invert(65%) sepia(85%) saturate(565%) hue-rotate(315deg) brightness(96%) contrast(96%)",
-    "#f76d57": // Location pin red (lowercase)
+    // Location pin red (lowercase)
+    "#f76d57":
       "invert(65%) sepia(85%) saturate(565%) hue-rotate(315deg) brightness(96%) contrast(96%)",
-    
+
     // Social media brand colors
-    "#0077b5": // LinkedIn blue
+    // LinkedIn blue
+    "#0077b5":
       "invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)",
-    "#1da1f2": // X (Twitter) blue  
+    // X (Twitter) blue
+    "#1da1f2":
       "invert(64%) sepia(88%) saturate(1018%) hue-rotate(169deg) brightness(97%) contrast(89%)",
-    "#e4405f": // Instagram gradient (main pink)
+    // Instagram gradient (main pink)
+    "#e4405f":
       "invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%)",
-    "#ff0050": // TikTok pink/red
+    // TikTok pink/red
+    "#ff0050":
       "invert(9%) sepia(100%) saturate(7426%) hue-rotate(321deg) brightness(118%) contrast(115%)",
-    "#25f4ee": // TikTok cyan
+    // TikTok cyan
+    "#25f4ee":
       "invert(92%) sepia(58%) saturate(200%) hue-rotate(137deg) brightness(91%) contrast(80%)",
   };
 

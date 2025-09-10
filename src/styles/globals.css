@@ -24,7 +24,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 确保主题切换时的平滑过渡 */
+/* Ensure smooth transition during theme switching */
 * {
   transition: background-color 0.3s ease, color 0.3s ease,
     border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
@@ -32,7 +32,8 @@ body {
 
 /* Enhanced text shadow utility */
 .text-shadow-lg {
-  text-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.4), 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+  text-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.4),
+    0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
 }
 
 /* Improved glass morphism effect */
@@ -66,7 +67,7 @@ body {
     0 0 2.5rem rgba(125, 184, 216, 0.2);
 }
 
-/* 自定义滚动条样式 */
+/* Custom scrollbar styles */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: gray transparent;
@@ -92,7 +93,7 @@ body {
   transform: scale(1.1);
 }
 
-/* 深色主题下的滚动条样式 */
+/* Scrollbar styles for dark theme */
 .dark .custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -101,7 +102,7 @@ body {
   scrollbar-color: rgba(59, 130, 246, 0.7) transparent;
 }
 
-/* 隐藏滚动条但保持滚动功能的样式 */
+/* Hide scrollbar but maintain scroll functionality */
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -290,7 +291,7 @@ body {
 }
 
 .pt-safe-top {
-  /* 使用动态视口高度单位 */
+  /* Use dynamic viewport height units */
   padding-top: calc(100vh - 100dvh + env(safe-area-inset-top, 0rem));
   min-padding-top: env(safe-area-inset-top, 0rem);
 }
@@ -366,7 +367,8 @@ body {
 
 /* Avatar floating animation */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -411,7 +413,11 @@ body {
 }
 
 @keyframes iconBounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
@@ -441,7 +447,8 @@ body {
 }
 
 @keyframes breathe {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
@@ -453,18 +460,14 @@ body {
 
 /* Navigation Card Utility Classes */
 .card-depth {
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.05);
   will-change: box-shadow, transform;
 }
 
 .card-depth-hover {
-  box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.3),
-    0 10px 10px -5px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.1),
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   will-change: box-shadow, transform;
 }
@@ -498,4 +501,3 @@ body {
   animation: breathe 4s ease-in-out infinite;
   will-change: transform, opacity;
 }
-

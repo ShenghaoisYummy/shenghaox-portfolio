@@ -73,7 +73,7 @@ export default function ChatPage() {
   const [onlineUsers, setOnlineUsers] = useState<number>(0);
   const [onlineUsersList, setOnlineUsersList] = useState<PusherMember[]>([]);
   console.log("🚀 ~ ChatPage ~ onlineUsersList:", onlineUsersList);
-  // 滚动到底部
+  // Scroll to bottom
   const scrollToBottom = () => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -84,7 +84,7 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  // 初始化用户信息
+  // Initialize user information
   useEffect(() => {
     const savedUserName = localStorage.getItem("chatUserName");
     const savedUserId = localStorage.getItem("chatUserId");
@@ -94,7 +94,7 @@ export default function ChatPage() {
       setCurrentUserId(savedUserId);
       setShowUserModal(false);
     } else {
-      // 生成新的用户ID
+      // Generate new user ID
       const newUserId = `user-${Date.now()}-${Math.random()
         .toString(36)
         .substr(2, 9)}`;
@@ -103,11 +103,11 @@ export default function ChatPage() {
     }
   }, []);
 
-  // 初始化 Pusher
+  // Initialize Pusher
   useEffect(() => {
     if (!userName) return;
 
-    // 如果已有连接，先清理
+    // If connection exists, clean up first
     if (pusherRef.current) {
       if (channelRef.current) {
         channelRef.current.unbind_all();
@@ -120,7 +120,7 @@ export default function ChatPage() {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
       forceTLS: true,
       enabledTransports: ["ws", "wss"],
-      // 添加认证端点
+      // Add authentication endpoint
       authorizer: (channel: PusherChannel) => {
         return {
           authorize: (
@@ -166,10 +166,10 @@ export default function ChatPage() {
         pusherRef.current?.connection.socket_id
       );
       setIsConnected(true);
-      // 连接成功后立即尝试订阅当前房间
+      // Try to subscribe to current room immediately after connection
       if (currentRoom) {
         subscribeToRoom(currentRoom.id);
-        // 添加这行：连接成功后加载当前房间的消息
+        // Add this line: load current room messages after successful connection
         fetchMessages(currentRoom.id);
       }
     });
@@ -216,7 +216,7 @@ export default function ChatPage() {
       return;
     }
 
-    // 取消之前的订阅
+    // Cancel previous subscription
     if (channelRef.current) {
       console.log(
         "Unsubscribing from previous channel:",
@@ -226,7 +226,7 @@ export default function ChatPage() {
       pusherRef.current.unsubscribe(channelRef.current.name);
     }
 
-    // 订阅新房间
+    // Subscribe to new room
     const channelName = `presence-chat-room-${roomId}`;
     console.log("Subscribing to presence channel:", channelName);
     channelRef.current = pusherRef.current.subscribe(
@@ -236,7 +236,7 @@ export default function ChatPage() {
     channelRef.current.bind("new-message", (data: Message) => {
       console.log("Received new message:", data);
       setMessages((prev) => {
-        // 防止重复消息
+        // Prevent duplicate messages
         const exists = prev.some((msg) => msg.id === data.id);
         if (exists) {
           console.log("Message already exists, skipping:", data.id);
@@ -245,7 +245,7 @@ export default function ChatPage() {
         return [...prev, data];
       });
 
-      // 更新房间列表中当前房间的消息数量
+      // Update message count for current room in room list
       setRooms((prevRooms) =>
         prevRooms.map((room) =>
           room.id === currentRoom?.id
@@ -255,7 +255,7 @@ export default function ChatPage() {
       );
     });
 
-    // 监听在线用户变化
+    // Listen for online user changes
     channelRef.current.bind(
       "pusher:subscription_succeeded",
       (members: PusherMembers) => {
@@ -292,12 +292,12 @@ export default function ChatPage() {
     });
   }, []);
 
-  // 加载聊天室列表
+  // Load chat room list
   useEffect(() => {
     fetchRooms();
   }, []);
 
-  // 订阅当前房间
+  // Subscribe to current room
   useEffect(() => {
     if (
       !currentRoom ||
@@ -307,12 +307,12 @@ export default function ChatPage() {
       return;
     }
 
-    // 如果Pusher已连接，立即订阅
+    // If Pusher is connected, subscribe immediately
     if (pusherRef.current?.connection.state === "connected") {
       subscribeToRoom(currentRoom.id);
     }
 
-    // 加载历史消息
+    // Load historical messages
     fetchMessages(currentRoom.id);
   }, [currentRoom, subscribeToRoom]);
 
@@ -369,16 +369,20 @@ export default function ChatPage() {
   const debouncedSendMessage = useCallback(async () => {
     if (!newMessage.trim() || !currentRoom || !userName || isSending) return;
 
-    // 检查Pusher连接状态
+    // Check Pusher connection status
     if (!isConnected || pusherRef.current?.connection.state !== "connected") {
-      setMessageError("连接已断开，请等待重新连接后再试");
+      setMessageError(
+        "Connection lost, please wait for reconnection and try again"
+      );
       setTimeout(() => setMessageError(""), 3000);
       return;
     }
 
-    // 检查消息内容
+    // Check message content
     if (containsProfanity(newMessage)) {
-      setMessageError("消息包含不当内容，请重新输入");
+      setMessageError(
+        "Message contains inappropriate content, please re-enter"
+      );
       setTimeout(() => setMessageError(""), 3000);
       return;
     }
@@ -387,7 +391,7 @@ export default function ChatPage() {
     setMessageError("");
 
     try {
-      // 过滤消息内容
+      // Filter message content
       const filteredContent = filterProfanity(newMessage);
 
       const response = await fetch("/api/chat/messages", {
@@ -410,7 +414,7 @@ export default function ChatPage() {
       const result = await response.json();
       console.log("Message sent successfully:", result);
 
-      // 更新房间列表中当前房间的消息数量
+      // Update message count for current room in room list
       setRooms((prevRooms) =>
         prevRooms.map((room) =>
           room.id === currentRoom.id
@@ -420,13 +424,15 @@ export default function ChatPage() {
       );
 
       setNewMessage("");
-      // 重置textarea高度
+      // Reset textarea height
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
     } catch (error) {
       console.error("Failed to send message:", error);
-      setMessageError("发送消息失败，请检查网络连接");
+      setMessageError(
+        "Failed to send message, please check network connection"
+      );
       setTimeout(() => setMessageError(""), 3000);
     } finally {
       setIsSending(false);
@@ -434,12 +440,12 @@ export default function ChatPage() {
   }, [newMessage, currentRoom, userName, currentUserId, isSending]);
 
   const sendMessage = () => {
-    // 清除之前的定时器
+    // Clear previous timer
     if (sendTimeoutRef.current) {
       clearTimeout(sendTimeoutRef.current);
     }
 
-    // 设置防抖延迟
+    // Set debounce delay
     sendTimeoutRef.current = setTimeout(() => {
       debouncedSendMessage();
     }, 300);
@@ -451,13 +457,13 @@ export default function ChatPage() {
         const state = pusherRef.current.connection.state;
         console.log("Current Pusher state:", state);
 
-        // 如果连接断开且用户已登录，尝试重连
+        // If disconnected and user is logged in, try to reconnect
         if (state === "disconnected" && userName && !isConnected) {
           console.log("Attempting to reconnect...");
           pusherRef.current.connect();
         }
       }
-    }, 30000); // 每30秒检查一次
+    }, 30000); // Check every 30 seconds
 
     return () => clearInterval(interval);
   }, [userName, isConnected]);
@@ -469,36 +475,40 @@ export default function ChatPage() {
     }
   };
 
-  // 自动调整textarea高度
+  // Auto-adjust textarea height
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setNewMessage(value);
 
-    // 清除之前的错误信息
+    // Clear previous error messages
     if (messageError) {
       setMessageError("");
     }
 
-    // 自动调整高度
+    // Auto-adjust height
     const textarea = e.target;
     textarea.style.height = "auto";
     const scrollHeight = textarea.scrollHeight;
-    const maxHeight = 120; // 最大高度
+    const maxHeight = 120; // Maximum height
     textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
   };
 
-  // 验证昵称
+  // Validate nickname
   const validateNickname = (nickname: string) => {
     if (!nickname.trim()) {
-      setNicknameError("请输入昵称");
+      setNicknameError("Please enter a nickname");
       return false;
     }
 
     if (!isValidNickname(nickname)) {
       if (nickname.toLowerCase().trim() === "austin") {
-        setNicknameError("该昵称不可用，请选择其他昵称");
+        setNicknameError(
+          "This nickname is not available, please choose another"
+        );
       } else {
-        setNicknameError("昵称包含不当内容，请重新输入");
+        setNicknameError(
+          "Nickname contains inappropriate content, please re-enter"
+        );
       }
       return false;
     }
@@ -514,12 +524,12 @@ export default function ChatPage() {
     }
   };
 
-  // 处理昵称输入变化
+  // Handle nickname input changes
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setUserName(value);
 
-    // 实时验证
+    // Real-time validation
     if (value.trim()) {
       validateNickname(value);
     } else {
@@ -527,7 +537,7 @@ export default function ChatPage() {
     }
   };
 
-  // 选择房间并在移动端关闭侧边栏
+  // Select room and close sidebar on mobile
   const selectRoom = (room: ChatRoom) => {
     setCurrentRoom(room);
     setIsMobileSidebarOpen(false);
@@ -551,31 +561,31 @@ export default function ChatPage() {
   const getThemeClasses = () => {
     const isDark = theme === "dark";
     return {
-      // 主容器
+      // Main container
       mainContainer: isDark ? "bg-gray-900" : "bg-gray-100",
-      // 侧边栏
+      // Sidebar
       sidebar: isDark
         ? "bg-gray-800 border-gray-700"
         : "bg-white border-gray-200",
       sidebarBorder: isDark ? "border-gray-700" : "border-gray-200",
-      // 文本颜色
+      // Text colors
       primaryText: isDark ? "text-white" : "text-gray-900",
       secondaryText: isDark ? "text-gray-400" : "text-gray-500",
-      // 悬停效果
+      // Hover effects
       hoverBg: isDark ? "hover:bg-gray-700" : "hover:bg-gray-50",
-      // 选中状态
+      // Selected state
       selectedBg: isDark
         ? "bg-gradient-to-r from-[#213C61] to-[#4C638C]"
         : "bg-gradient-to-r from-[#213C61] to-[#496189]",
-      // 输入框
+      // Input box
       inputBg: isDark
         ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
         : "bg-white border-gray-300 text-gray-900 placeholder-gray-500",
-      // 模态框
+      // Modal
       modalBg: isDark
         ? "bg-gradient-to-r from-[#213C61] to-[#4C638C]"
         : "bg-gradient-to-r from-gray-200 to-gray-300",
-      // 消息气泡
+      // Message bubble
       messageBg: isDark
         ? "bg-gradient-to-r from-[#213C61] to-[#4C638C]"
         : "bg-gradient-to-r from-gray-200 to-gray-300",
@@ -584,7 +594,7 @@ export default function ChatPage() {
 
   const themeClasses = getThemeClasses();
 
-  // 聊天室骨架屏组件
+  // Chat room skeleton component
   const RoomSkeleton = () => (
     <div className="p-2 animate-pulse">
       {[...Array(3)].map((_, index) => (
@@ -602,7 +612,7 @@ export default function ChatPage() {
     </div>
   );
 
-  // 消息骨架屏组件
+  // Message skeleton component
   const MessageSkeleton = () => (
     <div className="p-4 space-y-4 animate-pulse">
       {[...Array(5)].map((_, index) => (
@@ -630,12 +640,12 @@ export default function ChatPage() {
     </div>
   );
 
-  // 侧边栏组件
+  // Sidebar component
   const Sidebar = ({ className = "" }: { className?: string }) => (
     <div
       className={`${themeClasses.sidebar} border-r flex flex-col ${className}`}
     >
-      {/* 固定头部 */}
+      {/* Fixed header */}
       <div
         className={`px-4 py-2 border-b ${themeClasses.sidebarBorder} flex-shrink-0`}
       >
@@ -643,10 +653,10 @@ export default function ChatPage() {
           <h1
             className={`text-lg md:text-xl font-bold ${themeClasses.primaryText}`}
           >
-            聊天室
+            Chat Rooms
           </h1>
           <div className="flex items-center space-x-2">
-            {/* 移动端导航按钮 */}
+            {/* Mobile navigation buttons */}
             <div className="flex md:hidden items-center ">
               <Link
                 href="/blog"
@@ -672,9 +682,9 @@ export default function ChatPage() {
               className={`w-3 h-3 rounded-full ${
                 isConnected ? "bg-green-500" : "bg-red-500"
               }`}
-              title={isConnected ? "已连接" : "未连接"}
+              title={isConnected ? "Connected" : "Disconnected"}
             />
-            {/* 移动端关闭按钮 */}
+            {/* Mobile close button */}
             <button
               onClick={() => setIsMobileSidebarOpen(false)}
               className={`md:hidden p-1 ${themeClasses.hoverBg} rounded`}
@@ -689,11 +699,11 @@ export default function ChatPage() {
           </div>
         </div>
         <p className={`text-sm ${themeClasses.secondaryText} mt-1`}>
-          欢迎, {userName}
+          Welcome, {userName}
         </p>
       </div>
 
-      {/* 可滚动的房间列表 */}
+      {/* Scrollable room list */}
       <div className="flex-1 overflow-y-auto">
         {isLoadingRooms ? (
           <RoomSkeleton />
@@ -746,14 +756,14 @@ export default function ChatPage() {
     return (
       <>
         <Head>
-          <title>聊天室 - austin&rsquo;s web</title>
+          <title>Chat Room - austin&rsquo;s web</title>
         </Head>
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div
             className={`${themeClasses.modalBg} rounded-lg p-6 w-full max-w-md mx-4`}
           >
             <h2 className={`text-[16px] mb-4 ${themeClasses.primaryText}`}>
-              请输入您的聊天昵称
+              Please enter your chat nickname
             </h2>
             <div className="mb-4">
               <input
@@ -766,7 +776,7 @@ export default function ChatPage() {
                     handleUserNameSubmit();
                   }
                 }}
-                placeholder="请输入昵称"
+                placeholder="Please enter nickname"
                 className={`w-full p-3 outline-none rounded-lg text-base ${
                   themeClasses.inputBg
                 } ${nicknameError ? "border-red-500" : ""}`}
@@ -783,7 +793,7 @@ export default function ChatPage() {
               disabled={!userName.trim() || !!nicknameError}
               className={`w-full text-white p-3 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-base ${themeClasses.selectedBg} cursor-pointer`}
             >
-              进入聊天室
+              Enter Chat Room
             </button>
           </div>
         </div>
@@ -794,34 +804,34 @@ export default function ChatPage() {
   return (
     <>
       <Head>
-        <title>聊天室 - austin&rsquo;s web</title>
+        <title>Chat Room - austin&rsquo;s web</title>
       </Head>
       <div className="h-screen flex flex-col md:justify-center md:items-center">
-        {/* 导航按钮 - 桌面端 */}
+        {/* Navigation buttons - Desktop */}
         <div className="hidden md:flex fixed top-4 left-4 z-10 gap-2">
           <Link
             href="/blog"
             className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
           >
             <SvgIcon name="left" width={16} height={16} color="#fff" />
-            <span className="text-sm">文章集</span>
+            <span className="text-sm">Articles</span>
           </Link>
           <Link
             href="/"
             className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
           >
             <SvgIcon name="home" width={16} height={16} color="#fff" />
-            <span className="text-sm">首页</span>
+            <span className="text-sm">Home</span>
           </Link>
         </div>
 
         <div
           className={`flex h-full md:h-[80vh] w-full md:w-[90vw] lg:w-[80vw] ${themeClasses.mainContainer} md:rounded-[10px] md:p-[10px]`}
         >
-          {/* 桌面端侧边栏 */}
+          {/* Desktop sidebar */}
           <Sidebar className="hidden md:flex w-80 rounded-l-[10px]" />
 
-          {/* 移动端侧边栏遮罩 */}
+          {/* Mobile sidebar overlay */}
           {isMobileSidebarOpen && (
             <div
               className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -829,7 +839,7 @@ export default function ChatPage() {
             />
           )}
 
-          {/* 移动端侧边栏抽屉 */}
+          {/* Mobile sidebar drawer */}
           <div
             className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] z-50 transform transition-transform duration-300 md:hidden ${
               isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -838,16 +848,16 @@ export default function ChatPage() {
             <Sidebar className="h-full" />
           </div>
 
-          {/* 主聊天区域 */}
+          {/* Main chat area */}
           <div className="flex-1 flex flex-col">
             {currentRoom ? (
               <>
-                {/* 聊天头部 */}
+                {/* Chat header */}
                 <div
                   className={`px-4 py-[10px] ${themeClasses.sidebar} border-b ${themeClasses.sidebarBorder} flex items-center justify-between rounded-r-[10px] flex-shrink-0`}
                 >
                   <div className="flex items-center space-x-3 relative w-full pt-safe-top">
-                    {/* 移动端菜单按钮 */}
+                    {/* Mobile menu button */}
                     <button
                       onClick={() => setIsMobileSidebarOpen(true)}
                       className={`md:hidden p-2 ${themeClasses.hoverBg} rounded`}
@@ -865,13 +875,13 @@ export default function ChatPage() {
                       >
                         {currentRoom.name}
 
-                        {/* 在线人数显示 */}
+                        {/* Online user count display */}
                         <div className="flex items-center space-x-2 font-normal">
                           <div className="flex items-center space-x-1">
                             <span
                               className={`text-xs md:text-sm ${themeClasses.secondaryText}`}
                             >
-                              当前聊天室在线人数：{onlineUsers}
+                              Current online users: {onlineUsers}
                             </span>
                           </div>
                         </div>
@@ -887,7 +897,7 @@ export default function ChatPage() {
                   </div>
                 </div>
 
-                {/* 消息列表 */}
+                {/* Message list */}
                 <div className="flex-1 overflow-y-auto px-3 md:px-4 py-2 md:py-4 space-y-3 md:space-y-4 custom-scrollbar">
                   {isLoadingMessages ? (
                     <MessageSkeleton />
@@ -950,7 +960,7 @@ export default function ChatPage() {
                   )}
                 </div>
 
-                {/* 输入区域 */}
+                {/* Input area */}
                 <div
                   className={`p-3 md:p-4 border-t rounded-b-[10px] ${themeClasses.sidebarBorder} ${themeClasses.sidebar}`}
                 >
@@ -965,7 +975,7 @@ export default function ChatPage() {
                       value={newMessage}
                       onChange={handleTextareaChange}
                       onKeyPress={handleKeyPress}
-                      placeholder="输入消息..."
+                      placeholder="Enter message..."
                       className={`flex-1 p-2 border rounded-lg resize-none text-base ${themeClasses.inputBg} focus:outline-none focus:ring-2 focus:ring-gray-500 custom-scrollbar`}
                       rows={1}
                       style={{ minHeight: "44px", maxHeight: "120px" }}
@@ -978,7 +988,7 @@ export default function ChatPage() {
                       {isSending ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       ) : (
-                        <span className="text-sm md:text-base">发送</span>
+                        <span className="text-sm md:text-base">Send</span>
                       )}
                     </button>
                   </div>
@@ -988,7 +998,7 @@ export default function ChatPage() {
               <div
                 className={`flex-1 flex items-center justify-center ${themeClasses.primaryText}`}
               >
-                <p className="text-lg">请选择一个聊天室</p>
+                <p className="text-lg">Please select a chat room</p>
               </div>
             )}
           </div>

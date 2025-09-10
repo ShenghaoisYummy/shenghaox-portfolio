@@ -15,7 +15,7 @@ import {
 } from "../../service/api/comment";
 import { useRouter } from "next/router";
 
-// 布局组件，包含公共的主题切换和背景
+// Layout component containing common theme toggle and background
 function Layout({ children }: { children: React.ReactNode }) {
   const { theme } = useTheme();
   const router = useRouter();
@@ -37,7 +37,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     smile: false,
   });
 
-  // 添加谢谢你动画状态
+  // Add thank you animation state
   const [showThanks, setShowThanks] = useState<Record<ReactionType, boolean>>({
     like: false,
     cheer: false,
@@ -46,7 +46,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     smile: false,
   });
 
-  // 加载评论数量和点赞数量
+  // Load comment count and reaction count
   useEffect(() => {
     const loadCounts = async () => {
       try {
@@ -57,7 +57,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         setCommentCount(commentsData.length);
         setReactionCounts(reactionsData);
 
-        // 检查本地存储是否已点赞
+        // Check if already reacted in local storage
         const reacted: Record<ReactionType, boolean> = {
           like: localStorage.getItem("hasReacted_like") === "true",
           cheer: localStorage.getItem("hasReacted_cheer") === "true",
@@ -67,14 +67,14 @@ function Layout({ children }: { children: React.ReactNode }) {
         };
         setHasReacted(reacted);
       } catch (error) {
-        console.error("加载数据失败:", error);
+        console.error("Failed to load data:", error);
       }
     };
 
     loadCounts();
   }, []);
 
-  // 处理点赞
+  // Handle reactions
   const handleReaction = async (type: ReactionType) => {
     if (hasReacted[type]) return;
 
@@ -90,13 +90,13 @@ function Layout({ children }: { children: React.ReactNode }) {
       }));
       localStorage.setItem(`hasReacted_${type}`, "true");
 
-      // 显示谢谢你动画
+      // Show thank you animation
       setShowThanks((prev) => ({
         ...prev,
         [type]: true,
       }));
 
-      // 1秒后隐藏动画
+      // Hide animation after 2 seconds
       setTimeout(() => {
         setShowThanks((prev) => ({
           ...prev,
@@ -104,7 +104,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         }));
       }, 2000);
     } catch (error) {
-      console.error("点赞失败:", error);
+      console.error("Reaction failed:", error);
     }
   };
 
@@ -112,19 +112,20 @@ function Layout({ children }: { children: React.ReactNode }) {
     setIsCommentOpen(true);
   };
 
-  // 格式化评论数量显示
+  // Format comment count display
   const formatCount = (count: number) => {
     return count > 99 ? "99+" : count.toString();
   };
 
   const isChatPage = router.pathname === "/chat";
+  const isWorksPage = router.pathname === "/works";
 
   return (
     <div className="relative min-h-screen mb-8">
-      {/* 主题切换按钮 */}
+      {/* Theme toggle button */}
       <ThemeToggle />
 
-      {/* 浅色主题背景图片 */}
+      {/* Light theme background image */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1] min-h-full"
         style={{
@@ -133,7 +134,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         }}
       />
 
-      {/* 深色主题背景图片 */}
+      {/* Dark theme background image */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat blur-sm transition-opacity duration-1000 ease-in-out z-[-1] min-h-full"
         style={{
@@ -142,10 +143,10 @@ function Layout({ children }: { children: React.ReactNode }) {
         }}
       />
 
-      {/* 点赞按钮 */}
+      {/* Reaction buttons */}
 
-      {!isChatPage && (
-        <div className="fixed top-72 right-4 z-10 hidden md:block">
+      {!isChatPage && !isWorksPage && (
+        <div className="fixed top-72 right-4 z-20 hidden md:block">
           <div className="flex flex-col justify-start text-1xl items-center shadow-xl z-10 bg-black/20 dark:bg-[#191818] gap-2 p-2 rounded-2xl transition-transform duration-300 hover:scale-105">
             <button
               onClick={() => handleReaction("like")}
@@ -161,7 +162,7 @@ function Layout({ children }: { children: React.ReactNode }) {
               transform hover:-translate-y-1
             `}
             >
-              {/* 谢谢你动画 */}
+              {/* Thank you animation */}
               {showThanks.like && (
                 <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
                   <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
@@ -191,11 +192,11 @@ function Layout({ children }: { children: React.ReactNode }) {
               transform hover:-translate-y-1
             `}
             >
-              {/* 谢谢你动画 */}
+              {/* Thank you animation */}
               {showThanks.cheer && (
                 <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
                   <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
-                    谢啦
+                    Thanks!
                   </div>
                 </div>
               )}
@@ -221,7 +222,7 @@ function Layout({ children }: { children: React.ReactNode }) {
               transform hover:-translate-y-1
             `}
             >
-              {/* 谢谢你动画 */}
+              {/* Thank you animation */}
               {showThanks.celebrate && (
                 <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
                   <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
@@ -251,11 +252,11 @@ function Layout({ children }: { children: React.ReactNode }) {
               transform hover:-translate-y-1
             `}
             >
-              {/* 谢谢你动画 */}
+              {/* Thank you animation */}
               {showThanks.appreciate && (
                 <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
                   <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
-                    谢啦
+                    Thanks!
                   </div>
                 </div>
               )}
@@ -281,7 +282,7 @@ function Layout({ children }: { children: React.ReactNode }) {
               transform hover:-translate-y-1
             `}
             >
-              {/* 谢谢你动画 */}
+              {/* Thank you animation */}
               {showThanks.smile && (
                 <div className="fixed top-1/2 right-4 transform -translate-y-1/2 animate-slide-in-right z-50">
                   <div className="text-white text-sm font-bold shadow-2xl bg-black/80 px-2 py-1 rounded whitespace-nowrap border border-white/20">
@@ -300,12 +301,14 @@ function Layout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      {/* 评论按钮 */}
+      {/* Comment button */}
       {!isChatPage && (
         <button
           onClick={handleCommentClick}
           className={`
-          fixed bottom-48 right-4 z-10 hidden md:flex
+          fixed ${
+            isWorksPage ? "bottom-48 right-8" : "bottom-48 right-4"
+          } z-20 hidden md:flex
           bg-[#5D676B] hover:bg-[#2C363F] text-white
           shadow-lg hover:shadow-xl
           transition-all duration-300 ease-out
@@ -318,20 +321,20 @@ function Layout({ children }: { children: React.ReactNode }) {
           </span>
         </button>
       )}
-      {/* 评论弹窗 */}
+      {/* Comment modal */}
       <CommentModal
         isOpen={isCommentOpen}
         onClose={() => setIsCommentOpen(false)}
       />
 
-      {/* 页面内容 */}
+      {/* Page content */}
       {children}
     </div>
   );
 }
 
 // Inner App component that uses loading context
-function AppContent({ Component, pageProps }: AppProps) {
+function AppContent({ Component, pageProps }: { Component: AppProps['Component']; pageProps: AppProps['pageProps'] }) {
   const [isMinTimeElapsed, setIsMinTimeElapsed] = useState(false);
   const { isMainLoadingComplete } = useLoading();
   const router = useRouter();
@@ -347,15 +350,16 @@ function AppContent({ Component, pageProps }: AppProps) {
 
   // Show loading animation until both minimum time has elapsed AND heatmap is loaded
   // Only wait for heatmap on the home page
-  const isHomePage = router.pathname === '/';
-  const shouldShowLoading = !isMinTimeElapsed || (isHomePage && !isMainLoadingComplete());
+  const isHomePage = router.pathname === "/";
+  const shouldShowLoading =
+    !isMinTimeElapsed || (isHomePage && !isMainLoadingComplete());
 
   return (
     <>
-      {/* 全局加载动画 */}
+      {/* Global loading animation */}
       <LoadingAnimation isVisible={shouldShowLoading} />
 
-      {/* 布局组件包装页面内容 */}
+      {/* Layout component wrapping page content */}
       <Layout>
         <Component {...pageProps} />
       </Layout>
