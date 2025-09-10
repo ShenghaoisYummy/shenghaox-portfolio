@@ -265,6 +265,8 @@ async function convertToGitHubProjectItem(
     forks: repo.forks,
     language: repo.language,
     languageColor: repo.languageColor,
+    allLanguages: repo.allLanguages || [],
+    allLanguageColors: repo.allLanguageColors || {},
     topics: repo.topics || [],
     lastUpdated: repo.updated_at,
     createdAt: repo.created_at,
@@ -308,6 +310,48 @@ async function getCommitCount(username: string, repoName: string): Promise<numbe
   } catch (error) {
     console.warn(`Failed to get commit count for ${username}/${repoName}:`, error);
     return 0;
+  }
+}
+
+// Fetch repository languages
+async function fetchRepositoryLanguages(username: string, repoName: string): Promise<{
+  allLanguages: string[];
+  allLanguageColors: Record<string, string>;
+}> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${username}/${repoName}/languages`,
+      {
+        headers: {
+          Accept: "application/vnd.github.v3+json",
+          "User-Agent": "personal-portfolio",
+          ...(process.env.GITHUB_TOKEN && {
+            Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          }),
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.warn(`Failed to fetch languages for ${username}/${repoName}`);
+      return { allLanguages: [], allLanguageColors: {} };
+    }
+
+    const languagesData = await response.json();
+    const languages = Object.keys(languagesData);
+    const languageColors = languages.reduce((acc, lang) => {
+      acc[lang] = getLanguageColor(lang);
+      return acc;
+    }, {} as Record<string, string>);
+
+
+    return {
+      allLanguages: languages,
+      allLanguageColors: languageColors,
+    };
+  } catch (error) {
+    console.warn(`Error fetching languages for ${username}/${repoName}:`, error);
+    return { allLanguages: [], allLanguageColors: {} };
   }
 }
 
@@ -361,13 +405,17 @@ async function fetchGitHubRepositories(): Promise<ProcessedRepo[]> {
       return true;
     });
 
-    // Get commit counts for all filtered repos in parallel
+    // Get commit counts and languages for all filtered repos in parallel
     const reposWithCommits = await Promise.all(
       filteredRepos.map(async (repo: ProcessedRepoAPI) => {
-        const commitCount = await getCommitCount(username, repo.name);
+        const [commitCount, languagesData] = await Promise.all([
+          getCommitCount(username, repo.name),
+          fetchRepositoryLanguages(username, repo.name)
+        ]);
         return {
           ...repo,
           commitCount,
+          ...languagesData,
         };
       })
     );
@@ -378,7 +426,8 @@ async function fetchGitHubRepositories(): Promise<ProcessedRepo[]> {
       .slice(0, maxRepos);
 
     // Process and convert to the expected format
-    const processedRepos: ProcessedRepo[] = sortedRepos.map((repo) => ({
+    const processedRepos: ProcessedRepo[] = sortedRepos.map((repo) => {
+      return {
       name: repo.name,
       description: repo.description || "No description available",
       html_url: repo.html_url,
@@ -387,10 +436,10 @@ async function fetchGitHubRepositories(): Promise<ProcessedRepo[]> {
       forks: repo.forks_count || 0,
       language: repo.language || "",
       languageColor: getLanguageColor(repo.language || ""),
-      allLanguages: repo.language ? [repo.language] : [],
-      allLanguageColors: repo.language
+      allLanguages: repo.allLanguages || (repo.language ? [repo.language] : []),
+      allLanguageColors: repo.allLanguageColors || (repo.language
         ? { [repo.language]: getLanguageColor(repo.language) }
-        : {},
+        : {}),
       fork: repo.fork || false,
       topics: repo.topics || [],
       created_at: repo.created_at,
@@ -402,7 +451,8 @@ async function fetchGitHubRepositories(): Promise<ProcessedRepo[]> {
       disabled: repo.disabled || false,
       private: repo.private || false,
       commitCount: repo.commitCount, // Add commit count to the result
-    }));
+    };
+    });
 
     return processedRepos;
   } catch (error) {

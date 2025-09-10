@@ -802,7 +802,23 @@ export default function Works() {
                           <span>🔗</span>
                           <span>{work.forks}</span>
                         </div>
-                        {work.language && (
+                        {/* Show all languages if available, otherwise show primary language */}
+                        {work.allLanguages && work.allLanguages.length > 0 ? (
+                          <div className="flex items-center gap-2 text-[rgba(255,255,255,0.7)]">
+                            {work.allLanguages.slice(0, 3).map((lang, index) => (
+                              <div key={index} className="flex items-center gap-1">
+                                <div 
+                                  className="w-3 h-3 rounded-full" 
+                                  style={{ backgroundColor: work.allLanguageColors?.[lang] || '#858585' }}
+                                />
+                                <span>{lang}</span>
+                              </div>
+                            ))}
+                            {work.allLanguages.length > 3 && (
+                              <span>+{work.allLanguages.length - 3}</span>
+                            )}
+                          </div>
+                        ) : work.language && (
                           <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
                             <div 
                               className="w-3 h-3 rounded-full" 
@@ -859,7 +875,7 @@ export default function Works() {
                       {/* 查看详情按钮 */}
                       <button
                         onClick={() => openDrawer(work)}
-                        className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] hover:from-[#2a3d66] hover:to-[#4e96ba] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 font-medium cursor-pointer text-sm md:text-base"
+                        className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] hover:from-[#2a3d66] hover:to-[#4e96ba] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 font-medium cursor-pointer text-xs md:text-sm"
                       >
                         <SvgIcon
                           name="docs"
@@ -876,7 +892,7 @@ export default function Works() {
                         <>
                           <button
                             onClick={() => window.open(work.link, "_blank")}
-                            className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 border border-[rgba(255,255,255,0.2)] backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer text-sm md:text-base"
+                            className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 border border-[rgba(255,255,255,0.2)] backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer text-xs md:text-sm"
                           >
                             <SvgIcon
                               name="github"
@@ -896,7 +912,7 @@ export default function Works() {
                             onClick={() =>
                               window.open(work.download_url, "_blank")
                             }
-                            className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 border border-[rgba(255,255,255,0.2)] backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer text-sm md:text-base"
+                            className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 border border-[rgba(255,255,255,0.2)] backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer text-xs md:text-sm"
                           >
                             <SvgIcon
                               name="down"
@@ -905,7 +921,7 @@ export default function Works() {
                               color="#fff"
                               className="md:w-[18px] md:h-[18px]"
                             />
-                            Go to Download
+                            Demo
                           </button>
                         </>
                       )}

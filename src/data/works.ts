@@ -32,6 +32,8 @@ export interface GitHubProjectItem
   forks: number;
   language: string;
   languageColor: string;
+  allLanguages?: string[];
+  allLanguageColors?: Record<string, string>;
   topics: string[];
   lastUpdated: string;
   createdAt: string;
