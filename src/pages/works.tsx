@@ -5,7 +5,11 @@ import { useState, useEffect } from "react";
 import ImageModal from "@/components/ImageModal";
 import Head from "next/head";
 import Link from "next/link";
-import { manualWorksData, ProjectDisplayItem, GitHubProjectItem } from "@/data/works";
+import {
+  manualWorksData,
+  ProjectDisplayItem,
+  GitHubProjectItem,
+} from "@/data/works";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -55,22 +59,27 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
   // Check if image exists using API to avoid 404 errors
   useEffect(() => {
     setValidationComplete(false);
-    
+
     // Validate image path first
-    if (!work.image || work.image.length < 5 || work.image === '/images/' || work.image === '/images') {
+    if (
+      !work.image ||
+      work.image.length < 5 ||
+      work.image === "/images/" ||
+      work.image === "/images"
+    ) {
       setSkipImageLoad(true);
       setIsLoading(false);
       setImageError(true);
       setValidationComplete(true);
       return;
     }
-    
-    if (work.source === 'github') {
-      if (work.image.includes('/images/github-projects/')) {
+
+    if (work.source === "github") {
+      if (work.image.includes("/images/github-projects/")) {
         // Local GitHub project images - check if the image exists server-side
         fetch(`/api/check-image?imagePath=${encodeURIComponent(work.image)}`)
-          .then(res => res.json())
-          .then(data => {
+          .then((res) => res.json())
+          .then((data) => {
             if (data.exists) {
               // Image exists, load it normally
               setSkipImageLoad(false);
@@ -109,10 +118,13 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
 
   const GitHubPlaceholder = () => (
     <div className="relative w-full h-full bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] flex flex-col items-center justify-center p-6 shadow-2xl border border-slate-700/50">
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 3px, transparent 3px), radial-gradient(circle at 75% 75%, #4A90E2 2px, transparent 2px)`,
-        backgroundSize: '50px 50px'
-      }}></div>
+      <div
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 3px, transparent 3px), radial-gradient(circle at 75% 75%, #4A90E2 2px, transparent 2px)`,
+          backgroundSize: "50px 50px",
+        }}
+      ></div>
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-500/5 to-transparent"></div>
       <div className="relative z-10 text-center transform hover:scale-105 transition-all duration-300">
         <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#1b2c55] via-[#2d4a7a] to-[#3d85a9] rounded-3xl flex items-center justify-center shadow-xl ring-4 ring-blue-500/20 hover:ring-blue-400/40 transition-all duration-300">
@@ -121,12 +133,15 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
         <h3 className="text-xl font-bold text-white mb-2">{work.title}</h3>
         <div className="flex flex-wrap gap-2 justify-center mb-4">
           {work.tech.slice(0, 3).map((tech, i) => (
-            <span key={i} className="bg-[rgba(255,255,255,0.1)] text-white text-xs px-2 py-1 rounded-full">
+            <span
+              key={i}
+              className="bg-[rgba(255,255,255,0.1)] text-white text-xs px-2 py-1 rounded-full"
+            >
               {tech}
             </span>
           ))}
         </div>
-        {work.source === 'github' && (
+        {work.source === "github" && (
           <div className="flex items-center justify-center gap-4 text-sm text-[rgba(255,255,255,0.8)]">
             <div className="flex items-center gap-1">
               <span>⭐</span>
@@ -144,7 +159,9 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
 
   // Show loading state until validation is complete
   if (!validationComplete) {
-    return work.source === 'github' ? <GitHubPlaceholder /> : (
+    return work.source === "github" ? (
+      <GitHubPlaceholder />
+    ) : (
       <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
         <div className="text-white">Loading...</div>
       </div>
@@ -152,36 +169,47 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
   }
 
   // If we determined to skip image loading, show placeholder immediately
-  if (skipImageLoad || (work.source === 'github' && imageError)) {
+  if (skipImageLoad || (work.source === "github" && imageError)) {
     return <GitHubPlaceholder />;
   }
 
   return (
     <>
       {/* Only render Image component after validation and if not skipping */}
-      {validationComplete && !skipImageLoad && work.image && work.image.length > 5 && (
-        <div className="absolute inset-1 rounded-xl shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
-          <Image
-            src={work.image}
-            alt={work.title}
-            fill
-            className={`object-contain p-2 transition-all duration-500 ${isLoading ? 'opacity-0 scale-90 blur-sm' : 'opacity-100 scale-100 blur-0'} hover:scale-110 drop-shadow-lg`}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            priority={false}
-          />
-        </div>
-      )}
-      
+      {validationComplete &&
+        !skipImageLoad &&
+        work.image &&
+        work.image.length > 5 && (
+          <div className="absolute inset-1 rounded-xl shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
+            <Image
+              src={work.image}
+              alt={work.title}
+              fill
+              className={`object-contain p-2 transition-all duration-500 ${
+                isLoading
+                  ? "opacity-0 scale-90 blur-sm"
+                  : "opacity-100 scale-100 blur-0"
+              } hover:scale-110 drop-shadow-lg`}
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              priority={false}
+            />
+          </div>
+        )}
+
       {/* Show placeholder while loading or on error for GitHub projects */}
-      {(isLoading || imageError) && work.source === 'github' && (
-        <div className={`absolute inset-0 transition-opacity duration-200 ${isLoading || imageError ? 'opacity-100' : 'opacity-0'}`}>
+      {(isLoading || imageError) && work.source === "github" && (
+        <div
+          className={`absolute inset-0 transition-opacity duration-200 ${
+            isLoading || imageError ? "opacity-100" : "opacity-0"
+          }`}
+        >
           <GitHubPlaceholder />
         </div>
       )}
 
       {/* For manual projects, just hide the image on error (no placeholder) */}
-      {imageError && work.source === 'manual' && (
+      {imageError && work.source === "manual" && (
         <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
           <span className="text-white text-lg">Image not found</span>
         </div>
@@ -195,7 +223,7 @@ export default function Works() {
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(
     null
   );
-  const [textHeights, setTextHeights] = useState<{[key: number]: number}>({});
+  const [textHeights, setTextHeights] = useState<{ [key: number]: number }>({});
   // Add image modal state
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{
@@ -206,29 +234,30 @@ export default function Works() {
   // Add drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
-  
+
   // GitHub projects state
   const [githubProjects, setGithubProjects] = useState<GitHubProjectItem[]>([]);
   const [loadingGithub, setLoadingGithub] = useState(true);
   const [githubError, setGithubError] = useState<string | null>(null);
   const [showGithubProjects, setShowGithubProjects] = useState(true);
-  
+
   // Combine manual and GitHub projects
-  const [allProjects, setAllProjects] = useState<ProjectDisplayItem[]>(manualWorksData);
+  const [allProjects, setAllProjects] =
+    useState<ProjectDisplayItem[]>(manualWorksData);
   const works = allProjects;
 
   // Reset scroll position immediately on component mount
   useEffect(() => {
     // Disable scroll restoration temporarily
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
     }
-    
+
     // Force scroll to top immediately
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-    
+
     // Also reset the current section to 0 to ensure we're on the first project
     setCurrentSection(0);
   }, []);
@@ -256,10 +285,10 @@ export default function Works() {
         scrollContainer.scrollTop = 0;
         setCurrentSection(0);
       };
-      
+
       // Immediate reset
       resetScroll();
-      
+
       // Additional resets with delays to handle any async interference
       setTimeout(resetScroll, 50);
       setTimeout(resetScroll, 100);
@@ -276,18 +305,22 @@ export default function Works() {
       try {
         setLoadingGithub(true);
         setGithubError(null);
-        
-        const response = await fetch('/api/github-projects');
+
+        const response = await fetch("/api/github-projects");
         const data = await response.json();
-        
+
         if (data.success && data.projects) {
           setGithubProjects(data.projects);
         } else {
-          throw new Error(data.error || 'Failed to fetch GitHub projects');
+          throw new Error(data.error || "Failed to fetch GitHub projects");
         }
       } catch (error) {
-        console.error('Error fetching GitHub projects:', error);
-        setGithubError(error instanceof Error ? error.message : 'Failed to load GitHub projects');
+        console.error("Error fetching GitHub projects:", error);
+        setGithubError(
+          error instanceof Error
+            ? error.message
+            : "Failed to load GitHub projects"
+        );
         setGithubProjects([]);
       } finally {
         setLoadingGithub(false);
@@ -301,22 +334,22 @@ export default function Works() {
   useEffect(() => {
     const combinedProjects: ProjectDisplayItem[] = [
       ...manualWorksData,
-      ...(showGithubProjects ? githubProjects : [])
+      ...(showGithubProjects ? githubProjects : []),
     ];
-    
+
     // Sort by priority (manual projects first, then by stars for GitHub projects)
     combinedProjects.sort((a, b) => {
-      if (a.source === 'manual' && b.source === 'github') return -1;
-      if (a.source === 'github' && b.source === 'manual') return 1;
-      if (a.source === 'manual' && b.source === 'manual') {
+      if (a.source === "manual" && b.source === "github") return -1;
+      if (a.source === "github" && b.source === "manual") return 1;
+      if (a.source === "manual" && b.source === "manual") {
         return (a.priority || 0) - (b.priority || 0);
       }
-      if (a.source === 'github' && b.source === 'github') {
+      if (a.source === "github" && b.source === "github") {
         return b.stars - a.stars; // Sort by stars descending
       }
       return 0;
     });
-    
+
     setAllProjects(combinedProjects);
   }, [githubProjects, showGithubProjects]);
 
@@ -327,7 +360,7 @@ export default function Works() {
         scrollContainer.scrollTop = 0;
         setCurrentSection(0);
       };
-      
+
       // Reset after projects are loaded
       setTimeout(resetAfterLoad, 100);
       setTimeout(resetAfterLoad, 300);
@@ -337,9 +370,11 @@ export default function Works() {
   // Effect to measure text heights and sync image heights
   useEffect(() => {
     const measureTextHeights = () => {
-      const newTextHeights: {[key: number]: number} = {};
+      const newTextHeights: { [key: number]: number } = {};
       works.forEach((_, index) => {
-        const textElement = document.querySelector(`[data-text-section="${index}"]`) as HTMLElement;
+        const textElement = document.querySelector(
+          `[data-text-section="${index}"]`
+        ) as HTMLElement;
         if (textElement) {
           newTextHeights[index] = textElement.offsetHeight;
         }
@@ -355,8 +390,8 @@ export default function Works() {
     }
 
     // Add resize listener
-    window.addEventListener('resize', measureTextHeights);
-    return () => window.removeEventListener('resize', measureTextHeights);
+    window.addEventListener("resize", measureTextHeights);
+    return () => window.removeEventListener("resize", measureTextHeights);
   }, [works]);
 
   // Scroll to specified section
@@ -682,13 +717,13 @@ export default function Works() {
             />
             <span className="text-xs md:text-sm">Back to Home</span>
           </Link>
-          
+
           {/* GitHub projects toggle */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowGithubProjects(!showGithubProjects)}
               className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[6px] md:p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-1 md:gap-2 text-white backdrop-blur-sm"
-              title={`${showGithubProjects ? 'Hide' : 'Show'} GitHub projects`}
+              title={`${showGithubProjects ? "Hide" : "Show"} GitHub projects`}
             >
               <SvgIcon
                 name="github"
@@ -701,18 +736,27 @@ export default function Works() {
                 GitHub ({githubProjects.length})
               </span>
             </button>
-            
+
             {/* Loading indicator for GitHub projects */}
             {loadingGithub && (
               <div className="bg-[rgba(0,0,0,.5)] rounded-[5px] p-[6px] md:p-[8px] backdrop-blur-sm">
                 <div className="w-4 h-4 border-2 border-transparent border-t-[#4A90E2] animate-spin rounded-full"></div>
               </div>
             )}
-            
+
             {/* Error indicator */}
             {githubError && (
-              <div className="bg-[rgba(220,38,38,.5)] rounded-[5px] p-[6px] md:p-[8px] backdrop-blur-sm" title={githubError}>
-                <SvgIcon name="close" width={16} height={16} color="#fff" className="md:w-5 md:h-5" />
+              <div
+                className="bg-[rgba(220,38,38,.5)] rounded-[5px] p-[6px] md:p-[8px] backdrop-blur-sm"
+                title={githubError}
+              >
+                <SvgIcon
+                  name="close"
+                  width={16}
+                  height={16}
+                  color="#fff"
+                  className="md:w-5 md:h-5"
+                />
               </div>
             )}
           </div>
@@ -767,9 +811,14 @@ export default function Works() {
                         Project {index + 1} / {works.length}
                       </div>
                       {/* GitHub project indicator */}
-                      {work.source === 'github' && (
+                      {work.source === "github" && (
                         <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.6)]">
-                          <SvgIcon name="github" width={14} height={14} color="#4A90E2" />
+                          <SvgIcon
+                            name="github"
+                            width={14}
+                            height={14}
+                            color="#4A90E2"
+                          />
                           <span>GitHub Project</span>
                         </div>
                       )}
@@ -790,9 +839,9 @@ export default function Works() {
                         </span>
                       ))}
                     </h1>
-                    
+
                     {/* GitHub stats for GitHub projects */}
-                    {work.source === 'github' && (
+                    {work.source === "github" && (
                       <div className="flex items-center gap-4 text-xs md:text-sm">
                         <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
                           <span>⭐</span>
@@ -805,31 +854,42 @@ export default function Works() {
                         {/* Show all languages if available, otherwise show primary language */}
                         {work.allLanguages && work.allLanguages.length > 0 ? (
                           <div className="flex items-center gap-2 text-[rgba(255,255,255,0.7)]">
-                            {work.allLanguages.slice(0, 3).map((lang, index) => (
-                              <div key={index} className="flex items-center gap-1">
-                                <div 
-                                  className="w-3 h-3 rounded-full" 
-                                  style={{ backgroundColor: work.allLanguageColors?.[lang] || '#858585' }}
-                                />
-                                <span>{lang}</span>
-                              </div>
-                            ))}
+                            {work.allLanguages
+                              .slice(0, 3)
+                              .map((lang, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center gap-1"
+                                >
+                                  <div
+                                    className="w-3 h-3 rounded-full"
+                                    style={{
+                                      backgroundColor:
+                                        work.allLanguageColors?.[lang] ||
+                                        "#858585",
+                                    }}
+                                  />
+                                  <span>{lang}</span>
+                                </div>
+                              ))}
                             {work.allLanguages.length > 3 && (
                               <span>+{work.allLanguages.length - 3}</span>
                             )}
                           </div>
-                        ) : work.language && (
-                          <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
-                            <div 
-                              className="w-3 h-3 rounded-full" 
-                              style={{ backgroundColor: work.languageColor }}
-                            />
-                            <span>{work.language}</span>
-                          </div>
+                        ) : (
+                          work.language && (
+                            <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                              <div
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: work.languageColor }}
+                              />
+                              <span>{work.language}</span>
+                            </div>
+                          )
                         )}
                       </div>
                     )}
-                    
+
                     <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed line-clamp-3 md:line-clamp-4">
                       {work.description}
                     </p>
@@ -875,7 +935,7 @@ export default function Works() {
                       {/* 查看详情按钮 */}
                       <button
                         onClick={() => openDrawer(work)}
-                        className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] hover:from-[#2a3d66] hover:to-[#4e96ba] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 font-medium cursor-pointer text-xs md:text-sm"
+                        className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-emerald-500 hover:border-emerald-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
                       >
                         <SvgIcon
                           name="docs"
@@ -884,7 +944,12 @@ export default function Works() {
                           color="#fff"
                           className="md:w-[18px] md:h-[18px]"
                         />
-                        View Details
+                        <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                          View Details
+                        </span>
+                        <span className="text-xs font-bold bg-gradient-to-r from-[#93c5fd] to-[#60a5fa] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                          Show Details
+                        </span>
                       </button>
 
                       {/* Original project link button */}
@@ -892,7 +957,7 @@ export default function Works() {
                         <>
                           <button
                             onClick={() => window.open(work.link, "_blank")}
-                            className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 border border-[rgba(255,255,255,0.2)] backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer text-xs md:text-sm"
+                            className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-black hover:border-black text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
                           >
                             <SvgIcon
                               name="github"
@@ -901,7 +966,12 @@ export default function Works() {
                               color="#fff"
                               className="md:w-[18px] md:h-[18px]"
                             />
-                            View Project
+                            <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                              View Project
+                            </span>
+                            <span className="text-xs font-bold bg-gradient-to-r from-[#d1d5db] to-[#9ca3af] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                              Visit Github
+                            </span>
                           </button>
                         </>
                       )}
@@ -912,7 +982,7 @@ export default function Works() {
                             onClick={() =>
                               window.open(work.download_url, "_blank")
                             }
-                            className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 border border-[rgba(255,255,255,0.2)] backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer text-xs md:text-sm"
+                            className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-orange-500 hover:border-orange-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
                           >
                             <SvgIcon
                               name="down"
@@ -921,7 +991,12 @@ export default function Works() {
                               color="#fff"
                               className="md:w-[18px] md:h-[18px]"
                             />
-                            Demo
+                            <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                              Demo
+                            </span>
+                            <span className="text-xs font-bold bg-gradient-to-r from-[#fdba74] to-[#f97316] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                              Live
+                            </span>
                           </button>
                         </>
                       )}
@@ -936,22 +1011,26 @@ export default function Works() {
                   className={`relative order-first lg:order-none flex items-center justify-center ${
                     index % 2 === 1 ? "lg:order-1" : ""
                   }`}
-                  style={{ 
-                    height: textHeights[index] ? `${textHeights[index]}px` : 'auto',
-                    minHeight: textHeights[index] ? `${textHeights[index]}px` : '16rem'
+                  style={{
+                    height: textHeights[index]
+                      ? `${textHeights[index]}px`
+                      : "auto",
+                    minHeight: textHeights[index]
+                      ? `${textHeights[index]}px`
+                      : "16rem",
                   }}
                 >
                   <div
                     className="relative w-full rounded-[12px] overflow-hidden shadow-lg group cursor-pointer bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.15)] p-[16px]"
                     onClick={() => openImageModal(work)}
-                    style={{ 
-                      height: textHeights[index] ? `${textHeights[index]}px` : '16rem'
+                    style={{
+                      height: textHeights[index]
+                        ? `${textHeights[index]}px`
+                        : "16rem",
                     }}
                   >
                     <GitHubProjectImage work={work} />
-                    <div 
-                      className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
                   </div>
 
                   {/* Decorative elements */}
