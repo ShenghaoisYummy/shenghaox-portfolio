@@ -21,7 +21,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // 检查本地存储的主题设置
     const savedTheme = localStorage.getItem("theme") as Theme;
-    console.log(savedTheme, "savedTheme");
     if (savedTheme) {
       setTheme(savedTheme);
     } else {
@@ -29,7 +28,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const prefersDark = window.matchMedia(
         "(prefers-color-scheme: dark)"
       ).matches;
-      console.log("41231245125");
       setTheme(prefersDark ? "dark" : "light");
     }
   }, []);
@@ -39,7 +37,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.remove("light", "dark");
     document.documentElement.classList.add(theme);
     localStorage.setItem("theme", theme);
-    console.log("12312321");
   }, [theme]);
 
   const toggleTheme = () => {
