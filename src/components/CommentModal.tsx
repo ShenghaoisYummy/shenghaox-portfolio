@@ -99,22 +99,24 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
       }
     }
 
-    // 验证内容长度
+    // Validate content length
     if (content.trim().length > 200) {
-      setReplyContentError("回复内容不能超过200个字");
+      setReplyContentError("Reply content cannot exceed 200 characters");
       return false;
     }
 
-    // 验证内容是否包含不文明词汇
+    // Validate content for inappropriate language
     if (containsProfanity(content)) {
-      setReplyContentError("回复内容包含不当词汇，请修改后重试");
+      setReplyContentError(
+        "Reply contains inappropriate language, please modify and try again"
+      );
       return false;
     }
 
     return true;
   };
 
-  // 新增：处理回复昵称变化
+  // Handle reply nickname changes
   const handleReplyNicknameChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -150,7 +152,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
     }
   };
 
-  // 新增：处理回复内容变化
+  // Handle reply content changes
   const handleReplyContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -159,12 +161,14 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
 
     if (value.trim()) {
       if (value.trim().length > 200) {
-        setReplyContentError("回复内容不能超过200个字");
+        setReplyContentError("Reply content cannot exceed 200 characters");
         return;
       }
 
       if (containsProfanity(value)) {
-        setReplyContentError("回复内容包含不当词汇，请修改后重试");
+        setReplyContentError(
+          "Reply contains inappropriate language, please modify and try again"
+        );
       } else {
         setReplyContentError("");
       }
@@ -173,7 +177,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
     }
   };
 
-  // 新增：渲染评论和回复的递归组件
+  // Recursive component for rendering comments and replies
   const renderComment = (comment: Comment, isReply = false) => {
     const isAuthorComment = isAuthor(comment.nickname || "");
 
@@ -192,10 +196,10 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
           }
         `}
       >
-        {/* 评论头部 - 昵称和时间 */}
+        {/* Comment header - nickname and time */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            {/* 头像 */}
+            {/* Avatar */}
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${
                 isAuthorComment
@@ -203,9 +207,9 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                   : "bg-gradient-to-br from-[#1b2c55] to-[#3d85a9]"
               }`}
             >
-              {(comment.nickname || "匿名用户").charAt(0).toUpperCase()}
+              {(comment.nickname || "Anonymous").charAt(0).toUpperCase()}
             </div>
-            {/* 昵称 */}
+            {/* Nickname */}
             <span
               className={`text-sm ${
                 isAuthorComment
@@ -213,20 +217,20 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                   : "font-medium text-gray-900 dark:text-white"
               }`}
             >
-              {comment.nickname || "匿名用户"}
+              {comment.nickname || "Anonymous"}
               {isAuthorComment && (
                 <span className="ml-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400 px-[0.125rem] py-[0.03125rem] rounded-full">
-                  作者
+                  Author
                 </span>
               )}
               {isReply && (
                 <span className="ml-1 text-xs bg-gray-100 dark:bg-gray-900 text-blue-600 dark:text-blue-400 px-[0.125rem] py-[0.03125rem] rounded-full cursor-pointer hidden sm:inline-block">
-                  回复
+                  Reply
                 </span>
               )}
             </span>
           </div>
-          {/* 时间和回复按钮 */}
+          {/* Time and reply button */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500 dark:text-gray-400">
               {new Date(comment.createdAt).toLocaleString("zh-CN", {
@@ -247,13 +251,13 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                 }}
                 className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 px-[0.125rem] py-[0.0625rem] rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
               >
-                {replyingTo === comment.id ? "取消" : "回复"}
+                {replyingTo === comment.id ? "Cancel" : "Reply"}
               </button>
             )}
           </div>
         </div>
 
-        {/* 评论内容 */}
+        {/* Comment content */}
         <div
           className={`text-sm leading-relaxed pl-11 ${
             isAuthorComment
@@ -264,13 +268,13 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
           {comment.content}
         </div>
 
-        {/* 回复输入框 */}
+        {/* Reply input box */}
         {replyingTo === comment.id && (
           <div className="mt-4 pl-11 space-y-3">
             <div className="relative">
               <input
                 type="text"
-                placeholder="昵称（可选，默认为匿名用户）"
+                placeholder="Nickname (optional, default: Anonymous)"
                 value={replyNickname}
                 onChange={handleReplyNicknameChange}
                 disabled={loading}
@@ -290,7 +294,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
             )}
             <div className="relative">
               <textarea
-                placeholder="写下你的回复..."
+                placeholder="Write your reply..."
                 value={replyContent}
                 onChange={handleReplyContentChange}
                 disabled={loading}
@@ -315,7 +319,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                 }
                 className="absolute right-[0.0625rem] top-[0.0625rem] px-[0.125rem] py-[0.0625rem] bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded text-xs font-medium transition-colors disabled:cursor-not-allowed"
               >
-                {loading ? "发送中" : "发送"}
+                {loading ? "Sending" : "Send"}
               </button>
             </div>
             {replyContentError && (
@@ -324,14 +328,14 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
           </div>
         )}
 
-        {/* 回复列表 */}
+        {/* Reply list */}
         {comment.replies && comment.replies.length > 0 && (
           <div className="mt-4">
             {comment.replies.map((reply) => renderComment(reply, true))}
           </div>
         )}
 
-        {/* 底部装饰线 */}
+        {/* Bottom decorative line */}
         <div className="mt-3 pl-11">
           <div
             className={`h-[0.0625rem] bg-gradient-to-r to-transparent ${
@@ -345,20 +349,20 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
     );
   };
 
-  // 验证输入内容
+  // Validate input content
   const validateInput = (nickname: string, content: string): boolean => {
     setNicknameError("");
     setContentError("");
 
     // Validate nickname
     if (nickname.trim()) {
-      // 检查昵称长度
+      // Check nickname length
       if (nickname.trim().length > 10) {
         setNicknameError("Nickname cannot exceed 10 characters");
         return false;
       }
 
-      // 检查昵称是否合法
+      // Check if nickname is valid
       if (!isValidNickname(nickname)) {
         const trimmedNickname = nickname.trim().toLowerCase();
         if (trimmedNickname === "austin") {
@@ -378,29 +382,31 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
       }
     }
 
-    // 验证内容长度
+    // Validate content length
     if (content.trim().length > 200) {
-      setContentError("评论内容不能超过200个字");
+      setContentError("Comment content cannot exceed 200 characters");
       return false;
     }
 
-    // 验证内容是否包含不文明词汇
+    // Validate content for inappropriate language
     if (containsProfanity(content)) {
-      setContentError("评论内容包含不当词汇，请修改后重试");
+      setContentError(
+        "Comment contains inappropriate language, please modify and try again"
+      );
       return false;
     }
 
     return true;
   };
 
-  // 提交评论
+  // Submit comment
   const handleSubmit = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
 
       if (!newComment.trim()) return;
 
-      const finalNickname = nickname.trim() || "匿名用户";
+      const finalNickname = nickname.trim() || "Anonymous";
 
       if (!validateInput(nickname, newComment)) {
         return;
@@ -408,7 +414,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
 
       setLoading(true);
       try {
-        // 过滤内容（双重保险）
+        // Filter content (double insurance)
         const filteredContent = filterProfanity(newComment.trim());
 
         await commentAPI.addComment({
@@ -422,18 +428,18 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
         setContentError("");
         await loadComments();
       } catch (error) {
-        console.error("提交评论失败:", error);
+        console.error("Failed to submit comment:", error);
       } finally {
         setLoading(false);
       }
     }
   };
 
-  // 点击发送按钮提交评论
+  // Submit comment by clicking Send button
   const handleSendClick = async () => {
     if (!newComment.trim()) return;
 
-    const finalNickname = nickname.trim() || "匿名用户";
+    const finalNickname = nickname.trim() || "Anonymous";
 
     if (!validateInput(nickname, newComment)) {
       return;
@@ -461,20 +467,20 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
     }
   };
 
-  // 处理昵称输入变化
+  // Handle nickname input changes
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNickname(value);
 
-    // 实时Validate nickname
+    // Real-time validate nickname
     if (value.trim()) {
-      // 检查昵称长度
+      // Check nickname length
       if (value.trim().length > 10) {
         setNicknameError("Nickname cannot exceed 10 characters");
         return;
       }
 
-      // 检查昵称是否合法
+      // Check if nickname is valid
       if (!isValidNickname(value)) {
         const trimmedNickname = value.trim().toLowerCase();
         if (trimmedNickname === "austin") {
@@ -498,22 +504,24 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
     }
   };
 
-  // 处理内容输入变化
+  // Handle content input changes
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setNewComment(value);
 
-    // 实时验证内容
+    // Real-time validate content
     if (value.trim()) {
-      // 检查内容长度
+      // Check content length
       if (value.trim().length > 200) {
-        setContentError("评论内容不能超过200个字");
+        setContentError("Comment content cannot exceed 200 characters");
         return;
       }
 
-      // 检查是否包含不文明词汇
+      // Check for inappropriate language
       if (containsProfanity(value)) {
-        setContentError("评论内容包含不当词汇，请修改后重试");
+        setContentError(
+          "Comment contains inappropriate language, please modify and try again"
+        );
       } else {
         setContentError("");
       }
@@ -532,7 +540,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
 
   return (
     <div className="fixed inset-0 z-50">
-      {/* 背景遮罩 */}
+      {/* Background overlay */}
       <div
         className={`absolute inset-0 bg-black transition-opacity duration-300 ${
           isOpen ? "opacity-50" : "opacity-0"
@@ -540,7 +548,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
         onClick={onClose}
       />
 
-      {/* 抽屉式评论弹窗 */}
+      {/* Drawer-style comment modal */}
       <div
         className={`
           fixed bottom-0 left-0 right-0 w-full
@@ -551,15 +559,15 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
         `}
         style={{ height: "80vh" }}
       >
-        {/* 拖拽指示器 */}
+        {/* Drag indicator */}
         <div className="flex justify-center pt-3 pb-2">
           <div className="w-12 h-1 bg-gray-500 rounded-full"></div>
         </div>
 
-        {/* 头部 */}
+        {/* Header */}
         <div className="flex items-center justify-between px-[0.375rem] py-[0.1875rem] border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-500 dark:text-white">
-            欢迎留言
+            Welcome to Comment
           </h2>
           <button
             onClick={onClose}
@@ -581,14 +589,13 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
           </button>
         </div>
 
-        {/* 输入区域 */}
-        {/* 输入区域 */}
+        {/* Input area */}
         <div className="px-[0.375rem] py-[0.25rem] border-b border-gray-200 dark:border-gray-700">
           <div className="mb-3">
             <div className="relative">
               <input
                 type="text"
-                placeholder="昵称（可选，默认为匿名用户）"
+                placeholder="Nickname (optional, default: Anonymous)"
                 value={nickname}
                 onChange={handleNicknameChange}
                 disabled={loading}
@@ -599,7 +606,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                     : "border-gray-300 dark:border-gray-600 focus:ring-gray-500"
                 }`}
               />
-              {/* 昵称字符计数 */}
+              {/* Nickname character count */}
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
                 {nickname.length}/10
               </div>
@@ -610,7 +617,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
           </div>
           <div className="relative">
             <textarea
-              placeholder="写下你的评论... (按回车发送)"
+              placeholder="Write your comment... (Press Enter to Send)"
               value={newComment}
               onChange={handleContentChange}
               onKeyDown={handleSubmit}
@@ -623,14 +630,14 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
               }`}
               rows={3}
             />
-            {/* 内容字符计数 */}
+            {/* Content character count */}
             <div className="absolute right-6 bottom-4 text-xs text-gray-400">
               {newComment.length}/200
             </div>
             {contentError && (
               <p className="mt-1 text-sm text-red-500">{contentError}</p>
             )}
-            {/* 发送按钮 */}
+            {/* Send button */}
             <button
               onClick={handleSendClick}
               disabled={
@@ -644,7 +651,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span>发送中</span>
+                  <span>Sending</span>
                 </>
               ) : (
                 <>
@@ -661,18 +668,18 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                       d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                     />
                   </svg>
-                  <span>发送</span>
+                  <span>Send</span>
                 </>
               )}
             </button>
           </div>
         </div>
 
-        {/* 评论列表 */}
+        {/* Comment list */}
         <div className="flex-1 overflow-y-auto px-[0.375rem] py-[0.25rem] h-[calc(100%-18.75rem)] custom-scrollbar">
           <div className="space-y-4">
             {comments
-              .filter((comment) => !comment.parentId) // 只显示顶级评论
+              .filter((comment) => !comment.parentId) // Only show top-level comments
               .map((comment, index) => (
                 <div
                   key={comment.id}
@@ -685,7 +692,7 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                 </div>
               ))}
 
-            {/* 空状态 */}
+            {/* Empty state */}
             {comments.filter((comment) => !comment.parentId).length === 0 && (
               <div className="w-full flex-col text-gray-500 dark:text-gray-400 py-16 flex justify-center items-center">
                 <div className="mb-6 opacity-80">
@@ -697,9 +704,9 @@ export default function CommentModal({ isOpen, onClose }: CommentModalProps) {
                   />
                 </div>
                 <div className="text-center">
-                  <p className="text-lg font-medium mb-2">还没有评论</p>
+                  <p className="text-lg font-medium mb-2">No comments yet</p>
                   <p className="text-sm opacity-75">
-                    快来抢沙发，分享你的想法吧！
+                    Be the first to comment and share your thoughts!
                   </p>
                 </div>
               </div>

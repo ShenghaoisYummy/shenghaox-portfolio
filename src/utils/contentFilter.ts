@@ -1,3 +1,11 @@
+// Whitelist for legitimate names and words that should not be filtered
+const WHITELIST = [
+  "shenghao", "austin", "github", "google", "microsoft", "apple", "meta",
+  "shanghai", "shenzhen", "shandong", "shaanxi", "shanxi",
+  "hao", "ming", "wei", "qing", "feng", "long", "gang", "bin",
+  "xin", "hui", "jun", "lei", "tao", "yan", "jie", "fei"
+];
+
 // 不文明词汇字典
 const PROFANITY_WORDS = {
   // 中文不文明词汇
@@ -47,21 +55,14 @@ const PROFANITY_WORDS = {
     "麻痹",
     "尼玛",
     "操你吗",
-    "操",
-    "草",
-    "曹",
-    "妈",
-    "马",
-    "骂",
-    "傻",
-    "艹",
+    "操你",
+    "草你",
+    "曹你",
+    "艹你",
     "c你m",
-    "死",
-    "全家",
+    "去死",
+    "死全家",
     "忘本",
-    "鸡",
-    "鸭",
-    "狗",
   ],
   // 英文不文明词汇
   english: [
@@ -95,13 +96,6 @@ const PROFANITY_WORDS = {
     "butt",
     "penis",
     "vagina",
-    "c",
-    "sab",
-    "sha",
-    "sa",
-    "s",
-    "m",
-    "dog",
   ],
   // 拼音和缩写
   abbreviations: [
@@ -147,7 +141,12 @@ const REPLACEMENT_CHAR = "*";
  * @returns 是否包含不文明内容
  */
 export function containsProfanity(text: string): boolean {
-  const lowerText = text.toLowerCase();
+  const lowerText = text.toLowerCase().trim();
+
+  // 首先检查白名单
+  if (WHITELIST.some(whiteWord => lowerText === whiteWord.toLowerCase())) {
+    return false;
+  }
 
   // 检查所有类型的不文明词汇
   const allWords = [
@@ -158,7 +157,11 @@ export function containsProfanity(text: string): boolean {
 
   return allWords.some((word) => {
     const lowerWord = word.toLowerCase();
-    return lowerText.includes(lowerWord);
+    // Only match whole words or words that are at least 2 characters long
+    if (word.length >= 2) {
+      return lowerText.includes(lowerWord);
+    }
+    return false;
   });
 }
 

@@ -21,12 +21,12 @@ const CustomTechIcons: React.FC<CustomIconProps> = ({ name, size = '1.75rem', ho
 
   const handleMouseEnter = (e: React.MouseEvent) => {
     if (hoverColor) {
-      e.currentTarget.style.color = hoverColor;
+      (e.currentTarget as HTMLElement).style.color = hoverColor;
     }
   };
 
   const handleMouseLeave = (e: React.MouseEvent) => {
-    e.currentTarget.style.color = initialColor || '#6B7280';
+    (e.currentTarget as HTMLElement).style.color = initialColor || '#6B7280';
   };
 
   if (name === 'claude') {
@@ -77,12 +77,12 @@ const CustomTechIcons: React.FC<CustomIconProps> = ({ name, size = '1.75rem', ho
 
   if (name === 'huggingface') {
     const handleHuggingFaceMouseEnter = (e: React.MouseEvent) => {
-      e.currentTarget.style.opacity = '1';
+      (e.currentTarget as HTMLElement).style.opacity = '1';
     };
 
     const handleHuggingFaceMouseLeave = (e: React.MouseEvent) => {
       const baseOpacity = initialColor === '#FFD21E' ? '1' : (initialColor ? '0.5' : '0.4');
-      e.currentTarget.style.opacity = baseOpacity;
+      (e.currentTarget as HTMLElement).style.opacity = baseOpacity;
     };
 
     return (

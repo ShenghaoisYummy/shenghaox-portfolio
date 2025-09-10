@@ -35,151 +35,151 @@ export interface TagConfig {
 }
 
 export const tagConfigs: Record<string, TagConfig> = {
-  做饭: {
+  cooking: {
     type: "image",
     config: {
       isOpen: true,
-      title: "做饭",
+      title: "Cooking",
       images: [],
-      danmakuText: "好吃",
+      danmakuText: "Delicious",
       enableDanmaku: true,
       imageWidth: 500,
       imageHeight: 500,
     },
   },
-  摄影: {
+  photography: {
     type: "image",
     config: {
       isOpen: true,
-      title: "摄影作品",
+      title: "Photography Works",
       images: [],
-      danmakuText: "好看",
+      danmakuText: "Beautiful",
       enableDanmaku: true,
       imageWidth: 800,
       imageHeight: 800,
     },
   },
-  美食: {
+  food: {
     type: "image",
     config: {
       isOpen: true,
-      title: "美食",
+      title: "Food",
       images: [],
-      danmakuText: "好吃",
+      danmakuText: "Delicious",
       enableDanmaku: true,
       imageWidth: 500,
       imageHeight: 500,
     },
   },
-  五哈: {
+  wuha: {
     type: "music",
     config: {
       isOpen: true,
       title: "wuha",
       musicUrl: "",
       cover: "/images/wuha.jpg",
-      author: "邓超&陈赫&鹿晗&范志毅&宝石Gem&王勉",
-      danmakuText: "好听",
+      author: "Deng Chao & Chen He & Lu Han & Fan Zhiyi & Gem & Wang Mian",
+      danmakuText: "Great song",
       enableDanmaku: true,
     },
   },
-  天空中的歌: {
+  "song-in-the-sky": {
     type: "music",
     config: {
       isOpen: true,
-      title: "天空中的歌",
+      title: "Song in the Sky",
       musicUrl: "",
       cover: "/images/tkzdg.jpg",
-      author: "崔一乔",
-      danmakuText: "好听",
+      author: "Cui Yiqiao",
+      danmakuText: "Great song",
       enableDanmaku: true,
     },
   },
-  鲜花: {
+  flowers: {
     type: "music",
     config: {
       isOpen: true,
-      title: "鲜花",
+      title: "Flowers",
       musicUrl: "",
       cover: "/images/xh.jpg",
-      author: "回春丹乐队",
-      danmakuText: "好听",
+      author: "Huichundan Band",
+      danmakuText: "Great song",
       enableDanmaku: true,
     },
   },
-  蜡笔小新: {
+  "crayon-shin-chan": {
     type: "video",
     config: {
       isOpen: true,
       videoUrl: "",
-      danmakuText: "蜡笔小新",
+      danmakuText: "Crayon Shin-chan",
       enableDanmaku: true,
     },
   },
-  沧元图: {
+  "cang-yuan-tu": {
     type: "video",
     config: {
       isOpen: true,
       videoUrl: "",
-      danmakuText: "沧元图",
+      danmakuText: "Cang Yuan Tu",
       enableDanmaku: true,
     },
   },
-  枕刀歌: {
+  "pillow-sword-song": {
     type: "video",
     config: {
       isOpen: true,
       videoUrl: "",
-      danmakuText: "枕刀歌",
+      danmakuText: "Pillow Sword Song",
       enableDanmaku: true,
     },
   },
-  镖人: {
+  "blades-of-the-guardians": {
     type: "video",
     config: {
       isOpen: true,
       videoUrl: "",
-      danmakuText: "镖人",
+      danmakuText: "Blades of the Guardians",
       enableDanmaku: true,
     },
   },
-  英雄联盟手游: {
+  "league-of-legends-mobile": {
     type: "video",
     config: {
       isOpen: true,
       videoUrl: "",
-      danmakuText: "五杀！我真牛！！",
+      danmakuText: "Pentakill! I'm awesome!!",
       enableDanmaku: true,
     },
   },
-  不良人: {
+  "the-outcast": {
     type: "video",
     config: {
       isOpen: true,
       videoUrl: "",
-      danmakuText: "有品",
+      danmakuText: "Classy",
       enableDanmaku: true,
     },
   },
-  不良人天罡传: {
+  "the-outcast-tiangang-legend": {
     type: "video",
     config: {
       isOpen: true,
       videoUrl: "4",
-      danmakuText: "恭迎大帅",
+      danmakuText: "Welcome General",
       enableDanmaku: true,
     },
   },
-  鬼灭之刃: {
+  "demon-slayer": {
     type: "video",
     config: {
       isOpen: true,
       videoUrl: "",
-      danmakuText: "鬼灭之刃",
+      danmakuText: "Demon Slayer",
       enableDanmaku: true,
     },
   },
-  音乐: {
+  music: {
     type: "link",
     config: {
       url: "https://y.qq.com/",
