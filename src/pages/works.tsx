@@ -65,31 +65,39 @@ function GitHubProjectImage({ work }: { work: ProjectDisplayItem }) {
       return;
     }
     
-    if (work.source === 'github' && work.image.includes('/images/github-projects/')) {
-      // Check if the image exists server-side
-      fetch(`/api/check-image?imagePath=${encodeURIComponent(work.image)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.exists) {
-            // Image exists, load it normally
-            setSkipImageLoad(false);
-            setIsLoading(true);
-            setImageError(false);
-          } else {
-            // Image doesn't exist, skip loading and show placeholder
+    if (work.source === 'github') {
+      if (work.image.includes('/images/github-projects/')) {
+        // Local GitHub project images - check if the image exists server-side
+        fetch(`/api/check-image?imagePath=${encodeURIComponent(work.image)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.exists) {
+              // Image exists, load it normally
+              setSkipImageLoad(false);
+              setIsLoading(true);
+              setImageError(false);
+            } else {
+              // Image doesn't exist, skip loading and show placeholder
+              setSkipImageLoad(true);
+              setIsLoading(false);
+              setImageError(true);
+            }
+            setValidationComplete(true);
+          })
+          .catch(() => {
+            // On API error, default to showing placeholder
             setSkipImageLoad(true);
             setIsLoading(false);
             setImageError(true);
-          }
-          setValidationComplete(true);
-        })
-        .catch(() => {
-          // On API error, default to showing placeholder
-          setSkipImageLoad(true);
-          setIsLoading(false);
-          setImageError(true);
-          setValidationComplete(true);
-        });
+            setValidationComplete(true);
+          });
+      } else {
+        // GitHub asset URLs or external images - load directly
+        setSkipImageLoad(false);
+        setIsLoading(true);
+        setImageError(false);
+        setValidationComplete(true);
+      }
     } else {
       // For other images (README, manual projects), load normally
       setSkipImageLoad(false);
@@ -209,6 +217,22 @@ export default function Works() {
   const [allProjects, setAllProjects] = useState<ProjectDisplayItem[]>(manualWorksData);
   const works = allProjects;
 
+  // Reset scroll position immediately on component mount
+  useEffect(() => {
+    // Disable scroll restoration temporarily
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    
+    // Force scroll to top immediately
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    
+    // Also reset the current section to 0 to ensure we're on the first project
+    setCurrentSection(0);
+  }, []);
+
   // Listen to scroll events, update current section
   useEffect(() => {
     if (!scrollContainer) return;
@@ -222,6 +246,28 @@ export default function Works() {
 
     scrollContainer.addEventListener("scroll", handleScroll);
     return () => scrollContainer.removeEventListener("scroll", handleScroll);
+  }, [scrollContainer]);
+
+  // Scroll to top on page load
+  useEffect(() => {
+    if (scrollContainer) {
+      // Force scroll to the first project (section 0) with multiple attempts
+      const resetScroll = () => {
+        scrollContainer.scrollTop = 0;
+        setCurrentSection(0);
+      };
+      
+      // Immediate reset
+      resetScroll();
+      
+      // Additional resets with delays to handle any async interference
+      setTimeout(resetScroll, 50);
+      setTimeout(resetScroll, 100);
+      setTimeout(resetScroll, 200);
+      setTimeout(resetScroll, 500);
+    }
+    // Also ensure window scrolls to top as fallback
+    window.scrollTo(0, 0);
   }, [scrollContainer]);
 
   // Fetch GitHub projects
@@ -273,6 +319,20 @@ export default function Works() {
     
     setAllProjects(combinedProjects);
   }, [githubProjects, showGithubProjects]);
+
+  // Reset scroll position after projects are loaded
+  useEffect(() => {
+    if (scrollContainer && allProjects.length > 0) {
+      const resetAfterLoad = () => {
+        scrollContainer.scrollTop = 0;
+        setCurrentSection(0);
+      };
+      
+      // Reset after projects are loaded
+      setTimeout(resetAfterLoad, 100);
+      setTimeout(resetAfterLoad, 300);
+    }
+  }, [scrollContainer, allProjects.length]);
 
   // Scroll to specified section
   const scrollToSection = (index: number) => {
@@ -396,7 +456,7 @@ export default function Works() {
                     <h3 className="text-lg md:text-xl font-semibold text-white">
                       Project Description
                     </h3>
-                    <p className="text-[rgba(255,255,255,0.8)] leading-relaxed text-sm md:text-base">
+                    <p className="text-[rgba(255,255,255,0.8)] leading-relaxed text-sm md:text-base line-clamp-6">
                       {selectedWork.description}
                     </p>
                   </div>
@@ -668,11 +728,11 @@ export default function Works() {
               className="h-screen flex items-center justify-center px-4 md:px-8"
               style={{ scrollSnapAlign: "start" }}
             >
-              <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center">
+              <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-stretch overflow-hidden">
                 {/* Project information */}
                 <div
-                  className={`space-y-4 md:space-y-6 ${
-                    index % 2 === 1 ? "lg:order-2" : ""
+                  className={`space-y-4 md:space-y-6 flex flex-col justify-center min-h-[16rem] md:min-h-[24rem] lg:min-h-[500px] min-w-0 ${
+                    index % 2 === 1 ? "lg:order-2 lg:-ml-6" : ""
                   }`}
                 >
                   <div className="space-y-3 md:space-y-4">
@@ -728,7 +788,7 @@ export default function Works() {
                       </div>
                     )}
                     
-                    <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed">
+                    <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed line-clamp-3 md:line-clamp-4">
                       {work.description}
                     </p>
                   </div>
@@ -831,12 +891,12 @@ export default function Works() {
 
                 {/* Project image */}
                 <div
-                  className={`relative order-first lg:order-none ${
+                  className={`relative order-first lg:order-none flex items-center justify-center min-h-[16rem] md:min-h-[24rem] lg:min-h-[500px] ${
                     index % 2 === 1 ? "lg:order-1" : ""
                   }`}
                 >
                   <div
-                    className="relative h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
+                    className="relative w-full h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
                     onClick={() => openImageModal(work)}
                   >
                     <GitHubProjectImage work={work} />
