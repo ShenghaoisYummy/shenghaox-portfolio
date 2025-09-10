@@ -196,6 +196,7 @@ export default function Works() {
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(
     null
   );
+  const [textHeights, setTextHeights] = useState<{[key: number]: number}>({});
   // Add image modal state
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{
@@ -333,6 +334,31 @@ export default function Works() {
       setTimeout(resetAfterLoad, 300);
     }
   }, [scrollContainer, allProjects.length]);
+
+  // Effect to measure text heights and sync image heights
+  useEffect(() => {
+    const measureTextHeights = () => {
+      const newTextHeights: {[key: number]: number} = {};
+      works.forEach((_, index) => {
+        const textElement = document.querySelector(`[data-text-section="${index}"]`) as HTMLElement;
+        if (textElement) {
+          newTextHeights[index] = textElement.offsetHeight;
+        }
+      });
+      setTextHeights(newTextHeights);
+    };
+
+    // Measure on initial load and when content changes
+    if (works.length > 0) {
+      setTimeout(measureTextHeights, 100);
+      setTimeout(measureTextHeights, 500);
+      setTimeout(measureTextHeights, 1000);
+    }
+
+    // Add resize listener
+    window.addEventListener('resize', measureTextHeights);
+    return () => window.removeEventListener('resize', measureTextHeights);
+  }, [works]);
 
   // Scroll to specified section
   const scrollToSection = (index: number) => {
@@ -728,10 +754,11 @@ export default function Works() {
               className="h-screen flex items-center justify-center px-4 md:px-8"
               style={{ scrollSnapAlign: "start" }}
             >
-              <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-stretch overflow-hidden">
+              <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-start overflow-hidden">
                 {/* Project information */}
                 <div
-                  className={`space-y-4 md:space-y-6 flex flex-col justify-center min-h-[16rem] md:min-h-[24rem] lg:min-h-[500px] min-w-0 ${
+                  data-text-section={index}
+                  className={`space-y-4 md:space-y-6 flex flex-col justify-center min-w-0 ${
                     index % 2 === 1 ? "lg:order-2 lg:-ml-6" : ""
                   }`}
                 >
@@ -891,16 +918,25 @@ export default function Works() {
 
                 {/* Project image */}
                 <div
-                  className={`relative order-first lg:order-none flex items-center justify-center min-h-[16rem] md:min-h-[24rem] lg:min-h-[500px] ${
+                  className={`relative order-first lg:order-none flex items-center justify-center ${
                     index % 2 === 1 ? "lg:order-1" : ""
                   }`}
+                  style={{ 
+                    height: textHeights[index] ? `${textHeights[index]}px` : 'auto',
+                    minHeight: textHeights[index] ? `${textHeights[index]}px` : '16rem'
+                  }}
                 >
                   <div
-                    className="relative w-full h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
+                    className="relative w-full rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
                     onClick={() => openImageModal(work)}
+                    style={{ 
+                      height: textHeights[index] ? `${textHeights[index]}px` : '16rem'
+                    }}
                   >
                     <GitHubProjectImage work={work} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
+                    <div 
+                      className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer"
+                    />
                   </div>
 
                   {/* Decorative elements */}
