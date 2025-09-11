@@ -8,23 +8,49 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const resumeDir = path.join(process.cwd(), 'public', 'resume');
-    
-    // Check if resume directory exists
-    if (!fs.existsSync(resumeDir)) {
-      return res.status(404).json({ message: 'Resume directory not found' });
+    // Try multiple possible paths for different deployment environments
+    const possiblePaths = [
+      path.join(process.cwd(), 'public', 'resume'),
+      path.join(process.cwd(), '.next', 'static', 'chunks', 'pages', 'public', 'resume'),
+      path.join('/var/task', 'public', 'resume'),
+      path.join(__dirname, '..', '..', '..', 'public', 'resume')
+    ];
+
+    let resumeDir = '';
+    let files: string[] = [];
+
+    // Find the correct path that exists
+    for (const possiblePath of possiblePaths) {
+      try {
+        if (fs.existsSync(possiblePath)) {
+          resumeDir = possiblePath;
+          files = fs.readdirSync(possiblePath);
+          break;
+        }
+      } catch (error) {
+        // Continue to next path
+        continue;
+      }
     }
 
-    // Read the resume directory
-    const files = fs.readdirSync(resumeDir);
-    
+    // If no directory found, fall back to known filename
+    if (!resumeDir || files.length === 0) {
+      console.log('No resume directory found, using fallback');
+      return res.status(200).json({ 
+        resumeUrl: `/resume/Resume%20(Austin%20Xu%20for%20Full-Stack%20+%20AI%20Developer%2025-08-25).pdf` 
+      });
+    }
+
     // Find the first PDF file
     const pdfFile = files.find(file => 
       file.toLowerCase().endsWith('.pdf')
     );
 
     if (!pdfFile) {
-      return res.status(404).json({ message: 'No PDF resume found' });
+      console.log('No PDF found in directory, using fallback');
+      return res.status(200).json({ 
+        resumeUrl: `/resume/Resume%20(Austin%20Xu%20for%20Full-Stack%20+%20AI%20Developer%2025-08-25).pdf` 
+      });
     }
 
     // Return the URL-encoded path to the resume
@@ -33,6 +59,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     res.status(200).json({ resumeUrl });
   } catch (error) {
     console.error('Error finding resume:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    // Fallback to known filename
+    res.status(200).json({ 
+      resumeUrl: `/resume/Resume%20(Austin%20Xu%20for%20Full-Stack%20+%20AI%20Developer%2025-08-25).pdf` 
+    });
   }
 }
