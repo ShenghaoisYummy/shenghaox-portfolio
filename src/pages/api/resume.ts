@@ -27,7 +27,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           files = fs.readdirSync(possiblePath);
           break;
         }
-      } catch (error) {
+      } catch {
         // Continue to next path
         continue;
       }
