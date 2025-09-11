@@ -2,6 +2,9 @@
 
 A modern, interactive personal portfolio website built with Next.js, featuring a responsive design, real-time chat functionality, and dynamic content management.
 
+### Preview
+<img width="1448" height="914" alt="Screenshot 2025-09-11 at 13 19 29" src="https://github.com/user-attachments/assets/d96bf209-1e33-40ba-b56d-01435ba22876" />
+
 ## ✨ Features
 
 ### Core Features
