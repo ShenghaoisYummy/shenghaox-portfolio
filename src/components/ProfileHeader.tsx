@@ -41,6 +41,20 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     loop: true,
   });
 
+  const handleResumeClick = async () => {
+    try {
+      const response = await fetch('/api/resume');
+      const data = await response.json();
+      if (data.resumeUrl) {
+        window.open(data.resumeUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Failed to get resume URL:', error);
+      // Fallback: try to open the hardcoded path
+      window.open("/resume/Resume%20(Austin%20Xu%20for%20Full-Stack%20+%20AI%20Developer%2025-08-25).pdf", "_blank");
+    }
+  };
+
   const getModalPosition = (
     iconRef: React.RefObject<HTMLDivElement | null>
   ) => {
@@ -281,10 +295,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               <SvgIcon name="phone" width={16} height={16} color="#fff" />
             </div>
 
-            {/* Projects */}
+            {/* Resume */}
             <div
               className="ml-2 cursor-pointer transition-all duration-300 rounded-lg p-2 w-18 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-[oklch(71.5%_0.143_215.221)] hover:border-[oklch(71.5%_0.143_215.221)] flex items-center justify-center group"
-              onClick={() => window.open("/works", "_self")}
+              onClick={handleResumeClick}
             >
               <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
                 Resume
