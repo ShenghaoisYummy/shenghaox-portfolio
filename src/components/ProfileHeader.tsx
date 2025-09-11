@@ -43,15 +43,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
   const handleResumeClick = async () => {
     try {
-      const response = await fetch('/api/resume');
+      const response = await fetch("/api/resume");
       const data = await response.json();
       if (data.resumeUrl) {
-        window.open(data.resumeUrl, '_blank');
+        window.open(data.resumeUrl, "_blank");
       }
     } catch (error) {
-      console.error('Failed to get resume URL:', error);
+      console.error("Failed to get resume URL:", error);
       // Fallback: try to open the hardcoded path
-      window.open("/resume/Resume%20(Austin%20Xu%20for%20Full-Stack%20+%20AI%20Developer%2025-08-25).pdf", "_blank");
+      window.open(
+        "/resume/Resume%20(Austin%20Xu%20for%20Full-Stack%20+%20AI%20Developer%2025-08-25).pdf",
+        "_blank"
+      );
     }
   };
 
@@ -212,7 +215,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           </div>
           <div className="text-shadow-sm text-[#fff] text-[0.9375rem] md:text-[1.125rem]">
             <span className="bg-gradient-to-r from-[#2196f3] to-[#1976d2] bg-clip-text text-transparent text-[1.0625rem] md:text-[1.25rem] font-black drop-shadow-lg">
-              Full-Stack & AI Developer
+              Full-Stack &{" "}
+              <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                AI
+              </span>{" "}
+              Developer
             </span>{" "}
           </div>
 
