@@ -10,7 +10,7 @@ import {
   ProjectDisplayItem,
   GitHubProjectItem,
 } from "@/data/works";
-import { LLM_MODEL_DISPLAY_NAME } from "@/services/llm-techstack";
+import { PRIMARY_MODEL_DISPLAY_NAME } from "@/services/llm-techstack";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -40,9 +40,9 @@ interface Work {
   desc?: string;
   // Enhanced tech stack information
   extractedTechStack?: string[];
-  techStackSource?: 'manual' | 'extracted' | 'mixed';
+  techStackSource?: "manual" | "extracted" | "mixed";
   extractedTechCount?: number;
-  source?: 'manual' | 'github';
+  source?: "manual" | "github";
 }
 
 // Component to handle GitHub project image loading with proper fallbacks
@@ -253,7 +253,9 @@ export default function Works() {
   const works = allProjects;
 
   // Loading state - show loading until GitHub projects are loaded and processed
-  const isLoading = loadingGithub || (showGithubProjects && githubProjects.length === 0 && !githubError);
+  const isLoading =
+    loadingGithub ||
+    (showGithubProjects && githubProjects.length === 0 && !githubError);
 
   // Reset scroll position immediately on component mount
   useEffect(() => {
@@ -478,68 +480,6 @@ export default function Works() {
         imageHeight={300}
       />
 
-      {/* Loading Screen */}
-      {isLoading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-          {/* Background pattern overlay */}
-          <div className="absolute inset-0 opacity-20" 
-               style={{
-                 backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 3px, transparent 3px), radial-gradient(circle at 75% 75%, #67B26F 2px, transparent 2px)`,
-                 backgroundSize: "60px 60px"
-               }}></div>
-          
-          {/* Additional gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-500/5 to-transparent"></div>
-          
-          {/* Loading content */}
-          <div className="relative z-10 text-center space-y-6">
-            {/* Spinner */}
-            <div className="flex justify-center">
-              <div className="w-16 h-16 border-4 border-transparent border-t-[#4A90E2] animate-spin rounded-full"></div>
-            </div>
-            
-            {/* Loading text */}
-            <div className="space-y-2">
-              <h2 className="text-2xl md:text-3xl font-bold text-white">
-                Loading <span className="bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent">Projects</span>
-              </h2>
-              <p className="text-[rgba(255,255,255,0.8)] text-sm md:text-base">
-                Fetching repositories and extracting tech stacks with AI...
-              </p>
-              
-              {/* LLM Model Indicator */}
-              <div className="mt-3 px-4 py-2 bg-gradient-to-r from-[rgba(74,144,226,0.2)] to-[rgba(103,178,111,0.2)] rounded-full border border-[rgba(74,144,226,0.3)] backdrop-blur-sm">
-                <div className="flex items-center justify-center gap-2 text-xs text-[rgba(255,255,255,0.9)]">
-                  <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
-                  <span className="font-medium">Powered by</span>
-                  <span className="font-bold bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent">
-                    {LLM_MODEL_DISPLAY_NAME}
-                  </span>
-                  <span className="text-[rgba(255,255,255,0.6)]">•</span>
-                  <span className="text-[rgba(255,255,255,0.7)]">90% cost optimized</span>
-                </div>
-              </div>
-              
-              {/* Progress indicators */}
-              <div className="flex justify-center items-center gap-4 mt-4 text-xs text-[rgba(255,255,255,0.6)]">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
-                  <span>GitHub Projects</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-gradient-to-r from-[#67B26F] to-[#4A90E2] rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-                  <span>Tech Stack Analysis</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-                  <span>README Processing</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Detail drawer */}
       {isDrawerOpen && (
         <div className="fixed inset-0 z-11 flex items-end">
@@ -599,52 +539,67 @@ export default function Works() {
                         Tech Stack
                       </h3>
                       {/* Tech stack source indicator */}
-                      {selectedWork.techStackSource && selectedWork.techStackSource !== 'manual' && (
-                        <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]">
-                          <div className="w-3 h-3 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
-                          <span>
-                            {selectedWork.techStackSource === 'extracted' ? 'AI Enhanced' : 
-                             selectedWork.techStackSource === 'mixed' ? 'Mixed Sources' : ''}
-                          </span>
-                        </div>
-                      )}
+                      {selectedWork.techStackSource &&
+                        selectedWork.techStackSource !== "manual" && (
+                          <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]">
+                            <div className="w-3 h-3 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                            <span>
+                              {selectedWork.techStackSource === "extracted"
+                                ? "AI Enhanced"
+                                : selectedWork.techStackSource === "mixed"
+                                ? "Mixed Sources"
+                                : ""}
+                            </span>
+                          </div>
+                        )}
                     </div>
                     <div className="flex flex-wrap gap-2 md:gap-3">
                       {selectedWork.tech.map((tech: string, index: number) => {
                         // Check if this tech was extracted by LLM
-                        const isExtracted = selectedWork.extractedTechStack?.includes(tech) && 
-                                          selectedWork.techStackSource !== 'manual';
-                        
+                        const isExtracted =
+                          selectedWork.extractedTechStack?.includes(tech) &&
+                          selectedWork.techStackSource !== "manual";
+
                         return (
                           <span
                             key={index}
                             className={`text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-full transition-all duration-200 ${
-                              isExtracted 
-                                ? 'bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.3)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]' 
-                                : 'bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)]'
+                              isExtracted
+                                ? "bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.3)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]"
+                                : "bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)]"
                             }`}
-                            title={isExtracted ? 'Technology extracted from README using AI' : 'Technology from repository metadata'}
+                            title={
+                              isExtracted
+                                ? "Technology extracted from README using AI"
+                                : "Technology from repository metadata"
+                            }
                           >
                             {tech}
                             {isExtracted && (
-                              <span className="ml-1 text-[10px] opacity-75">✨</span>
+                              <span className="ml-1 text-[10px] opacity-75">
+                                ✨
+                              </span>
                             )}
                           </span>
                         );
                       })}
                     </div>
-                    
+
                     {/* Show extraction info for GitHub projects */}
-                    {selectedWork.source === 'github' && selectedWork.extractedTechCount && selectedWork.extractedTechCount > 0 && (
-                      <div className="text-sm text-[rgba(255,255,255,0.6)] mt-2 p-3 bg-[rgba(74,144,226,0.1)] rounded-lg border border-[rgba(74,144,226,0.2)]">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
-                          <span>
-                            {selectedWork.extractedTechCount} technologies were automatically extracted from the project&apos;s README file using AI analysis
-                          </span>
+                    {selectedWork.source === "github" &&
+                      selectedWork.extractedTechCount &&
+                      selectedWork.extractedTechCount > 0 && (
+                        <div className="text-sm text-[rgba(255,255,255,0.6)] mt-2 p-3 bg-[rgba(74,144,226,0.1)] rounded-lg border border-[rgba(74,144,226,0.2)]">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                            <span>
+                              {selectedWork.extractedTechCount} technologies
+                              were automatically extracted from the
+                              project&apos;s README file using AI analysis
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
 
                   {/* Main features */}
@@ -899,289 +854,401 @@ export default function Works() {
             height: "100vh",
           }}
         >
-          {/* Project showcase area */}
-          {works.map((work, index) => (
+          {/* Loading Section */}
+          {isLoading && (
             <section
-              key={index}
               className="h-screen flex items-center justify-center px-4 md:px-8"
               style={{ scrollSnapAlign: "start" }}
             >
-              <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-start overflow-hidden">
-                {/* Project information */}
-                <div
-                  data-text-section={index}
-                  className={`space-y-4 md:space-y-6 flex flex-col justify-center min-w-0 ${
-                    index % 2 === 1 ? "lg:order-2 lg:-ml-6" : ""
-                  }`}
-                >
+              <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center overflow-hidden">
+                {/* Loading content */}
+                <div className="space-y-4 md:space-y-6 flex flex-col justify-center min-w-0">
                   <div className="space-y-3 md:space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
-                        Project {index + 1} / {works.length}
-                      </div>
-                      {/* GitHub project indicator */}
-                      {work.source === "github" && (
-                        <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.6)]">
-                          <SvgIcon
-                            name="github"
-                            width={14}
-                            height={14}
-                            color="#4A90E2"
-                          />
-                          <span>GitHub Project</span>
-                        </div>
-                      )}
+                    <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
+                      Loading Projects...
                     </div>
-                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#fff] text-shadow-sm">
-                      {work.title.split(" ").map((word, wordIndex) => (
-                        <span key={wordIndex}>
-                          {wordIndex === 0 ? (
-                            <span className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent">
-                              {word}
-                            </span>
-                          ) : (
-                            word
-                          )}
-                          {wordIndex < work.title.split(" ").length - 1
-                            ? " "
-                            : ""}
-                        </span>
-                      ))}
+
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+                      Fetching{" "}
+                      <span className="bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent">
+                        GitHub Projects
+                      </span>
                     </h1>
 
-                    {/* GitHub stats for GitHub projects */}
-                    {work.source === "github" && (
-                      <div className="flex items-center gap-4 text-xs md:text-sm">
-                        <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
-                          <span>⭐</span>
-                          <span>{work.stars}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
-                          <span>🔗</span>
-                          <span>{work.forks}</span>
-                        </div>
-                        {/* Show all languages if available, otherwise show primary language */}
-                        {work.allLanguages && work.allLanguages.length > 0 ? (
-                          <div className="flex items-center gap-2 text-[rgba(255,255,255,0.7)]">
-                            {work.allLanguages
-                              .slice(0, 3)
-                              .map((lang, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-1"
-                                >
-                                  <div
-                                    className="w-3 h-3 rounded-full"
-                                    style={{
-                                      backgroundColor:
-                                        work.allLanguageColors?.[lang] ||
-                                        "#858585",
-                                    }}
-                                  />
-                                  <span>{lang}</span>
-                                </div>
-                              ))}
-                            {work.allLanguages.length > 3 && (
-                              <span>+{work.allLanguages.length - 3}</span>
-                            )}
-                          </div>
-                        ) : (
-                          work.language && (
-                            <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
-                              <div
-                                className="w-3 h-3 rounded-full"
-                                style={{ backgroundColor: work.languageColor }}
-                              />
-                              <span>{work.language}</span>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    )}
-
-                    <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed line-clamp-3 md:line-clamp-4">
-                      {work.description}
+                    <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed">
+                      Loading repositories and extracting tech stacks using
+                      AI-powered analysis...
                     </p>
                   </div>
 
-                  {/* Tech stack */}
+                  {/* LLM Model Indicator */}
                   <div className="space-y-2 md:space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base md:text-lg font-semibold text-[#fff]">
-                        Tech Stack
-                      </h3>
-                      {/* Tech stack source indicator */}
-                      {work.techStackSource && work.techStackSource !== 'manual' && (
-                        <div className="flex items-center gap-1 text-xs text-[rgba(255,255,255,0.6)]">
-                          <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
-                          <span>
-                            {work.techStackSource === 'extracted' ? 'AI Enhanced' : 
-                             work.techStackSource === 'mixed' ? 'Mixed Sources' : ''}
+                    <h3 className="text-base md:text-lg font-semibold text-[#fff]">
+                      AI Analysis Engine
+                    </h3>
+                    <div className="px-4 py-2 bg-gradient-to-r from-[rgba(74,144,226,0.15)] to-[rgba(103,178,111,0.15)] rounded-lg border border-[rgba(74,144,226,0.2)] backdrop-blur-sm">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.9)]">
+                          <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
+                          <span className="font-medium">Powered by</span>
+                          <span className="font-bold bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent">
+                            {PRIMARY_MODEL_DISPLAY_NAME}
                           </span>
                         </div>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                      {work.tech.map((tech, techIndex) => {
-                        // Check if this tech was extracted by LLM
-                        const isExtracted = work.extractedTechStack?.includes(tech) && 
-                                          work.techStackSource !== 'manual';
-                        
-                        return (
-                          <span
-                            key={techIndex}
-                            className={`text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
-                              isExtracted 
-                                ? 'bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.5)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]' 
-                                : 'bg-[rgba(0,0,0,.5)] border border-[rgba(255,255,255,0.2)] hover:bg-[rgba(0,0,0,.7)]'
-                            }`}
-                            title={isExtracted ? 'Technology extracted from README using AI' : 'Technology from repository metadata'}
-                          >
-                            {tech}
-                            {isExtracted && (
-                              <span className="ml-1 text-[10px] opacity-75">✨</span>
-                            )}
-                          </span>
-                        );
-                      })}
-                    </div>
-                    
-                    {/* Show extraction info for GitHub projects */}
-                    {work.source === 'github' && work.extractedTechCount && work.extractedTechCount > 0 && (
-                      <div className="text-xs text-[rgba(255,255,255,0.6)] mt-1">
-                        {work.extractedTechCount} technologies extracted from README using AI
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Progress indicators */}
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-3 text-xs text-[rgba(255,255,255,0.7)]">
+                      <div className="flex items-center gap-2 bg-[rgba(0,0,0,0.3)] px-3 py-2 rounded-full">
+                        <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
+                        <span>GitHub API</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-[rgba(0,0,0,0.3)] px-3 py-2 rounded-full">
+                        <div
+                          className="w-2 h-2 bg-gradient-to-r from-[#67B26F] to-[#4A90E2] rounded-full animate-pulse"
+                          style={{ animationDelay: "0.5s" }}
+                        ></div>
+                        <span>README Processing</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-[rgba(0,0,0,0.3)] px-3 py-2 rounded-full">
+                        <div
+                          className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"
+                          style={{ animationDelay: "1s" }}
+                        ></div>
+                        <span>Tech Stack Analysis</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Loading visual/spinner */}
+                <div className="flex items-center justify-center">
+                  <div className="relative">
+                    {/* Main spinner */}
+                    <div className="w-32 h-32 border-4 border-transparent border-t-[#4A90E2] animate-spin rounded-full"></div>
+                    {/* Inner spinner */}
+                    <div
+                      className="absolute inset-4 w-24 h-24 border-4 border-transparent border-b-[#67B26F] animate-spin rounded-full"
+                      style={{
+                        animationDirection: "reverse",
+                        animationDuration: "1.5s",
+                      }}
+                    ></div>
+                    {/* Center dot */}
+                    <div className="absolute inset-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Project showcase area */}
+          {!isLoading &&
+            works.map((work, index) => (
+              <section
+                key={index}
+                className="h-screen flex items-center justify-center px-4 md:px-8"
+                style={{ scrollSnapAlign: "start" }}
+              >
+                <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-start overflow-hidden">
+                  {/* Project information */}
+                  <div
+                    data-text-section={index}
+                    className={`space-y-4 md:space-y-6 flex flex-col justify-center min-w-0 ${
+                      index % 2 === 1 ? "lg:order-2 lg:-ml-6" : ""
+                    }`}
+                  >
+                    <div className="space-y-3 md:space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
+                          Project {index + 1} / {works.length}
+                        </div>
+                        {/* GitHub project indicator */}
+                        {work.source === "github" && (
+                          <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.6)]">
+                            <SvgIcon
+                              name="github"
+                              width={14}
+                              height={14}
+                              color="#4A90E2"
+                            />
+                            <span>GitHub Project</span>
+                          </div>
+                        )}
+                      </div>
+                      <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#fff] text-shadow-sm">
+                        {work.title.split(" ").map((word, wordIndex) => (
+                          <span key={wordIndex}>
+                            {wordIndex === 0 ? (
+                              <span className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent">
+                                {word}
+                              </span>
+                            ) : (
+                              word
+                            )}
+                            {wordIndex < work.title.split(" ").length - 1
+                              ? " "
+                              : ""}
+                          </span>
+                        ))}
+                      </h1>
+
+                      {/* GitHub stats for GitHub projects */}
+                      {work.source === "github" && (
+                        <div className="flex items-center gap-4 text-xs md:text-sm">
+                          <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                            <span>⭐</span>
+                            <span>{work.stars}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                            <span>🔗</span>
+                            <span>{work.forks}</span>
+                          </div>
+                          {/* Show all languages if available, otherwise show primary language */}
+                          {work.allLanguages && work.allLanguages.length > 0 ? (
+                            <div className="flex items-center gap-2 text-[rgba(255,255,255,0.7)]">
+                              {work.allLanguages
+                                .slice(0, 3)
+                                .map((lang, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-1"
+                                  >
+                                    <div
+                                      className="w-3 h-3 rounded-full"
+                                      style={{
+                                        backgroundColor:
+                                          work.allLanguageColors?.[lang] ||
+                                          "#858585",
+                                      }}
+                                    />
+                                    <span>{lang}</span>
+                                  </div>
+                                ))}
+                              {work.allLanguages.length > 3 && (
+                                <span>+{work.allLanguages.length - 3}</span>
+                              )}
+                            </div>
+                          ) : (
+                            work.language && (
+                              <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                                <div
+                                  className="w-3 h-3 rounded-full"
+                                  style={{
+                                    backgroundColor: work.languageColor,
+                                  }}
+                                />
+                                <span>{work.language}</span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+
+                      <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed line-clamp-3 md:line-clamp-4">
+                        {work.description}
+                      </p>
+                    </div>
+
+                    {/* Tech stack */}
+                    <div className="space-y-2 md:space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-base md:text-lg font-semibold text-[#fff]">
+                          Tech Stack
+                        </h3>
+                        {/* Tech stack source indicator */}
+                        {work.techStackSource &&
+                          work.techStackSource !== "manual" && (
+                            <div className="flex items-center gap-1 text-xs text-[rgba(255,255,255,0.6)]">
+                              <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                              <span>
+                                {work.techStackSource === "extracted"
+                                  ? "AI Enhanced"
+                                  : work.techStackSource === "mixed"
+                                  ? "Mixed Sources"
+                                  : ""}
+                              </span>
+                            </div>
+                          )}
+                      </div>
+                      <div className="flex flex-wrap gap-2 md:gap-3">
+                        {work.tech.map((tech, techIndex) => {
+                          // Check if this tech was extracted by LLM
+                          const isExtracted =
+                            work.extractedTechStack?.includes(tech) &&
+                            work.techStackSource !== "manual";
+
+                          return (
+                            <span
+                              key={techIndex}
+                              className={`text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
+                                isExtracted
+                                  ? "bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.5)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]"
+                                  : "bg-[rgba(0,0,0,.5)] border border-[rgba(255,255,255,0.2)] hover:bg-[rgba(0,0,0,.7)]"
+                              }`}
+                              title={
+                                isExtracted
+                                  ? "Technology extracted from README using AI"
+                                  : "Technology from repository metadata"
+                              }
+                            >
+                              {tech}
+                              {isExtracted && (
+                                <span className="ml-1 text-[10px] opacity-75">
+                                  ✨
+                                </span>
+                              )}
+                            </span>
+                          );
+                        })}
+                      </div>
+
+                      {/* Show extraction info for GitHub projects */}
+                      {work.source === "github" &&
+                        work.extractedTechCount &&
+                        work.extractedTechCount > 0 && (
+                          <div className="text-xs text-[rgba(255,255,255,0.6)] mt-1">
+                            {work.extractedTechCount} technologies extracted
+                            from README using AI
+                          </div>
+                        )}
+                    </div>
+
+                    {/* Features */}
+                    <div className="space-y-2 md:space-y-3">
+                      <h3 className="text-base md:text-lg font-semibold text-[#fff]">
+                        Main Features
+                      </h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {work.features.map((feature, featureIndex) => (
+                          <div
+                            key={featureIndex}
+                            className="flex items-center gap-2 text-[rgba(255,255,255,0.8)]"
+                          >
+                            <div className="w-2 h-2 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full flex-shrink-0" />
+                            <span className="text-xs md:text-sm">
+                              {feature}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {!work.title.includes("austin") ? (
+                      <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
+                        {/* 查看详情按钮 */}
+                        <button
+                          onClick={() => openDrawer(work)}
+                          className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-emerald-500 hover:border-emerald-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
+                        >
+                          <SvgIcon
+                            name="docs"
+                            width={16}
+                            height={16}
+                            color="#fff"
+                            className="md:w-[18px] md:h-[18px]"
+                          />
+                          <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                            View Details
+                          </span>
+                          <span className="text-xs font-bold bg-gradient-to-r from-[#93c5fd] to-[#60a5fa] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                            Show Details
+                          </span>
+                        </button>
+
+                        {/* Original project link button */}
+                        {!work.title.includes("austin") &&
+                          work.link !== "#" && (
+                            <>
+                              <button
+                                onClick={() => window.open(work.link, "_blank")}
+                                className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-black hover:border-black text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
+                              >
+                                <SvgIcon
+                                  name="github"
+                                  width={16}
+                                  height={16}
+                                  color="#fff"
+                                  className="md:w-[18px] md:h-[18px]"
+                                />
+                                <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                                  View Project
+                                </span>
+                                <span className="text-xs font-bold bg-gradient-to-r from-[#d1d5db] to-[#9ca3af] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                                  Visit Github
+                                </span>
+                              </button>
+                            </>
+                          )}
+
+                        {!work.title.includes("austin") &&
+                          work.download_url && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  window.open(work.download_url, "_blank")
+                                }
+                                className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-orange-500 hover:border-orange-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
+                              >
+                                <SvgIcon
+                                  name="down"
+                                  width={16}
+                                  height={16}
+                                  color="#fff"
+                                  className="md:w-[18px] md:h-[18px]"
+                                />
+                                <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                                  Demo
+                                </span>
+                                <span className="text-xs font-bold bg-gradient-to-r from-[#fdba74] to-[#f97316] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                                  Live
+                                </span>
+                              </button>
+                            </>
+                          )}
+                      </div>
+                    ) : (
+                      ""
                     )}
                   </div>
 
-                  {/* Features */}
-                  <div className="space-y-2 md:space-y-3">
-                    <h3 className="text-base md:text-lg font-semibold text-[#fff]">
-                      Main Features
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      {work.features.map((feature, featureIndex) => (
-                        <div
-                          key={featureIndex}
-                          className="flex items-center gap-2 text-[rgba(255,255,255,0.8)]"
-                        >
-                          <div className="w-2 h-2 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full flex-shrink-0" />
-                          <span className="text-xs md:text-sm">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {!work.title.includes("austin") ? (
-                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
-                      {/* 查看详情按钮 */}
-                      <button
-                        onClick={() => openDrawer(work)}
-                        className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-emerald-500 hover:border-emerald-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
-                      >
-                        <SvgIcon
-                          name="docs"
-                          width={16}
-                          height={16}
-                          color="#fff"
-                          className="md:w-[18px] md:h-[18px]"
-                        />
-                        <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
-                          View Details
-                        </span>
-                        <span className="text-xs font-bold bg-gradient-to-r from-[#93c5fd] to-[#60a5fa] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
-                          Show Details
-                        </span>
-                      </button>
-
-                      {/* Original project link button */}
-                      {!work.title.includes("austin") && work.link !== "#" && (
-                        <>
-                          <button
-                            onClick={() => window.open(work.link, "_blank")}
-                            className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-black hover:border-black text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
-                          >
-                            <SvgIcon
-                              name="github"
-                              width={16}
-                              height={16}
-                              color="#fff"
-                              className="md:w-[18px] md:h-[18px]"
-                            />
-                            <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
-                              View Project
-                            </span>
-                            <span className="text-xs font-bold bg-gradient-to-r from-[#d1d5db] to-[#9ca3af] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
-                              Visit Github
-                            </span>
-                          </button>
-                        </>
-                      )}
-
-                      {!work.title.includes("austin") && work.download_url && (
-                        <>
-                          <button
-                            onClick={() =>
-                              window.open(work.download_url, "_blank")
-                            }
-                            className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-orange-500 hover:border-orange-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
-                          >
-                            <SvgIcon
-                              name="down"
-                              width={16}
-                              height={16}
-                              color="#fff"
-                              className="md:w-[18px] md:h-[18px]"
-                            />
-                            <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
-                              Demo
-                            </span>
-                            <span className="text-xs font-bold bg-gradient-to-r from-[#fdba74] to-[#f97316] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
-                              Live
-                            </span>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </div>
-
-                {/* Project image */}
-                <div
-                  className={`relative order-first lg:order-none flex items-center justify-center ${
-                    index % 2 === 1 ? "lg:order-1" : ""
-                  }`}
-                  style={{
-                    height: textHeights[index]
-                      ? `${textHeights[index]}px`
-                      : "auto",
-                    minHeight: textHeights[index]
-                      ? `${textHeights[index]}px`
-                      : "16rem",
-                  }}
-                >
+                  {/* Project image */}
                   <div
-                    className="relative w-full rounded-[12px] overflow-hidden shadow-lg group cursor-pointer bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.15)] p-[16px]"
-                    onClick={() => openImageModal(work)}
+                    className={`relative order-first lg:order-none flex items-center justify-center ${
+                      index % 2 === 1 ? "lg:order-1" : ""
+                    }`}
                     style={{
                       height: textHeights[index]
+                        ? `${textHeights[index]}px`
+                        : "auto",
+                      minHeight: textHeights[index]
                         ? `${textHeights[index]}px`
                         : "16rem",
                     }}
                   >
-                    <GitHubProjectImage work={work} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
-                  </div>
+                    <div
+                      className="relative w-full rounded-[12px] overflow-hidden shadow-lg group cursor-pointer bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.15)] p-[16px]"
+                      onClick={() => openImageModal(work)}
+                      style={{
+                        height: textHeights[index]
+                          ? `${textHeights[index]}px`
+                          : "16rem",
+                      }}
+                    >
+                      <GitHubProjectImage work={work} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
+                    </div>
 
-                  {/* Decorative elements */}
-                  <div className="absolute -top-2 md:-top-4 -right-2 md:-right-4 w-16 md:w-24 h-16 md:h-24 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full opacity-20 blur-xl" />
-                  <div className="absolute -bottom-2 md:-bottom-4 -left-2 md:-left-4 w-20 md:w-32 h-20 md:h-32 bg-gradient-to-br from-[#3d85a9] to-[#1b2c55] rounded-full opacity-20 blur-xl" />
+                    {/* Decorative elements */}
+                    <div className="absolute -top-2 md:-top-4 -right-2 md:-right-4 w-16 md:w-24 h-16 md:h-24 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full opacity-20 blur-xl" />
+                    <div className="absolute -bottom-2 md:-bottom-4 -left-2 md:-left-4 w-20 md:w-32 h-20 md:h-32 bg-gradient-to-br from-[#3d85a9] to-[#1b2c55] rounded-full opacity-20 blur-xl" />
+                  </div>
                 </div>
-              </div>
-            </section>
-          ))}
+              </section>
+            ))}
 
           {/* Contact page */}
           <section

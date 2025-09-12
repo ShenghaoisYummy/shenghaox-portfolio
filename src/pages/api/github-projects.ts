@@ -293,7 +293,8 @@ async function convertToGitHubProjectItem(
       }
     } catch (error) {
       console.warn(`Failed to extract tech stack for ${repo.name}:`, error);
-      // Continue with initial tech stack on error
+      // Continue with initial tech stack on error - this is expected when API key is not configured
+      // In development or incognito mode, this graceful fallback ensures the app still works
     }
   }
 

@@ -6,7 +6,7 @@ type LLMProvider = 'gemini' | 'openai';
 
 interface LLMClient {
   provider: LLMProvider;
-  client: any;
+  client: OpenAI | GoogleGenerativeAI;
   model: string;
   available: boolean;
 }
@@ -207,7 +207,7 @@ async function extractWithGemini(
 
   console.log(`Extracting tech stack for ${repoName} using Gemini...`);
 
-  const model = geminiClient.client.getGenerativeModel({ 
+  const model = (geminiClient.client as GoogleGenerativeAI).getGenerativeModel({ 
     model: geminiClient.model,
     generationConfig: {
       temperature: 0.1,
@@ -239,7 +239,7 @@ async function extractWithOpenAI(
 
   console.log(`Extracting tech stack for ${repoName} using OpenAI...`);
 
-  const completion = await openaiClient.client.chat.completions.create({
+  const completion = await (openaiClient.client as OpenAI).chat.completions.create({
     model: openaiClient.model,
     messages: [
       {

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { extractTechStackFromReadme, mergeTechStacks, ExtractedTechStack } from "@/services/llm-techstack";
+import { extractTechStackFromReadme, mergeTechStacks, ExtractedTechStack, getActiveModel } from "@/services/llm-techstack";
 
 // Request body interface
 interface ExtractTechStackRequest {
@@ -16,6 +16,8 @@ interface ExtractTechStackResponse {
     mergedTech: string[];
     extractedCount: number;
     source: 'manual' | 'extracted' | 'mixed';
+    provider?: string;
+    model?: string;
   };
   error?: string;
   cached?: boolean;
@@ -75,6 +77,16 @@ export default async function handler(
 
     console.log(`Tech stack extraction requested for: ${repoName}`);
 
+    // Check if any LLM provider is available
+    try {
+      getActiveModel(); // This will throw if no providers are available
+    } catch {
+      return res.status(503).json({
+        success: false,
+        error: "No LLM providers configured. Please set up either GEMINI_API_KEY or OPENAI_API_KEY.",
+      });
+    }
+
     // Extract tech stack using LLM
     const extracted = await extractTechStackFromReadme(readmeContent, repoName);
 
@@ -89,25 +101,27 @@ export default async function handler(
         mergedTech,
         extractedCount,
         source,
+        provider: extracted?.provider,
+        model: extracted?.model,
       },
     });
 
   } catch (error) {
     console.error("Tech stack extraction API error:", error);
 
-    // Handle OpenAI API errors specifically
+    // Handle LLM API errors specifically
     if (error instanceof Error) {
-      if (error.message.includes('API key')) {
+      if (error.message.includes('API key') || error.message.includes('api key')) {
         return res.status(500).json({
           success: false,
-          error: "OpenAI API key configuration issue",
+          error: "LLM API key configuration issue. Check your Gemini or OpenAI API keys.",
         });
       }
       
-      if (error.message.includes('rate limit')) {
+      if (error.message.includes('rate limit') || error.message.includes('quota')) {
         return res.status(429).json({
           success: false,
-          error: "OpenAI API rate limit exceeded. Please try again later.",
+          error: "API rate limit exceeded. Please try again later.",
         });
       }
 
@@ -115,6 +129,20 @@ export default async function handler(
         return res.status(408).json({
           success: false,
           error: "Request timeout. Please try again with shorter content.",
+        });
+      }
+
+      if (error.message.includes('safety') || error.message.includes('blocked')) {
+        return res.status(400).json({
+          success: false,
+          error: "Content was blocked by safety filters. Please try with different content.",
+        });
+      }
+
+      if (error.message.includes('Gemini client not available') || error.message.includes('OpenAI client not available')) {
+        return res.status(503).json({
+          success: false,
+          error: "LLM provider temporarily unavailable. Please try again later.",
         });
       }
     }
