@@ -37,6 +37,11 @@ interface Work {
   download_url?: string;
   function?: WorkFunction[];
   desc?: string;
+  // Enhanced tech stack information
+  extractedTechStack?: string[];
+  techStackSource?: 'manual' | 'extracted' | 'mixed';
+  extractedTechCount?: number;
+  source?: 'manual' | 'github';
 }
 
 // Component to handle GitHub project image loading with proper fallbacks
@@ -523,19 +528,57 @@ export default function Works() {
 
                   {/* Tech stack */}
                   <div className="space-y-4">
-                    <h3 className="text-lg md:text-xl font-semibold text-white">
-                      Tech Stack
-                    </h3>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                      {selectedWork.tech.map((tech: string, index: number) => (
-                        <span
-                          key={index}
-                          className="bg-[rgba(0,0,0,.5)] text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-full"
-                        >
-                          {tech}
-                        </span>
-                      ))}
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg md:text-xl font-semibold text-white">
+                        Tech Stack
+                      </h3>
+                      {/* Tech stack source indicator */}
+                      {selectedWork.techStackSource && selectedWork.techStackSource !== 'manual' && (
+                        <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]">
+                          <div className="w-3 h-3 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                          <span>
+                            {selectedWork.techStackSource === 'extracted' ? 'AI Enhanced' : 
+                             selectedWork.techStackSource === 'mixed' ? 'Mixed Sources' : ''}
+                          </span>
+                        </div>
+                      )}
                     </div>
+                    <div className="flex flex-wrap gap-2 md:gap-3">
+                      {selectedWork.tech.map((tech: string, index: number) => {
+                        // Check if this tech was extracted by LLM
+                        const isExtracted = selectedWork.extractedTechStack?.includes(tech) && 
+                                          selectedWork.techStackSource !== 'manual';
+                        
+                        return (
+                          <span
+                            key={index}
+                            className={`text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-full transition-all duration-200 ${
+                              isExtracted 
+                                ? 'bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.3)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]' 
+                                : 'bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)]'
+                            }`}
+                            title={isExtracted ? 'Technology extracted from README using AI' : 'Technology from repository metadata'}
+                          >
+                            {tech}
+                            {isExtracted && (
+                              <span className="ml-1 text-[10px] opacity-75">✨</span>
+                            )}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Show extraction info for GitHub projects */}
+                    {selectedWork.source === 'github' && selectedWork.extractedTechCount && selectedWork.extractedTechCount > 0 && (
+                      <div className="text-sm text-[rgba(255,255,255,0.6)] mt-2 p-3 bg-[rgba(74,144,226,0.1)] rounded-lg border border-[rgba(74,144,226,0.2)]">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                          <span>
+                            {selectedWork.extractedTechCount} technologies were automatically extracted from the project&apos;s README file using AI analysis
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Main features */}
@@ -897,19 +940,52 @@ export default function Works() {
 
                   {/* Tech stack */}
                   <div className="space-y-2 md:space-y-3">
-                    <h3 className="text-base md:text-lg font-semibold text-[#fff]">
-                      Tech Stack
-                    </h3>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                      {work.tech.map((tech, techIndex) => (
-                        <span
-                          key={techIndex}
-                          className="bg-[rgba(0,0,0,.5)] text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-[rgba(255,255,255,0.2)] backdrop-blur-sm"
-                        >
-                          {tech}
-                        </span>
-                      ))}
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base md:text-lg font-semibold text-[#fff]">
+                        Tech Stack
+                      </h3>
+                      {/* Tech stack source indicator */}
+                      {work.techStackSource && work.techStackSource !== 'manual' && (
+                        <div className="flex items-center gap-1 text-xs text-[rgba(255,255,255,0.6)]">
+                          <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                          <span>
+                            {work.techStackSource === 'extracted' ? 'AI Enhanced' : 
+                             work.techStackSource === 'mixed' ? 'Mixed Sources' : ''}
+                          </span>
+                        </div>
+                      )}
                     </div>
+                    <div className="flex flex-wrap gap-2 md:gap-3">
+                      {work.tech.map((tech, techIndex) => {
+                        // Check if this tech was extracted by LLM
+                        const isExtracted = work.extractedTechStack?.includes(tech) && 
+                                          work.techStackSource !== 'manual';
+                        
+                        return (
+                          <span
+                            key={techIndex}
+                            className={`text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
+                              isExtracted 
+                                ? 'bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.5)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]' 
+                                : 'bg-[rgba(0,0,0,.5)] border border-[rgba(255,255,255,0.2)] hover:bg-[rgba(0,0,0,.7)]'
+                            }`}
+                            title={isExtracted ? 'Technology extracted from README using AI' : 'Technology from repository metadata'}
+                          >
+                            {tech}
+                            {isExtracted && (
+                              <span className="ml-1 text-[10px] opacity-75">✨</span>
+                            )}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Show extraction info for GitHub projects */}
+                    {work.source === 'github' && work.extractedTechCount && work.extractedTechCount > 0 && (
+                      <div className="text-xs text-[rgba(255,255,255,0.6)] mt-1">
+                        {work.extractedTechCount} technologies extracted from README using AI
+                      </div>
+                    )}
                   </div>
 
                   {/* Features */}

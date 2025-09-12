@@ -14,6 +14,10 @@ export interface WorkItem {
     img2?: string;
     img3?: string;
   }[];
+  // Enhanced tech stack information
+  extractedTechStack?: string[];
+  techStackSource?: 'manual' | 'extracted' | 'mixed';
+  extractedTechCount?: number;
 }
 
 // Manual project item (existing static projects)
@@ -61,6 +65,10 @@ export interface GitHubConfig {
   showArchived?: boolean;
   // Whether to show forked repositories
   showForks?: boolean;
+  // Tech stack extraction settings
+  enableTechStackExtraction?: boolean;
+  // Skip extraction for specific repositories
+  skipExtractionForRepos?: string[];
 }
 
 // GitHub configuration
@@ -74,6 +82,9 @@ export const githubConfig: GitHubConfig = {
   minStars: 0, // Show projects with any number of stars
   showArchived: false,
   showForks: false,
+  // Tech stack extraction settings
+  enableTechStackExtraction: true, // Enable LLM-based tech stack extraction
+  skipExtractionForRepos: [], // Repos to skip extraction for
 };
 
 // Manual works data (static projects)

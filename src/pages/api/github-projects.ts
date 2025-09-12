@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ProcessedRepo } from "@/services/github";
 import { GitHubProjectItem, githubConfig } from "@/data/works";
+import { extractTechStackFromReadme, mergeTechStacks } from "@/services/llm-techstack";
 
 // GitHub API response type
 interface ProcessedRepoAPI {
@@ -73,11 +74,11 @@ async function getProjectImage(
   return `/images/github-projects/${repoName.toLowerCase()}.jpg`;
 }
 
-// Helper function to extract first image from README
-async function getRepoImage(
+// Helper function to fetch README content (both for images and tech stack extraction)
+async function getRepoReadme(
   username: string,
   repoName: string
-): Promise<string | null> {
+): Promise<{ content: string; imageUrl: string | null } | null> {
   try {
     const response = await fetch(
       `https://api.github.com/repos/${username}/${repoName}/readme`,
@@ -143,18 +144,28 @@ async function getRepoImage(
         // Create absolute URL
         imageUrl = `https://raw.githubusercontent.com/${username}/${repoName}/main/${imageUrl}`;
       }
-
-      return imageUrl;
     }
 
-    return null;
+    return {
+      content,
+      imageUrl
+    };
   } catch (error) {
     console.warn(
-      `Failed to fetch README image for ${username}/${repoName}:`,
+      `Failed to fetch README for ${username}/${repoName}:`,
       error
     );
     return null;
   }
+}
+
+// Helper function to extract first image from README (backward compatibility)
+async function getRepoImage(
+  username: string,
+  repoName: string
+): Promise<string | null> {
+  const readme = await getRepoReadme(username, repoName);
+  return readme?.imageUrl || null;
 }
 
 // Convert ProcessedRepo to GitHubProjectItem
@@ -198,56 +209,98 @@ async function convertToGitHubProjectItem(
     }
   }
 
-  // Generate tech stack from language and topics
-  const tech: string[] = [];
+  // Generate initial tech stack from language and topics
+  const initialTech: string[] = [];
   if (repo.language) {
-    tech.push(repo.language);
+    initialTech.push(repo.language);
   }
 
   // Add related technologies based on topics
   repo.topics?.forEach((topic) => {
     const topicLower = topic.toLowerCase();
-    if (topicLower.includes("react")) tech.push("React");
-    if (topicLower.includes("vue")) tech.push("Vue");
-    if (topicLower.includes("angular")) tech.push("Angular");
+    if (topicLower.includes("react")) initialTech.push("React");
+    if (topicLower.includes("vue")) initialTech.push("Vue");
+    if (topicLower.includes("angular")) initialTech.push("Angular");
     if (topicLower.includes("nextjs") || topicLower.includes("next-js"))
-      tech.push("Next.js");
+      initialTech.push("Next.js");
     if (topicLower.includes("nodejs") || topicLower.includes("node"))
-      tech.push("Node.js");
-    if (topicLower.includes("typescript")) tech.push("TypeScript");
-    if (topicLower.includes("javascript")) tech.push("JavaScript");
-    if (topicLower.includes("python")) tech.push("Python");
-    if (topicLower.includes("docker")) tech.push("Docker");
-    if (topicLower.includes("kubernetes")) tech.push("Kubernetes");
-    if (topicLower.includes("aws")) tech.push("AWS");
-    if (topicLower.includes("firebase")) tech.push("Firebase");
-    if (topicLower.includes("mongodb")) tech.push("MongoDB");
+      initialTech.push("Node.js");
+    if (topicLower.includes("typescript")) initialTech.push("TypeScript");
+    if (topicLower.includes("javascript")) initialTech.push("JavaScript");
+    if (topicLower.includes("python")) initialTech.push("Python");
+    if (topicLower.includes("docker")) initialTech.push("Docker");
+    if (topicLower.includes("kubernetes")) initialTech.push("Kubernetes");
+    if (topicLower.includes("aws")) initialTech.push("AWS");
+    if (topicLower.includes("firebase")) initialTech.push("Firebase");
+    if (topicLower.includes("mongodb")) initialTech.push("MongoDB");
     if (topicLower.includes("postgresql") || topicLower.includes("postgres"))
-      tech.push("PostgreSQL");
-    if (topicLower.includes("mysql")) tech.push("MySQL");
-    if (topicLower.includes("redis")) tech.push("Redis");
-    if (topicLower.includes("graphql")) tech.push("GraphQL");
+      initialTech.push("PostgreSQL");
+    if (topicLower.includes("mysql")) initialTech.push("MySQL");
+    if (topicLower.includes("redis")) initialTech.push("Redis");
+    if (topicLower.includes("graphql")) initialTech.push("GraphQL");
     if (topicLower.includes("rest-api") || topicLower.includes("restful"))
-      tech.push("REST API");
+      initialTech.push("REST API");
     if (topicLower.includes("machine-learning") || topicLower.includes("ml"))
-      tech.push("Machine Learning");
+      initialTech.push("Machine Learning");
     if (
       topicLower.includes("ai") ||
       topicLower.includes("artificial-intelligence")
     )
-      tech.push("AI");
-    if (topicLower.includes("blockchain")) tech.push("Blockchain");
-    if (topicLower.includes("mobile")) tech.push("Mobile");
-    if (topicLower.includes("ios")) tech.push("iOS");
-    if (topicLower.includes("android")) tech.push("Android");
-    if (topicLower.includes("flutter")) tech.push("Flutter");
-    if (topicLower.includes("react-native")) tech.push("React Native");
+      initialTech.push("AI");
+    if (topicLower.includes("blockchain")) initialTech.push("Blockchain");
+    if (topicLower.includes("mobile")) initialTech.push("Mobile");
+    if (topicLower.includes("ios")) initialTech.push("iOS");
+    if (topicLower.includes("android")) initialTech.push("Android");
+    if (topicLower.includes("flutter")) initialTech.push("Flutter");
+    if (topicLower.includes("react-native")) initialTech.push("React Native");
   });
 
-  // Remove duplicates and limit to reasonable number
-  const uniqueTech = Array.from(new Set(tech)).slice(0, 6);
+  // Remove duplicates from initial tech
+  const uniqueInitialTech = Array.from(new Set(initialTech));
 
-  // Try multiple image sources in order of preference
+  // Get README content and extract tech stack if enabled
+  let finalTech = uniqueInitialTech;
+  let extractedTechStack: string[] = [];
+  let techStackSource: 'manual' | 'extracted' | 'mixed' = 'manual';
+  let extractedTechCount = 0;
+
+  const shouldExtractTechStack = 
+    githubConfig.enableTechStackExtraction && 
+    !githubConfig.skipExtractionForRepos?.includes(repo.name);
+
+  if (shouldExtractTechStack) {
+    try {
+      console.log(`Fetching README and extracting tech stack for ${repo.name}...`);
+      const readme = await getRepoReadme(githubConfig.username, repo.name);
+      
+      if (readme && readme.content) {
+        const extracted = await extractTechStackFromReadme(readme.content, repo.name);
+        
+        if (extracted) {
+          const mergeResult = mergeTechStacks(uniqueInitialTech, extracted);
+          finalTech = mergeResult.mergedTech;
+          extractedTechStack = [...extracted.primary, ...extracted.secondary];
+          techStackSource = mergeResult.source;
+          extractedTechCount = mergeResult.extractedCount;
+          
+          console.log(`Tech stack extraction completed for ${repo.name}:`, {
+            original: uniqueInitialTech.length,
+            extracted: extractedTechCount,
+            final: finalTech.length,
+            source: techStackSource
+          });
+        }
+      }
+    } catch (error) {
+      console.warn(`Failed to extract tech stack for ${repo.name}:`, error);
+      // Continue with initial tech stack on error
+    }
+  }
+
+  // Limit final tech stack to reasonable number
+  const tech = finalTech.slice(0, 8);
+
+  // Get project image
   const image = await getProjectImage(githubConfig.username, repo.name);
 
   return {
@@ -258,7 +311,7 @@ async function convertToGitHubProjectItem(
       .replace(/\b\w/g, (l) => l.toUpperCase()),
     description: repo.description,
     image,
-    tech: uniqueTech.length > 0 ? uniqueTech : [repo.language || "Project"],
+    tech: tech.length > 0 ? tech : [repo.language || "Project"],
     link: repo.html_url,
     features,
     stars: repo.stargazers_count,
@@ -272,6 +325,10 @@ async function convertToGitHubProjectItem(
     createdAt: repo.created_at,
     homepage: repo.homepage || undefined,
     download_url: repo.homepage || undefined,
+    // Enhanced tech stack information
+    extractedTechStack: extractedTechStack.length > 0 ? extractedTechStack : undefined,
+    techStackSource,
+    extractedTechCount,
   };
 }
 
