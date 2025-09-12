@@ -10,6 +10,7 @@ import {
   ProjectDisplayItem,
   GitHubProjectItem,
 } from "@/data/works";
+import { LLM_MODEL_DISPLAY_NAME } from "@/services/llm-techstack";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -506,6 +507,19 @@ export default function Works() {
                 Fetching repositories and extracting tech stacks with AI...
               </p>
               
+              {/* LLM Model Indicator */}
+              <div className="mt-3 px-4 py-2 bg-gradient-to-r from-[rgba(74,144,226,0.2)] to-[rgba(103,178,111,0.2)] rounded-full border border-[rgba(74,144,226,0.3)] backdrop-blur-sm">
+                <div className="flex items-center justify-center gap-2 text-xs text-[rgba(255,255,255,0.9)]">
+                  <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
+                  <span className="font-medium">Powered by</span>
+                  <span className="font-bold bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent">
+                    {LLM_MODEL_DISPLAY_NAME}
+                  </span>
+                  <span className="text-[rgba(255,255,255,0.6)]">•</span>
+                  <span className="text-[rgba(255,255,255,0.7)]">90% cost optimized</span>
+                </div>
+              </div>
+              
               {/* Progress indicators */}
               <div className="flex justify-center items-center gap-4 mt-4 text-xs text-[rgba(255,255,255,0.6)]">
                 <div className="flex items-center gap-1">
@@ -515,6 +529,10 @@ export default function Works() {
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-gradient-to-r from-[#67B26F] to-[#4A90E2] rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
                   <span>Tech Stack Analysis</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                  <span>README Processing</span>
                 </div>
               </div>
             </div>

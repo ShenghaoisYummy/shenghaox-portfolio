@@ -5,6 +5,10 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Model configuration
+export const LLM_MODEL_NAME = 'gpt-5-nano';
+export const LLM_MODEL_DISPLAY_NAME = 'GPT-5-Nano';
+
 // Tech stack extraction result interface
 export interface ExtractedTechStack {
   primary: string[];      // Main technologies (frameworks, languages, databases)
@@ -127,7 +131,7 @@ export async function extractTechStackFromReadme(
     // Input: $0.05/1M tokens (10x cheaper than gpt-3.5-turbo)
     // Output: $0.40/1M tokens (3.75x cheaper than gpt-3.5-turbo)
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-nano",
+      model: LLM_MODEL_NAME,
       messages: [
         {
           role: "user",
