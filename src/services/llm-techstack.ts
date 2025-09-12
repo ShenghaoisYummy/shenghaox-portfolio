@@ -123,8 +123,11 @@ export async function extractTechStackFromReadme(
     // Create prompt and call OpenAI
     const prompt = createExtractionPrompt(cleanedContent, repoName);
     
+    // Using gpt-5-nano for cost efficiency:
+    // Input: $0.05/1M tokens (10x cheaper than gpt-3.5-turbo)
+    // Output: $0.40/1M tokens (3.75x cheaper than gpt-3.5-turbo)
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-5-nano",
       messages: [
         {
           role: "user",
