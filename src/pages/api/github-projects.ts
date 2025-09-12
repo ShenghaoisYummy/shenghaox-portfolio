@@ -263,6 +263,8 @@ async function convertToGitHubProjectItem(
   let extractedTechStack: string[] = [];
   let techStackSource: 'manual' | 'extracted' | 'mixed' = 'manual';
   let extractedTechCount = 0;
+  let extractedProvider: string | undefined;
+  let extractedModel: string | undefined;
 
   const shouldExtractTechStack = 
     githubConfig.enableTechStackExtraction && 
@@ -282,6 +284,8 @@ async function convertToGitHubProjectItem(
           extractedTechStack = [...extracted.primary, ...extracted.secondary];
           techStackSource = mergeResult.source;
           extractedTechCount = mergeResult.extractedCount;
+          extractedProvider = extracted.provider;
+          extractedModel = extracted.model;
           
           console.log(`Tech stack extraction completed for ${repo.name}:`, {
             original: uniqueInitialTech.length,
@@ -298,8 +302,8 @@ async function convertToGitHubProjectItem(
     }
   }
 
-  // Limit final tech stack to reasonable number
-  const tech = finalTech.slice(0, 8);
+  // Use full tech stack (no artificial limits)
+  const tech = finalTech;
 
   // Get project image
   const image = await getProjectImage(githubConfig.username, repo.name);
@@ -330,6 +334,9 @@ async function convertToGitHubProjectItem(
     extractedTechStack: extractedTechStack.length > 0 ? extractedTechStack : undefined,
     techStackSource,
     extractedTechCount,
+    // LLM provider information
+    extractedProvider,
+    extractedModel,
   };
 }
 

@@ -18,6 +18,9 @@ export interface WorkItem {
   extractedTechStack?: string[];
   techStackSource?: 'manual' | 'extracted' | 'mixed';
   extractedTechCount?: number;
+  // LLM provider information
+  extractedProvider?: string;
+  extractedModel?: string;
 }
 
 // Manual project item (existing static projects)

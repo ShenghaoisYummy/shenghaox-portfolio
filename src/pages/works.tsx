@@ -10,7 +10,7 @@ import {
   ProjectDisplayItem,
   GitHubProjectItem,
 } from "@/data/works";
-import { PRIMARY_MODEL_DISPLAY_NAME } from "@/services/llm-techstack";
+import { PRIMARY_MODEL_DISPLAY_NAME, FALLBACK_MODEL_DISPLAY_NAME } from "@/services/llm-techstack";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -43,6 +43,9 @@ interface Work {
   techStackSource?: "manual" | "extracted" | "mixed";
   extractedTechCount?: number;
   source?: "manual" | "github";
+  // LLM provider information
+  extractedProvider?: string;
+  extractedModel?: string;
 }
 
 // Component to handle GitHub project image loading with proper fallbacks
@@ -246,6 +249,35 @@ export default function Works() {
   const [loadingGithub, setLoadingGithub] = useState(true);
   const [githubError, setGithubError] = useState<string | null>(null);
   const [showGithubProjects, setShowGithubProjects] = useState(true);
+  
+  // Current model being used for loading display
+  const [currentModelInUse, setCurrentModelInUse] = useState(PRIMARY_MODEL_DISPLAY_NAME);
+  const [modelFallbackOccurred, setModelFallbackOccurred] = useState(false);
+
+  // Tech stack expand/collapse state
+  const [expandedTechStacks, setExpandedTechStacks] = useState<Set<string>>(new Set());
+  const [expandedDrawerTechStack, setExpandedDrawerTechStack] = useState(false);
+  
+  // Tech stack popup state
+  const [isTechStackPopupOpen, setIsTechStackPopupOpen] = useState(false);
+  const [selectedTechStackWork, setSelectedTechStackWork] = useState<ProjectDisplayItem | null>(null);
+
+  // Helper functions for tech stack expansion
+  const toggleTechStackExpansion = (workTitle: string) => {
+    setExpandedTechStacks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(workTitle)) {
+        newSet.delete(workTitle);
+      } else {
+        newSet.add(workTitle);
+      }
+      return newSet;
+    });
+  };
+
+  const isTechStackExpanded = (workTitle: string) => {
+    return expandedTechStacks.has(workTitle);
+  };
 
   // Combine manual and GitHub projects
   const [allProjects, setAllProjects] =
@@ -322,6 +354,33 @@ export default function Works() {
 
         if (data.success && data.projects) {
           setGithubProjects(data.projects);
+          
+          // Track model usage for loading display
+          const usedModels = new Set<string>();
+          let fallbackDetected = false;
+          
+          data.projects.forEach((project: GitHubProjectItem) => {
+            if (project.extractedModel) {
+              usedModels.add(project.extractedModel);
+              // If we see a fallback model, mark it
+              if (project.extractedModel.toLowerCase().includes('gpt') || 
+                  project.extractedModel.toLowerCase().includes('openai')) {
+                fallbackDetected = true;
+              }
+            }
+          });
+          
+          // Update current model display
+          if (fallbackDetected) {
+            setCurrentModelInUse(FALLBACK_MODEL_DISPLAY_NAME);
+            setModelFallbackOccurred(true);
+          } else if (usedModels.size > 0) {
+            // Use the first model found (likely primary)
+            const firstModel = Array.from(usedModels)[0];
+            if (firstModel.toLowerCase().includes('gemini')) {
+              setCurrentModelInUse(PRIMARY_MODEL_DISPLAY_NAME);
+            }
+          }
         } else {
           throw new Error(data.error || "Failed to fetch GitHub projects");
         }
@@ -432,6 +491,7 @@ export default function Works() {
   const openDrawer = (work: Work) => {
     setSelectedWork(work);
     setIsDrawerOpen(true);
+    setExpandedDrawerTechStack(false); // Reset drawer tech stack expansion
   };
 
   // Close detail drawer
@@ -553,36 +613,56 @@ export default function Works() {
                           </div>
                         )}
                     </div>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                      {selectedWork.tech.map((tech: string, index: number) => {
-                        // Check if this tech was extracted by LLM
-                        const isExtracted =
-                          selectedWork.extractedTechStack?.includes(tech) &&
-                          selectedWork.techStackSource !== "manual";
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-2 md:gap-3">
+                        {(expandedDrawerTechStack ? selectedWork.tech : selectedWork.tech.slice(0, 8)).map((tech: string, index: number) => {
+                          // Check if this tech was extracted by LLM
+                          const isExtracted =
+                            selectedWork.extractedTechStack?.includes(tech) &&
+                            selectedWork.techStackSource !== "manual";
 
-                        return (
-                          <span
-                            key={index}
-                            className={`text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-full transition-all duration-200 ${
-                              isExtracted
-                                ? "bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.3)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]"
-                                : "bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)]"
-                            }`}
-                            title={
-                              isExtracted
-                                ? "Technology extracted from README using AI"
-                                : "Technology from repository metadata"
-                            }
-                          >
-                            {tech}
-                            {isExtracted && (
-                              <span className="ml-1 text-[10px] opacity-75">
-                                ✨
-                              </span>
-                            )}
-                          </span>
-                        );
-                      })}
+                          return (
+                            <span
+                              key={index}
+                              className={`text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-full transition-all duration-200 ${
+                                isExtracted
+                                  ? "bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.3)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]"
+                                  : "bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)]"
+                              }`}
+                              title={
+                                isExtracted
+                                  ? `Technology extracted from README using ${selectedWork.extractedModel || 'AI'}`
+                                  : "Technology from repository metadata"
+                              }
+                            >
+                              {tech}
+                              {isExtracted && (
+                                <span className="ml-1 text-[10px] opacity-75">
+                                  ✨
+                                </span>
+                              )}
+                            </span>
+                          );
+                        })}
+                      </div>
+                      {selectedWork.tech.length > 8 && (
+                        <button
+                          onClick={() => setExpandedDrawerTechStack(!expandedDrawerTechStack)}
+                          className="text-[rgba(255,255,255,0.7)] text-sm hover:text-[rgba(255,255,255,0.9)] transition-colors duration-200 flex items-center gap-2"
+                        >
+                          {expandedDrawerTechStack ? (
+                            <>
+                              <span>Show less</span>
+                              <span className="text-xs">▲</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Show {selectedWork.tech.length - 8} more technologies</span>
+                              <span className="text-xs">▼</span>
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
 
                     {/* Show extraction info for GitHub projects */}
@@ -595,34 +675,13 @@ export default function Works() {
                             <span>
                               {selectedWork.extractedTechCount} technologies
                               were automatically extracted from the
-                              project&apos;s README file using AI analysis
+                              project&apos;s README file using {selectedWork.extractedModel || 'AI'} analysis
                             </span>
                           </div>
                         </div>
                       )}
                   </div>
 
-                  {/* Main features */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg md:text-xl font-semibold text-white">
-                      Main Features
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {selectedWork.features.map(
-                        (feature: string, index: number) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-3 text-[rgba(255,255,255,0.8)] bg-[rgba(255,255,255,0.05)] p-3 rounded-lg"
-                          >
-                            <div className="w-2 h-2 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full flex-shrink-0" />
-                            <span className="text-sm md:text-base">
-                              {feature}
-                            </span>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
 
                   {/* Main functions */}
                   <div className="space-y-4">
@@ -764,6 +823,96 @@ export default function Works() {
         </div>
       )}
 
+      {/* Tech Stack Popup Modal */}
+      {isTechStackPopupOpen && selectedTechStackWork && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Background overlay */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsTechStackPopupOpen(false)}
+          />
+          
+          {/* Modal content */}
+          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden border border-gray-700">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  {selectedTechStackWork.title} - Tech Stack
+                </h3>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent font-bold">
+                    {selectedTechStackWork.extractedTechCount || selectedTechStackWork.tech.length}
+                  </span>
+                  <span className="text-gray-400">technologies</span>
+                  {selectedTechStackWork.extractedModel && (
+                    <>
+                      <span className="text-gray-400">extracted using</span>
+                      <span className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] bg-clip-text text-transparent font-bold">
+                        {selectedTechStackWork.extractedModel}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setIsTechStackPopupOpen(false)}
+                className="text-gray-400 hover:text-white transition-colors duration-200 p-2"
+              >
+                <span className="text-2xl">×</span>
+              </button>
+            </div>
+
+            {/* Tech stack content */}
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {selectedTechStackWork.tech.map((tech, index) => {
+                  const isExtracted = 
+                    selectedTechStackWork.extractedTechStack?.includes(tech) &&
+                    selectedTechStackWork.techStackSource !== "manual";
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`relative px-4 py-3 rounded-lg border transition-all duration-300 hover:scale-105 ${
+                        isExtracted
+                          ? "bg-gradient-to-r from-[rgba(74,144,226,0.15)] to-[rgba(103,178,111,0.15)] border-[rgba(74,144,226,0.3)] shadow-lg"
+                          : "bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
+                      }`}
+                    >
+                      <span className="text-white font-medium text-sm block text-center">
+                        {tech}
+                      </span>
+                      {isExtracted && (
+                        <div className="absolute top-1 right-1">
+                          <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Legend */}
+              {selectedTechStackWork.extractedTechCount && selectedTechStackWork.extractedTechCount > 0 && (
+                <div className="mt-6 pt-4 border-t border-gray-700">
+                  <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse" />
+                      <span>AI Extracted</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-gray-500 rounded-full" />
+                      <span>Manual/GitHub</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative">
         {/* Top navigation controls */}
         <div className="fixed top-2 md:top-4 left-2 md:left-4 z-10 font-[family-name:var(--font-geist-sans)] flex flex-col gap-2">
@@ -876,8 +1025,20 @@ export default function Works() {
                     </h1>
 
                     <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed">
-                      Loading repositories and extracting tech stacks using
-                      AI-powered analysis...
+                      Loading repositories and extracting tech stacks using{" "}
+                      <span className={`font-medium transition-colors duration-500 ${
+                        modelFallbackOccurred 
+                          ? "text-[rgba(255,165,0,0.9)]" 
+                          : "text-[rgba(74,144,226,0.9)]"
+                      }`}>
+                        {currentModelInUse}
+                      </span>{" "}
+                      analysis...
+                      {modelFallbackOccurred && (
+                        <span className="block text-xs text-[rgba(255,165,0,0.8)] mt-1">
+                          ⚠️ Primary model unavailable, using fallback
+                        </span>
+                      )}
                     </p>
                   </div>
 
@@ -889,11 +1050,26 @@ export default function Works() {
                     <div className="px-4 py-2 bg-gradient-to-r from-[rgba(74,144,226,0.15)] to-[rgba(103,178,111,0.15)] rounded-lg border border-[rgba(74,144,226,0.2)] backdrop-blur-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.9)]">
-                          <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
-                          <span className="font-medium">Powered by</span>
-                          <span className="font-bold bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent">
-                            {PRIMARY_MODEL_DISPLAY_NAME}
+                          <div className={`w-2 h-2 rounded-full animate-pulse transition-colors duration-500 ${
+                            modelFallbackOccurred 
+                              ? "bg-gradient-to-r from-[#FF8C00] to-[#FFB347]"
+                              : "bg-gradient-to-r from-[#4A90E2] to-[#67B26F]"
+                          }`}></div>
+                          <span className="font-medium">
+                            {modelFallbackOccurred ? "Fallback to" : "Powered by"}
                           </span>
+                          <span className={`font-bold bg-clip-text text-transparent transition-all duration-500 ${
+                            modelFallbackOccurred
+                              ? "bg-gradient-to-r from-[#FF8C00] to-[#FFB347]"
+                              : "bg-gradient-to-r from-[#4A90E2] to-[#67B26F]"
+                          }`}>
+                            {currentModelInUse}
+                          </span>
+                          {modelFallbackOccurred && (
+                            <span className="text-xs text-[rgba(255,165,0,0.7)] ml-1">
+                              (Backup)
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1074,68 +1250,86 @@ export default function Works() {
                             </div>
                           )}
                       </div>
-                      <div className="flex flex-wrap gap-2 md:gap-3">
-                        {work.tech.map((tech, techIndex) => {
-                          // Check if this tech was extracted by LLM
-                          const isExtracted =
-                            work.extractedTechStack?.includes(tech) &&
-                            work.techStackSource !== "manual";
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap gap-2 md:gap-3">
+                          {(isTechStackExpanded(work.title) ? work.tech : work.tech.slice(0, 8)).map((tech, techIndex) => {
+                            // Check if this tech was extracted by LLM
+                            const isExtracted =
+                              work.extractedTechStack?.includes(tech) &&
+                              work.techStackSource !== "manual";
 
-                          return (
-                            <span
-                              key={techIndex}
-                              className={`text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
-                                isExtracted
-                                  ? "bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.5)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]"
-                                  : "bg-[rgba(0,0,0,.5)] border border-[rgba(255,255,255,0.2)] hover:bg-[rgba(0,0,0,.7)]"
-                              }`}
-                              title={
-                                isExtracted
-                                  ? "Technology extracted from README using AI"
-                                  : "Technology from repository metadata"
-                              }
-                            >
-                              {tech}
-                              {isExtracted && (
-                                <span className="ml-1 text-[10px] opacity-75">
-                                  ✨
-                                </span>
-                              )}
-                            </span>
-                          );
-                        })}
+                            return (
+                              <span
+                                key={techIndex}
+                                className={`text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
+                                  isExtracted
+                                    ? "bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.5)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]"
+                                    : "bg-[rgba(0,0,0,.5)] border border-[rgba(255,255,255,0.2)] hover:bg-[rgba(0,0,0,.7)]"
+                                }`}
+                                title={
+                                  isExtracted
+                                    ? `Technology extracted from README using ${work.extractedModel || 'AI'}`
+                                    : "Technology from repository metadata"
+                                }
+                              >
+                                {tech}
+                                {isExtracted && (
+                                  <span className="ml-1 text-[10px] opacity-75">
+                                    ✨
+                                  </span>
+                                )}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        {work.tech.length > 8 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleTechStackExpansion(work.title);
+                            }}
+                            className="text-[rgba(255,255,255,0.7)] text-xs hover:text-[rgba(255,255,255,0.9)] transition-colors duration-200 flex items-center gap-1"
+                          >
+                            {isTechStackExpanded(work.title) ? (
+                              <>
+                                <span>Show less</span>
+                                <span className="text-[10px]">▲</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>+{work.tech.length - 8} more</span>
+                                <span className="text-[10px]">▼</span>
+                              </>
+                            )}
+                          </button>
+                        )}
                       </div>
 
                       {/* Show extraction info for GitHub projects */}
                       {work.source === "github" &&
                         work.extractedTechCount &&
                         work.extractedTechCount > 0 && (
-                          <div className="text-xs text-[rgba(255,255,255,0.6)] mt-1">
-                            {work.extractedTechCount} technologies extracted
-                            from README using AI
+                          <div className="text-xs mt-1">
+                            <button
+                              onClick={() => {
+                                setSelectedTechStackWork(work);
+                                setIsTechStackPopupOpen(true);
+                              }}
+                              className="text-[rgba(255,255,255,0.8)] hover:text-[rgba(255,255,255,1)] transition-colors duration-200 cursor-pointer group flex items-center gap-1"
+                            >
+                              <span className="bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent font-bold">
+                                {work.extractedTechCount}
+                              </span>
+                              <span>tech stacks extracted from README using</span>
+                              <span className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] bg-clip-text text-transparent font-bold">
+                                {work.extractedModel || 'AI'}
+                              </span>
+                              <span className="text-[10px] opacity-70 group-hover:opacity-100 transition-opacity duration-200">🔍</span>
+                            </button>
                           </div>
                         )}
                     </div>
 
-                    {/* Features */}
-                    <div className="space-y-2 md:space-y-3">
-                      <h3 className="text-base md:text-lg font-semibold text-[#fff]">
-                        Main Features
-                      </h3>
-                      <div className="grid grid-cols-2 gap-2">
-                        {work.features.map((feature, featureIndex) => (
-                          <div
-                            key={featureIndex}
-                            className="flex items-center gap-2 text-[rgba(255,255,255,0.8)]"
-                          >
-                            <div className="w-2 h-2 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full flex-shrink-0" />
-                            <span className="text-xs md:text-sm">
-                              {feature}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
                     {!work.title.includes("austin") ? (
                       <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">

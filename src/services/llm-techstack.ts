@@ -22,7 +22,7 @@ try {
     geminiClient = {
       provider: 'gemini',
       client: genAI,
-      model: 'gemini-2.0-flash-exp',
+      model: 'gemini-2.0-flash-lite',
       available: true
     };
     console.log('Gemini client initialized successfully');
@@ -60,8 +60,8 @@ if (!geminiClient && !openaiClient) {
 }
 
 // Model configuration
-export const PRIMARY_MODEL_NAME = 'gemini-2.0-flash-exp';
-export const PRIMARY_MODEL_DISPLAY_NAME = 'Gemini 2.0 Flash';
+export const PRIMARY_MODEL_NAME = 'gemini-2.0-flash-lite';
+export const PRIMARY_MODEL_DISPLAY_NAME = 'Gemini 2.0 Flash-Lite';
 export const FALLBACK_MODEL_NAME = 'gpt-4.1-nano';
 export const FALLBACK_MODEL_DISPLAY_NAME = 'GPT-4.1 Nano';
 
@@ -159,7 +159,7 @@ Guidelines:
 3. Secondary technologies are supporting tools (Jest, Docker, AWS, etc.)
 4. Set confidence to "high" if tech stack is clearly documented, "medium" if inferred from context, "low" if mostly guessing
 5. Include in extractedFrom what helped you identify the technologies (badges, installation instructions, dependencies, etc.)
-6. Limit primary to max 8 items and secondary to max 6 items
+6. Include all relevant technologies without artificial limits
 7. Use standard technology names (e.g., "JavaScript" not "JS", "TypeScript" not "TS")
 8. If no clear tech stack is found, return empty arrays but still provide confidence and extractedFrom
 
@@ -179,15 +179,16 @@ ${readmeContent}
 
 **Output Format:** JSON object with this exact structure:
 {
-  "primary": ["main technologies: languages, frameworks, databases"],
-  "secondary": ["supporting tools: testing, deployment, etc."],
+  "primary": ["main technologies: languages, frameworks, databases (sorted by popularity/importance)"],
+  "secondary": ["supporting tools: testing, deployment, etc. (sorted by popularity/importance)"],
   "confidence": "high|medium|low",
   "extractedFrom": ["sources that indicated the technologies"]
 }
 
 **Guidelines:**
-- Primary: Core project technologies (max 8)
-- Secondary: Supporting tools and libraries (max 6) 
+- Primary: Core project technologies
+- Secondary: Supporting tools and libraries
+- **IMPORTANT: Sort both arrays by popularity/importance - most popular/important technologies first**
 - Confidence: "high" if clearly documented, "medium" if inferred, "low" if guessing
 - ExtractedFrom: What indicated each technology (badges, dependencies, instructions, etc.)
 - Use standard names: "JavaScript" not "JS", "TypeScript" not "TS"
@@ -365,13 +366,11 @@ export async function extractTechStackFromReadme(
     // Clean and validate the arrays
     extractedData.primary = extractedData.primary
       .filter(tech => typeof tech === 'string' && tech.trim().length > 0)
-      .map(tech => tech.trim())
-      .slice(0, 8); // Limit to 8 items
+      .map(tech => tech.trim());
 
     extractedData.secondary = extractedData.secondary
       .filter(tech => typeof tech === 'string' && tech.trim().length > 0)
-      .map(tech => tech.trim())
-      .slice(0, 6); // Limit to 6 items
+      .map(tech => tech.trim());
 
     // Ensure confidence is valid
     if (!['high', 'medium', 'low'].includes(extractedData.confidence)) {
