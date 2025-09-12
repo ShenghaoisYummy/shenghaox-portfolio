@@ -1,13 +1,87 @@
 import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// LLM Provider types
+type LLMProvider = 'gemini' | 'openai';
+
+interface LLMClient {
+  provider: LLMProvider;
+  client: any;
+  model: string;
+  available: boolean;
+}
+
+// Initialize LLM clients with fallback handling
+let geminiClient: LLMClient | null = null;
+let openaiClient: LLMClient | null = null;
+
+// Initialize Gemini client (primary)
+try {
+  if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your_gemini_api_key_here') {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    geminiClient = {
+      provider: 'gemini',
+      client: genAI,
+      model: 'gemini-2.0-flash-exp',
+      available: true
+    };
+    console.log('Gemini client initialized successfully');
+  } else {
+    console.warn('Gemini API key not configured - using OpenAI as primary');
+  }
+} catch (error) {
+  console.error('Failed to initialize Gemini client:', error);
+  geminiClient = null;
+}
+
+// Initialize OpenAI client (fallback)
+try {
+  if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_openai_api_key_here') {
+    openaiClient = {
+      provider: 'openai',
+      client: new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      }),
+      model: 'gpt-4.1-nano',
+      available: true
+    };
+    console.log('OpenAI client initialized successfully');
+  } else {
+    console.warn('OpenAI API key not configured - fallback will be disabled');
+  }
+} catch (error) {
+  console.error('Failed to initialize OpenAI client:', error);
+  openaiClient = null;
+}
+
+// Check if any LLM is available
+if (!geminiClient && !openaiClient) {
+  console.error('No LLM providers available - tech stack extraction will be disabled');
+}
 
 // Model configuration
-export const LLM_MODEL_NAME = 'gpt-5-nano';
-export const LLM_MODEL_DISPLAY_NAME = 'GPT-5-Nano';
+export const PRIMARY_MODEL_NAME = 'gemini-2.0-flash-exp';
+export const PRIMARY_MODEL_DISPLAY_NAME = 'Gemini 2.0 Flash';
+export const FALLBACK_MODEL_NAME = 'gpt-4.1-nano';
+export const FALLBACK_MODEL_DISPLAY_NAME = 'GPT-4.1 Nano';
+
+// Get active model info
+export function getActiveModel(): { name: string; displayName: string; provider: LLMProvider } {
+  if (geminiClient?.available) {
+    return {
+      name: PRIMARY_MODEL_NAME,
+      displayName: PRIMARY_MODEL_DISPLAY_NAME,
+      provider: 'gemini'
+    };
+  } else if (openaiClient?.available) {
+    return {
+      name: FALLBACK_MODEL_NAME,
+      displayName: FALLBACK_MODEL_DISPLAY_NAME,
+      provider: 'openai'
+    };
+  }
+  throw new Error('No LLM providers available');
+}
 
 // Tech stack extraction result interface
 export interface ExtractedTechStack {
@@ -15,13 +89,17 @@ export interface ExtractedTechStack {
   secondary: string[];    // Supporting tools (testing, deployment, etc.)
   confidence: 'high' | 'medium' | 'low';  // Confidence in extraction accuracy
   extractedFrom: string[];  // What parts of README were analyzed
+  provider?: LLMProvider;  // Which LLM provider was used
+  model?: string;          // Which specific model was used
 }
 
 // Cache for tech stack extractions to avoid repeated API calls
+// Separate cache per provider to avoid conflicts
 const extractionCache = new Map<string, { 
   result: ExtractedTechStack; 
   timestamp: number; 
-  contentHash: string; 
+  contentHash: string;
+  provider: LLMProvider;
 }>();
 
 const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
@@ -57,8 +135,8 @@ function preprocessReadmeContent(content: string): string {
   return cleaned;
 }
 
-// Create structured prompt for tech stack extraction
-function createExtractionPrompt(readmeContent: string, repoName: string): string {
+// Create structured prompt for tech stack extraction (OpenAI format)
+function createOpenAIExtractionPrompt(readmeContent: string, repoName: string): string {
   return `You are a technical expert tasked with extracting technology stack information from a GitHub repository's README file.
 
 Repository Name: ${repoName}
@@ -88,28 +166,125 @@ Guidelines:
 Return only valid JSON, no additional text or explanation.`;
 }
 
-// Extract tech stack from README content using OpenAI
+// Create structured prompt for tech stack extraction (Gemini format)
+function createGeminiExtractionPrompt(readmeContent: string, repoName: string): string {
+  return `Extract technology stack information from this GitHub repository's README.
+
+**Repository:** ${repoName}
+
+**README Content:**
+${readmeContent}
+
+**Task:** Analyze the README and identify the technology stack. Focus on technologies actually used in the project.
+
+**Output Format:** JSON object with this exact structure:
+{
+  "primary": ["main technologies: languages, frameworks, databases"],
+  "secondary": ["supporting tools: testing, deployment, etc."],
+  "confidence": "high|medium|low",
+  "extractedFrom": ["sources that indicated the technologies"]
+}
+
+**Guidelines:**
+- Primary: Core project technologies (max 8)
+- Secondary: Supporting tools and libraries (max 6) 
+- Confidence: "high" if clearly documented, "medium" if inferred, "low" if guessing
+- ExtractedFrom: What indicated each technology (badges, dependencies, instructions, etc.)
+- Use standard names: "JavaScript" not "JS", "TypeScript" not "TS"
+- Return empty arrays if no clear tech stack found
+
+**Important:** Return only the JSON object, no additional text or formatting.`;
+}
+
+// Extract tech stack using Gemini
+async function extractWithGemini(
+  readmeContent: string,
+  repoName: string
+): Promise<string> {
+  if (!geminiClient?.available || !geminiClient.client) {
+    throw new Error('Gemini client not available');
+  }
+
+  console.log(`Extracting tech stack for ${repoName} using Gemini...`);
+
+  const model = geminiClient.client.getGenerativeModel({ 
+    model: geminiClient.model,
+    generationConfig: {
+      temperature: 0.1,
+      topK: 1,
+      topP: 0.8,
+      maxOutputTokens: 800,
+    },
+  });
+
+  const prompt = createGeminiExtractionPrompt(readmeContent, repoName);
+  const result = await model.generateContent(prompt);
+  const response = result.response.text();
+
+  if (!response) {
+    throw new Error('No response from Gemini');
+  }
+
+  return response;
+}
+
+// Extract tech stack using OpenAI
+async function extractWithOpenAI(
+  readmeContent: string,
+  repoName: string
+): Promise<string> {
+  if (!openaiClient?.available || !openaiClient.client) {
+    throw new Error('OpenAI client not available');
+  }
+
+  console.log(`Extracting tech stack for ${repoName} using OpenAI...`);
+
+  const completion = await openaiClient.client.chat.completions.create({
+    model: openaiClient.model,
+    messages: [
+      {
+        role: "user",
+        content: createOpenAIExtractionPrompt(readmeContent, repoName)
+      }
+    ],
+    temperature: 0.1,
+    max_tokens: 800,
+  }, {
+    timeout: 30000,
+  });
+
+  const response = completion.choices[0]?.message?.content;
+  
+  if (!response) {
+    throw new Error('No response from OpenAI');
+  }
+
+  return response;
+}
+
+// Extract tech stack from README content using dual provider system
 export async function extractTechStackFromReadme(
   readmeContent: string,
   repoName: string
 ): Promise<ExtractedTechStack | null> {
   try {
-    // Check if OpenAI API key is available
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
-      console.warn('OpenAI API key not configured, skipping tech stack extraction');
+    // Check if any LLM provider is available
+    if (!geminiClient?.available && !openaiClient?.available) {
+      console.warn('No LLM providers configured, skipping tech stack extraction for', repoName);
       return null;
     }
 
     // Generate cache key and content hash
     const contentHash = generateContentHash(readmeContent);
-    const cacheKey = `${repoName}-${contentHash}`;
+    const primaryProvider = geminiClient?.available ? 'gemini' : 'openai';
+    const cacheKey = `${repoName}-${contentHash}-${primaryProvider}`;
     
     // Check cache first
     const cached = extractionCache.get(cacheKey);
     const now = Date.now();
     
     if (cached && (now - cached.timestamp) < CACHE_EXPIRY && cached.contentHash === contentHash) {
-      console.log(`Using cached tech stack for ${repoName}`);
+      console.log(`Using cached tech stack for ${repoName} (provider: ${cached.provider})`);
       return cached.result;
     }
 
@@ -122,41 +297,59 @@ export async function extractTechStackFromReadme(
       return null;
     }
 
-    console.log(`Extracting tech stack for ${repoName} using OpenAI...`);
+    let response: string;
+    let usedProvider: LLMProvider;
+    let usedModel: string;
 
-    // Create prompt and call OpenAI
-    const prompt = createExtractionPrompt(cleanedContent, repoName);
-    
-    // Using gpt-5-nano for cost efficiency:
-    // Input: $0.05/1M tokens (10x cheaper than gpt-3.5-turbo)
-    // Output: $0.40/1M tokens (3.75x cheaper than gpt-3.5-turbo)
-    const completion = await openai.chat.completions.create({
-      model: LLM_MODEL_NAME,
-      messages: [
-        {
-          role: "user",
-          content: prompt
+    // Try Gemini first (primary), then OpenAI (fallback)
+    try {
+      if (geminiClient?.available) {
+        response = await extractWithGemini(cleanedContent, repoName);
+        usedProvider = 'gemini';
+        usedModel = geminiClient.model;
+      } else if (openaiClient?.available) {
+        response = await extractWithOpenAI(cleanedContent, repoName);
+        usedProvider = 'openai';
+        usedModel = openaiClient.model;
+      } else {
+        throw new Error('No LLM providers available');
+      }
+    } catch (error) {
+      console.warn(`Primary LLM provider failed for ${repoName}:`, error);
+      
+      // Try fallback if primary failed
+      if (geminiClient?.available && openaiClient?.available) {
+        try {
+          console.log(`Falling back to OpenAI for ${repoName}`);
+          response = await extractWithOpenAI(cleanedContent, repoName);
+          usedProvider = 'openai';
+          usedModel = openaiClient.model;
+        } catch (fallbackError) {
+          console.error(`Fallback provider also failed for ${repoName}:`, fallbackError);
+          return null;
         }
-      ],
-      temperature: 0.1, // Low temperature for consistent results
-      max_tokens: 800,
-    }, {
-      timeout: 30000, // 30 second timeout
-    });
-
-    const response = completion.choices[0]?.message?.content;
+      } else {
+        console.error(`No fallback provider available for ${repoName}`);
+        return null;
+      }
+    }
     
     if (!response) {
-      console.warn(`No response from OpenAI for ${repoName}`);
+      console.warn(`No response from ${usedProvider} for ${repoName}`);
       return null;
     }
 
-    // Parse JSON response
+    // Parse JSON response (remove markdown code blocks if present)
     let extractedData: ExtractedTechStack;
     try {
-      extractedData = JSON.parse(response.trim());
+      // Remove markdown code blocks if present
+      let cleanedResponse = response.trim();
+      cleanedResponse = cleanedResponse.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      cleanedResponse = cleanedResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      
+      extractedData = JSON.parse(cleanedResponse);
     } catch (parseError) {
-      console.error(`Failed to parse OpenAI response for ${repoName}:`, parseError);
+      console.error(`Failed to parse ${usedProvider} response for ${repoName}:`, parseError);
       console.error('Response was:', response);
       return null;
     }
@@ -185,17 +378,24 @@ export async function extractTechStackFromReadme(
       extractedData.confidence = 'medium';
     }
 
+    // Add provider info
+    extractedData.provider = usedProvider;
+    extractedData.model = usedModel;
+
     // Cache the result
     extractionCache.set(cacheKey, {
       result: extractedData,
       timestamp: now,
-      contentHash: contentHash
+      contentHash: contentHash,
+      provider: usedProvider
     });
 
-    console.log(`Successfully extracted tech stack for ${repoName}:`, {
+    console.log(`Successfully extracted tech stack for ${repoName} using ${usedProvider}:`, {
       primary: extractedData.primary.length,
       secondary: extractedData.secondary.length,
-      confidence: extractedData.confidence
+      confidence: extractedData.confidence,
+      provider: usedProvider,
+      model: usedModel
     });
 
     return extractedData;
@@ -274,9 +474,23 @@ export function clearTechStackCache(): void {
 }
 
 // Get cache statistics
-export function getCacheStats(): { size: number, entries: string[] } {
+export function getCacheStats(): { 
+  size: number; 
+  entries: string[]; 
+  byProvider: Record<LLMProvider, number>;
+} {
+  const byProvider: Record<LLMProvider, number> = {
+    gemini: 0,
+    openai: 0
+  };
+  
+  for (const [, cached] of extractionCache) {
+    byProvider[cached.provider]++;
+  }
+  
   return {
     size: extractionCache.size,
-    entries: Array.from(extractionCache.keys())
+    entries: Array.from(extractionCache.keys()),
+    byProvider
   };
 }
