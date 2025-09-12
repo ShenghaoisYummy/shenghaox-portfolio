@@ -251,6 +251,9 @@ export default function Works() {
     useState<ProjectDisplayItem[]>(manualWorksData);
   const works = allProjects;
 
+  // Loading state - show loading until GitHub projects are loaded and processed
+  const isLoading = loadingGithub || (showGithubProjects && githubProjects.length === 0 && !githubError);
+
   // Reset scroll position immediately on component mount
   useEffect(() => {
     // Disable scroll restoration temporarily
@@ -473,6 +476,51 @@ export default function Works() {
         imageWidth={300}
         imageHeight={300}
       />
+
+      {/* Loading Screen */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
+          {/* Background pattern overlay */}
+          <div className="absolute inset-0 opacity-20" 
+               style={{
+                 backgroundImage: `radial-gradient(circle at 25% 25%, #4A90E2 3px, transparent 3px), radial-gradient(circle at 75% 75%, #67B26F 2px, transparent 2px)`,
+                 backgroundSize: "60px 60px"
+               }}></div>
+          
+          {/* Additional gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-500/5 to-transparent"></div>
+          
+          {/* Loading content */}
+          <div className="relative z-10 text-center space-y-6">
+            {/* Spinner */}
+            <div className="flex justify-center">
+              <div className="w-16 h-16 border-4 border-transparent border-t-[#4A90E2] animate-spin rounded-full"></div>
+            </div>
+            
+            {/* Loading text */}
+            <div className="space-y-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">
+                Loading <span className="bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent">Projects</span>
+              </h2>
+              <p className="text-[rgba(255,255,255,0.8)] text-sm md:text-base">
+                Fetching repositories and extracting tech stacks with AI...
+              </p>
+              
+              {/* Progress indicators */}
+              <div className="flex justify-center items-center gap-4 mt-4 text-xs text-[rgba(255,255,255,0.6)]">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
+                  <span>GitHub Projects</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-gradient-to-r from-[#67B26F] to-[#4A90E2] rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                  <span>Tech Stack Analysis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Detail drawer */}
       {isDrawerOpen && (
