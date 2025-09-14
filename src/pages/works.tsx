@@ -254,29 +254,24 @@ export default function Works() {
   const [currentModelInUse, setCurrentModelInUse] = useState(PRIMARY_MODEL_DISPLAY_NAME);
   const [modelFallbackOccurred, setModelFallbackOccurred] = useState(false);
 
-  // Tech stack expand/collapse state
-  const [expandedTechStacks, setExpandedTechStacks] = useState<Set<string>>(new Set());
-  const [expandedDrawerTechStack, setExpandedDrawerTechStack] = useState(false);
-  
   // Tech stack popup state
   const [isTechStackPopupOpen, setIsTechStackPopupOpen] = useState(false);
   const [selectedTechStackWork, setSelectedTechStackWork] = useState<ProjectDisplayItem | null>(null);
 
-  // Helper functions for tech stack expansion
-  const toggleTechStackExpansion = (workTitle: string) => {
-    setExpandedTechStacks(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(workTitle)) {
-        newSet.delete(workTitle);
-      } else {
-        newSet.add(workTitle);
-      }
-      return newSet;
-    });
-  };
-
-  const isTechStackExpanded = (workTitle: string) => {
-    return expandedTechStacks.has(workTitle);
+  // Helper function to get main technologies for display
+  const getMainTechnologies = (work: ProjectDisplayItem): string[] => {
+    // Show first 8 technologies, prioritizing extracted ones if available
+    const maxMainTechs = 8;
+    
+    if (work.techStackSource === "extracted" && work.extractedTechStack) {
+      // For extracted tech, show extracted ones first, then manual ones
+      const extractedTechs = work.tech.filter(tech => work.extractedTechStack?.includes(tech));
+      const manualTechs = work.tech.filter(tech => !work.extractedTechStack?.includes(tech));
+      return [...extractedTechs, ...manualTechs].slice(0, maxMainTechs);
+    }
+    
+    // For manual or mixed projects, just show first few technologies
+    return work.tech.slice(0, maxMainTechs);
   };
 
   // Combine manual and GitHub projects
@@ -615,7 +610,7 @@ export default function Works() {
                     </div>
                     <div className="space-y-3">
                       <div className="flex flex-wrap gap-2 md:gap-3">
-                        {(expandedDrawerTechStack ? selectedWork.tech : selectedWork.tech.slice(0, 8)).map((tech: string, index: number) => {
+                        {getMainTechnologies(selectedWork).map((tech: string, index: number) => {
                           // Check if this tech was extracted by LLM
                           const isExtracted =
                             selectedWork.extractedTechStack?.includes(tech) &&
@@ -645,24 +640,6 @@ export default function Works() {
                           );
                         })}
                       </div>
-                      {selectedWork.tech.length > 8 && (
-                        <button
-                          onClick={() => setExpandedDrawerTechStack(!expandedDrawerTechStack)}
-                          className="text-[rgba(255,255,255,0.7)] text-sm hover:text-[rgba(255,255,255,0.9)] transition-colors duration-200 flex items-center gap-2"
-                        >
-                          {expandedDrawerTechStack ? (
-                            <>
-                              <span>Show less</span>
-                              <span className="text-xs">▲</span>
-                            </>
-                          ) : (
-                            <>
-                              <span>Show {selectedWork.tech.length - 8} more technologies</span>
-                              <span className="text-xs">▼</span>
-                            </>
-                          )}
-                        </button>
-                      )}
                     </div>
 
                     {/* Show extraction info for GitHub projects */}
@@ -1252,7 +1229,7 @@ export default function Works() {
                       </div>
                       <div className="space-y-2">
                         <div className="flex flex-wrap gap-2 md:gap-3">
-                          {(isTechStackExpanded(work.title) ? work.tech : work.tech.slice(0, 8)).map((tech, techIndex) => {
+                          {getMainTechnologies(work).map((tech, techIndex) => {
                             // Check if this tech was extracted by LLM
                             const isExtracted =
                               work.extractedTechStack?.includes(tech) &&
@@ -1282,27 +1259,6 @@ export default function Works() {
                             );
                           })}
                         </div>
-                        {work.tech.length > 8 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleTechStackExpansion(work.title);
-                            }}
-                            className="text-[rgba(255,255,255,0.7)] text-xs hover:text-[rgba(255,255,255,0.9)] transition-colors duration-200 flex items-center gap-1"
-                          >
-                            {isTechStackExpanded(work.title) ? (
-                              <>
-                                <span>Show less</span>
-                                <span className="text-[10px]">▲</span>
-                              </>
-                            ) : (
-                              <>
-                                <span>+{work.tech.length - 8} more</span>
-                                <span className="text-[10px]">▼</span>
-                              </>
-                            )}
-                          </button>
-                        )}
                       </div>
 
                       {/* Show extraction info for GitHub projects */}
