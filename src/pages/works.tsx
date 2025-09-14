@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import SvgIcon from "@/components/SvgIcon";
 import TechIcon from "@/components/TechIcon";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ImageModal from "@/components/ImageModal";
 import Head from "next/head";
 import Link from "next/link";
@@ -258,6 +258,20 @@ export default function Works() {
   // Tech stack popup state
   const [isTechStackPopupOpen, setIsTechStackPopupOpen] = useState(false);
   const [selectedTechStackWork, setSelectedTechStackWork] = useState<ProjectDisplayItem | null>(null);
+  
+  // Contact modal state - same as ProfileHeader
+  const [showEmailInfo, setShowEmailInfo] = useState(false);
+  const [showPhoneInfo, setShowPhoneInfo] = useState(false);
+  const [emailModalPosition, setEmailModalPosition] = useState({
+    top: 0,
+    left: 0,
+  });
+  const [phoneModalPosition, setPhoneModalPosition] = useState({
+    top: 0,
+    left: 0,
+  });
+  const emailIconRef = useRef<HTMLButtonElement>(null);
+  const phoneIconRef = useRef<HTMLButtonElement>(null);
 
   // Helper function to get main technologies for display
   const getMainTechnologies = (work: ProjectDisplayItem | Work): string[] => {
@@ -495,16 +509,61 @@ export default function Works() {
     setSelectedWork(null);
   };
 
-  const [isQQModalOpen, setIsQQModalOpen] = useState(false);
+  // Modal positioning function - same as ProfileHeader
+  const getModalPosition = (
+    iconRef: React.RefObject<HTMLButtonElement | null>
+  ) => {
+    if (!iconRef.current) return { top: 0, left: 0 };
 
-  // QQ button click event
-  const handleQQClick = () => {
-    setIsQQModalOpen(true);
+    const rect = iconRef.current.getBoundingClientRect();
+    return {
+      top: rect.top - 150, // Show modal above the icon
+      left: Math.max(10, rect.left - 100), // Center modal relative to icon, but keep it on screen
+    };
   };
 
-  // Close QQ modal
-  const closeQQModal = () => {
-    setIsQQModalOpen(false);
+  // Close modals when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowEmailInfo(false);
+      setShowPhoneInfo(false);
+    };
+
+    if (showEmailInfo || showPhoneInfo) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [showEmailInfo, showPhoneInfo]);
+
+  // Contact handlers - same as home page social icons
+  const handleGithubClick = () => {
+    window.open("https://github.com/ShenghaoisYummy", "_blank");
+  };
+  const handlePhoneClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!showPhoneInfo) {
+      const position = getModalPosition(phoneIconRef);
+      setPhoneModalPosition(position);
+      setShowEmailInfo(false); // Close email modal
+    }
+    setShowPhoneInfo(!showPhoneInfo);
+  };
+
+  const handleEmailClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!showEmailInfo) {
+      const position = getModalPosition(emailIconRef);
+      setEmailModalPosition(position);
+      setShowPhoneInfo(false); // Close phone modal
+    }
+    setShowEmailInfo(!showEmailInfo);
+  };
+
+  const handleLinkedInClick = () => {
+    window.open("https://www.linkedin.com/in/austin-xu-272586160/", "_blank");
   };
 
   return (
@@ -525,15 +584,85 @@ export default function Works() {
         imageWidth={1000}
       />
 
-      <ImageModal
-        isOpen={isQQModalOpen}
-        onClose={closeQQModal}
-        title="QQ Contact Information"
-        images={["/images/qq.jpg"]}
-        enableDanmaku={false}
-        imageWidth={300}
-        imageHeight={300}
-      />
+      {/* Email Modal - Positioned near email icon */}
+      {showEmailInfo && (
+        <div
+          className="fixed w-[280px] bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[#fff] text-sm p-4 z-[9999] shadow-lg"
+          style={{
+            top: `${emailModalPosition.top}px`,
+            left: `${emailModalPosition.left}px`,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mb-3 font-semibold text-center">
+            Contact Information
+          </div>
+          <div className="mb-2 flex items-center gap-2">
+            <span>📧</span>
+            <span className="truncate">hsupisces@hotmail.com</span>
+          </div>
+          <div className="text-gray-300 mb-3 text-xs">
+            Available for collaboration
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => {
+                window.open("mailto:hsupisces@hotmail.com", "_blank");
+                setShowEmailInfo(false);
+              }}
+              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+            >
+              Send Email
+            </button>
+            <button
+              onClick={() => setShowEmailInfo(false)}
+              className="bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Phone Modal - Positioned near phone icon */}
+      {showPhoneInfo && (
+        <div
+          className="fixed w-[280px] bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[#fff] text-sm p-4 z-[9999] shadow-lg"
+          style={{
+            top: `${phoneModalPosition.top}px`,
+            left: `${phoneModalPosition.left}px`,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mb-3 font-semibold text-center">
+            Phone Information
+          </div>
+          <div className="mb-2 flex items-center gap-2">
+            <span>📱</span>
+            <span>+61 491 648 468</span>
+          </div>
+          <div className="text-gray-300 mb-3 text-xs">
+            Available: 9AM - 9PM AEST
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => {
+                window.open("tel:+61491648468", "_blank");
+                setShowPhoneInfo(false);
+              }}
+              className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+            >
+              Call Now
+            </button>
+            <button
+              onClick={() => setShowPhoneInfo(false)}
+              className="bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Detail drawer */}
       {isDrawerOpen && (
@@ -1401,12 +1530,11 @@ export default function Works() {
                 </p>
               </div>
 
-              <div className="flex justify-center gap-4 md:gap-6">
+              <div className="flex justify-center gap-3 md:gap-4">
                 <button
-                  onClick={() =>
-                    window.open("https://github.com/996austin", "_blank")
-                  }
-                  className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-xl p-2 md:p-3 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-[rgba(255,255,255,0.2)] group"
+                  onClick={handleGithubClick}
+                  className="bg-[rgba(0,0,0,.5)] hover:bg-gray-400 hover:border-gray-400 rounded-xl p-2 md:p-3 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-[rgba(255,255,255,0.2)] group hover:scale-105 hover:shadow-lg"
+                  title="GitHub"
                 >
                   <SvgIcon
                     name="github"
@@ -1417,11 +1545,40 @@ export default function Works() {
                   />
                 </button>
                 <button
-                  onClick={handleQQClick}
-                  className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-xl p-2 md:p-3 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-[rgba(255,255,255,0.2)] group"
+                  ref={phoneIconRef}
+                  onClick={handlePhoneClick}
+                  className="bg-[rgba(0,0,0,.5)] hover:bg-green-600 hover:border-green-600 rounded-xl p-2 md:p-3 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-[rgba(255,255,255,0.2)] group hover:scale-105 hover:shadow-lg"
+                  title="Phone"
                 >
                   <SvgIcon
-                    name="qq"
+                    name="phone"
+                    width={24}
+                    height={24}
+                    color="#fff"
+                    className="md:w-[30px] md:h-[30px]"
+                  />
+                </button>
+                <button
+                  ref={emailIconRef}
+                  onClick={handleEmailClick}
+                  className="bg-[rgba(0,0,0,.5)] hover:bg-red-600 hover:border-red-600 rounded-xl p-2 md:p-3 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-[rgba(255,255,255,0.2)] group hover:scale-105 hover:shadow-lg"
+                  title="Email"
+                >
+                  <SvgIcon
+                    name="email"
+                    width={24}
+                    height={24}
+                    color="#fff"
+                    className="md:w-[30px] md:h-[30px]"
+                  />
+                </button>
+                <button
+                  onClick={handleLinkedInClick}
+                  className="bg-[rgba(0,0,0,.5)] hover:bg-blue-600 hover:border-blue-600 rounded-xl p-2 md:p-3 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-[rgba(255,255,255,0.2)] group hover:scale-105 hover:shadow-lg"
+                  title="LinkedIn"
+                >
+                  <SvgIcon
+                    name="linkedin"
                     width={24}
                     height={24}
                     color="#fff"
