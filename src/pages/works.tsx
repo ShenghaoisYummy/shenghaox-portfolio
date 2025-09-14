@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import SvgIcon from "@/components/SvgIcon";
+import TechIcon from "@/components/TechIcon";
 import { useState, useEffect } from "react";
 import ImageModal from "@/components/ImageModal";
 import Head from "next/head";
@@ -259,7 +260,7 @@ export default function Works() {
   const [selectedTechStackWork, setSelectedTechStackWork] = useState<ProjectDisplayItem | null>(null);
 
   // Helper function to get main technologies for display
-  const getMainTechnologies = (work: ProjectDisplayItem): string[] => {
+  const getMainTechnologies = (work: ProjectDisplayItem | Work): string[] => {
     // Show first 8 technologies, prioritizing extracted ones if available
     const maxMainTechs = 8;
     
@@ -486,7 +487,6 @@ export default function Works() {
   const openDrawer = (work: Work) => {
     setSelectedWork(work);
     setIsDrawerOpen(true);
-    setExpandedDrawerTechStack(false); // Reset drawer tech stack expansion
   };
 
   // Close detail drawer
@@ -609,7 +609,7 @@ export default function Works() {
                         )}
                     </div>
                     <div className="space-y-3">
-                      <div className="flex flex-wrap gap-2 md:gap-3">
+                      <div className="flex flex-wrap items-center gap-2">
                         {getMainTechnologies(selectedWork).map((tech: string, index: number) => {
                           // Check if this tech was extracted by LLM
                           const isExtracted =
@@ -617,26 +617,17 @@ export default function Works() {
                             selectedWork.techStackSource !== "manual";
 
                           return (
-                            <span
-                              key={index}
-                              className={`text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-full transition-all duration-200 ${
-                                isExtracted
-                                  ? "bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.3)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]"
-                                  : "bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)]"
-                              }`}
-                              title={
-                                isExtracted
-                                  ? `Technology extracted from README using ${selectedWork.extractedModel || 'AI'}`
-                                  : "Technology from repository metadata"
-                              }
-                            >
-                              {tech}
-                              {isExtracted && (
-                                <span className="ml-1 text-[10px] opacity-75">
-                                  ✨
-                                </span>
+                            <div key={index} className="flex items-center">
+                              <TechIcon
+                                techName={tech}
+                                size="lg"
+                                isExtracted={isExtracted}
+                                extractedModel={selectedWork.extractedModel}
+                              />
+                              {index < getMainTechnologies(selectedWork).length - 1 && (
+                                <div className="mx-2 w-1 h-1 bg-[rgba(255,255,255,0.3)] rounded-full flex-shrink-0"></div>
                               )}
-                            </span>
+                            </div>
                           );
                         })}
                       </div>
@@ -1228,7 +1219,7 @@ export default function Works() {
                           )}
                       </div>
                       <div className="space-y-2">
-                        <div className="flex flex-wrap gap-2 md:gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
                           {getMainTechnologies(work).map((tech, techIndex) => {
                             // Check if this tech was extracted by LLM
                             const isExtracted =
@@ -1236,26 +1227,17 @@ export default function Works() {
                               work.techStackSource !== "manual";
 
                             return (
-                              <span
-                                key={techIndex}
-                                className={`text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
-                                  isExtracted
-                                    ? "bg-gradient-to-r from-[rgba(74,144,226,0.4)] to-[rgba(103,178,111,0.4)] border border-[rgba(74,144,226,0.5)] hover:from-[rgba(74,144,226,0.5)] hover:to-[rgba(103,178,111,0.5)]"
-                                    : "bg-[rgba(0,0,0,.5)] border border-[rgba(255,255,255,0.2)] hover:bg-[rgba(0,0,0,.7)]"
-                                }`}
-                                title={
-                                  isExtracted
-                                    ? `Technology extracted from README using ${work.extractedModel || 'AI'}`
-                                    : "Technology from repository metadata"
-                                }
-                              >
-                                {tech}
-                                {isExtracted && (
-                                  <span className="ml-1 text-[10px] opacity-75">
-                                    ✨
-                                  </span>
+                              <div key={techIndex} className="flex items-center">
+                                <TechIcon
+                                  techName={tech}
+                                  size="md"
+                                  isExtracted={isExtracted}
+                                  extractedModel={work.extractedModel}
+                                />
+                                {techIndex < getMainTechnologies(work).length - 1 && (
+                                  <div className="mx-1.5 w-0.5 h-0.5 bg-[rgba(255,255,255,0.3)] rounded-full flex-shrink-0"></div>
                                 )}
-                              </span>
+                              </div>
                             );
                           })}
                         </div>
