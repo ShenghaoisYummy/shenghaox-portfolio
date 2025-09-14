@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import SvgIcon from "@/components/SvgIcon";
+import TechIcon from "@/components/TechIcon";
 import { useState, useEffect } from "react";
 import ImageModal from "@/components/ImageModal";
 import Head from "next/head";
@@ -10,6 +11,7 @@ import {
   ProjectDisplayItem,
   GitHubProjectItem,
 } from "@/data/works";
+import { PRIMARY_MODEL_DISPLAY_NAME, FALLBACK_MODEL_DISPLAY_NAME } from "@/services/llm-techstack";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -37,6 +39,14 @@ interface Work {
   download_url?: string;
   function?: WorkFunction[];
   desc?: string;
+  // Enhanced tech stack information
+  extractedTechStack?: string[];
+  techStackSource?: "manual" | "extracted" | "mixed";
+  extractedTechCount?: number;
+  source?: "manual" | "github";
+  // LLM provider information
+  extractedProvider?: string;
+  extractedModel?: string;
 }
 
 // Component to handle GitHub project image loading with proper fallbacks
@@ -240,11 +250,40 @@ export default function Works() {
   const [loadingGithub, setLoadingGithub] = useState(true);
   const [githubError, setGithubError] = useState<string | null>(null);
   const [showGithubProjects, setShowGithubProjects] = useState(true);
+  
+  // Current model being used for loading display
+  const [currentModelInUse, setCurrentModelInUse] = useState(PRIMARY_MODEL_DISPLAY_NAME);
+  const [modelFallbackOccurred, setModelFallbackOccurred] = useState(false);
+
+  // Tech stack popup state
+  const [isTechStackPopupOpen, setIsTechStackPopupOpen] = useState(false);
+  const [selectedTechStackWork, setSelectedTechStackWork] = useState<ProjectDisplayItem | null>(null);
+
+  // Helper function to get main technologies for display
+  const getMainTechnologies = (work: ProjectDisplayItem | Work): string[] => {
+    // Show first 8 technologies, prioritizing extracted ones if available
+    const maxMainTechs = 8;
+    
+    if (work.techStackSource === "extracted" && work.extractedTechStack) {
+      // For extracted tech, show extracted ones first, then manual ones
+      const extractedTechs = work.tech.filter(tech => work.extractedTechStack?.includes(tech));
+      const manualTechs = work.tech.filter(tech => !work.extractedTechStack?.includes(tech));
+      return [...extractedTechs, ...manualTechs].slice(0, maxMainTechs);
+    }
+    
+    // For manual or mixed projects, just show first few technologies
+    return work.tech.slice(0, maxMainTechs);
+  };
 
   // Combine manual and GitHub projects
   const [allProjects, setAllProjects] =
     useState<ProjectDisplayItem[]>(manualWorksData);
   const works = allProjects;
+
+  // Loading state - show loading until GitHub projects are loaded and processed
+  const isLoading =
+    loadingGithub ||
+    (showGithubProjects && githubProjects.length === 0 && !githubError);
 
   // Reset scroll position immediately on component mount
   useEffect(() => {
@@ -311,6 +350,33 @@ export default function Works() {
 
         if (data.success && data.projects) {
           setGithubProjects(data.projects);
+          
+          // Track model usage for loading display
+          const usedModels = new Set<string>();
+          let fallbackDetected = false;
+          
+          data.projects.forEach((project: GitHubProjectItem) => {
+            if (project.extractedModel) {
+              usedModels.add(project.extractedModel);
+              // If we see a fallback model, mark it
+              if (project.extractedModel.toLowerCase().includes('gpt') || 
+                  project.extractedModel.toLowerCase().includes('openai')) {
+                fallbackDetected = true;
+              }
+            }
+          });
+          
+          // Update current model display
+          if (fallbackDetected) {
+            setCurrentModelInUse(FALLBACK_MODEL_DISPLAY_NAME);
+            setModelFallbackOccurred(true);
+          } else if (usedModels.size > 0) {
+            // Use the first model found (likely primary)
+            const firstModel = Array.from(usedModels)[0];
+            if (firstModel.toLowerCase().includes('gemini')) {
+              setCurrentModelInUse(PRIMARY_MODEL_DISPLAY_NAME);
+            }
+          }
         } else {
           throw new Error(data.error || "Failed to fetch GitHub projects");
         }
@@ -523,42 +589,67 @@ export default function Works() {
 
                   {/* Tech stack */}
                   <div className="space-y-4">
-                    <h3 className="text-lg md:text-xl font-semibold text-white">
-                      Tech Stack
-                    </h3>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                      {selectedWork.tech.map((tech: string, index: number) => (
-                        <span
-                          key={index}
-                          className="bg-[rgba(0,0,0,.5)] text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-full"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Main features */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg md:text-xl font-semibold text-white">
-                      Main Features
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {selectedWork.features.map(
-                        (feature: string, index: number) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-3 text-[rgba(255,255,255,0.8)] bg-[rgba(255,255,255,0.05)] p-3 rounded-lg"
-                          >
-                            <div className="w-2 h-2 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full flex-shrink-0" />
-                            <span className="text-sm md:text-base">
-                              {feature}
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg md:text-xl font-semibold text-white">
+                        Tech Stack
+                      </h3>
+                      {/* Tech stack source indicator */}
+                      {selectedWork.techStackSource &&
+                        selectedWork.techStackSource !== "manual" && (
+                          <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]">
+                            <div className="w-3 h-3 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                            <span>
+                              {selectedWork.techStackSource === "extracted"
+                                ? "AI Enhanced"
+                                : selectedWork.techStackSource === "mixed"
+                                ? "Mixed Sources"
+                                : ""}
                             </span>
                           </div>
-                        )
-                      )}
+                        )}
                     </div>
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {getMainTechnologies(selectedWork).map((tech: string, index: number) => {
+                          // Check if this tech was extracted by LLM
+                          const isExtracted =
+                            selectedWork.extractedTechStack?.includes(tech) &&
+                            selectedWork.techStackSource !== "manual";
+
+                          return (
+                            <div key={index} className="flex items-center">
+                              <TechIcon
+                                techName={tech}
+                                size="lg"
+                                isExtracted={isExtracted}
+                                extractedModel={selectedWork.extractedModel}
+                              />
+                              {index < getMainTechnologies(selectedWork).length - 1 && (
+                                <div className="mx-2 w-1 h-1 bg-[rgba(255,255,255,0.3)] rounded-full flex-shrink-0"></div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Show extraction info for GitHub projects */}
+                    {selectedWork.source === "github" &&
+                      selectedWork.extractedTechCount &&
+                      selectedWork.extractedTechCount > 0 && (
+                        <div className="text-sm text-[rgba(255,255,255,0.6)] mt-2 p-3 bg-[rgba(74,144,226,0.1)] rounded-lg border border-[rgba(74,144,226,0.2)]">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                            <span>
+                              {selectedWork.extractedTechCount} technologies
+                              were automatically extracted from the
+                              project&apos;s README file using {selectedWork.extractedModel || 'AI'} analysis
+                            </span>
+                          </div>
+                        </div>
+                      )}
                   </div>
+
 
                   {/* Main functions */}
                   <div className="space-y-4">
@@ -700,6 +791,96 @@ export default function Works() {
         </div>
       )}
 
+      {/* Tech Stack Popup Modal */}
+      {isTechStackPopupOpen && selectedTechStackWork && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Background overlay */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsTechStackPopupOpen(false)}
+          />
+          
+          {/* Modal content */}
+          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden border border-gray-700">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  {selectedTechStackWork.title} - Tech Stack
+                </h3>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent font-bold">
+                    {selectedTechStackWork.extractedTechCount || selectedTechStackWork.tech.length}
+                  </span>
+                  <span className="text-gray-400">technologies</span>
+                  {selectedTechStackWork.extractedModel && (
+                    <>
+                      <span className="text-gray-400">extracted using</span>
+                      <span className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] bg-clip-text text-transparent font-bold">
+                        {selectedTechStackWork.extractedModel}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setIsTechStackPopupOpen(false)}
+                className="text-gray-400 hover:text-white transition-colors duration-200 p-2"
+              >
+                <span className="text-2xl">×</span>
+              </button>
+            </div>
+
+            {/* Tech stack content */}
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {selectedTechStackWork.tech.map((tech, index) => {
+                  const isExtracted = 
+                    selectedTechStackWork.extractedTechStack?.includes(tech) &&
+                    selectedTechStackWork.techStackSource !== "manual";
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`relative px-4 py-3 rounded-lg border transition-all duration-300 hover:scale-105 ${
+                        isExtracted
+                          ? "bg-gradient-to-r from-[rgba(74,144,226,0.15)] to-[rgba(103,178,111,0.15)] border-[rgba(74,144,226,0.3)] shadow-lg"
+                          : "bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
+                      }`}
+                    >
+                      <span className="text-white font-medium text-sm block text-center">
+                        {tech}
+                      </span>
+                      {isExtracted && (
+                        <div className="absolute top-1 right-1">
+                          <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Legend */}
+              {selectedTechStackWork.extractedTechCount && selectedTechStackWork.extractedTechCount > 0 && (
+                <div className="mt-6 pt-4 border-t border-gray-700">
+                  <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse" />
+                      <span>AI Extracted</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-gray-500 rounded-full" />
+                      <span>Manual/GitHub</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative">
         {/* Top navigation controls */}
         <div className="fixed top-2 md:top-4 left-2 md:left-4 z-10 font-[family-name:var(--font-geist-sans)] flex flex-col gap-2">
@@ -790,256 +971,416 @@ export default function Works() {
             height: "100vh",
           }}
         >
-          {/* Project showcase area */}
-          {works.map((work, index) => (
+          {/* Loading Section */}
+          {isLoading && (
             <section
-              key={index}
               className="h-screen flex items-center justify-center px-4 md:px-8"
               style={{ scrollSnapAlign: "start" }}
             >
-              <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-start overflow-hidden">
-                {/* Project information */}
-                <div
-                  data-text-section={index}
-                  className={`space-y-4 md:space-y-6 flex flex-col justify-center min-w-0 ${
-                    index % 2 === 1 ? "lg:order-2 lg:-ml-6" : ""
-                  }`}
-                >
+              <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center overflow-hidden">
+                {/* Loading content */}
+                <div className="space-y-4 md:space-y-6 flex flex-col justify-center min-w-0">
                   <div className="space-y-3 md:space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
-                        Project {index + 1} / {works.length}
-                      </div>
-                      {/* GitHub project indicator */}
-                      {work.source === "github" && (
-                        <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.6)]">
-                          <SvgIcon
-                            name="github"
-                            width={14}
-                            height={14}
-                            color="#4A90E2"
-                          />
-                          <span>GitHub Project</span>
-                        </div>
-                      )}
+                    <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
+                      Loading Projects...
                     </div>
-                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#fff] text-shadow-sm">
-                      {work.title.split(" ").map((word, wordIndex) => (
-                        <span key={wordIndex}>
-                          {wordIndex === 0 ? (
-                            <span className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent">
-                              {word}
-                            </span>
-                          ) : (
-                            word
-                          )}
-                          {wordIndex < work.title.split(" ").length - 1
-                            ? " "
-                            : ""}
-                        </span>
-                      ))}
+
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+                      Fetching{" "}
+                      <span className="bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent">
+                        GitHub Projects
+                      </span>
                     </h1>
 
-                    {/* GitHub stats for GitHub projects */}
-                    {work.source === "github" && (
-                      <div className="flex items-center gap-4 text-xs md:text-sm">
-                        <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
-                          <span>⭐</span>
-                          <span>{work.stars}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
-                          <span>🔗</span>
-                          <span>{work.forks}</span>
-                        </div>
-                        {/* Show all languages if available, otherwise show primary language */}
-                        {work.allLanguages && work.allLanguages.length > 0 ? (
-                          <div className="flex items-center gap-2 text-[rgba(255,255,255,0.7)]">
-                            {work.allLanguages
-                              .slice(0, 3)
-                              .map((lang, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-1"
-                                >
-                                  <div
-                                    className="w-3 h-3 rounded-full"
-                                    style={{
-                                      backgroundColor:
-                                        work.allLanguageColors?.[lang] ||
-                                        "#858585",
-                                    }}
-                                  />
-                                  <span>{lang}</span>
-                                </div>
-                              ))}
-                            {work.allLanguages.length > 3 && (
-                              <span>+{work.allLanguages.length - 3}</span>
-                            )}
-                          </div>
-                        ) : (
-                          work.language && (
-                            <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
-                              <div
-                                className="w-3 h-3 rounded-full"
-                                style={{ backgroundColor: work.languageColor }}
-                              />
-                              <span>{work.language}</span>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    )}
-
-                    <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed line-clamp-3 md:line-clamp-4">
-                      {work.description}
+                    <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed">
+                      Loading repositories and extracting tech stacks using{" "}
+                      <span className={`font-medium transition-colors duration-500 ${
+                        modelFallbackOccurred 
+                          ? "text-[rgba(255,165,0,0.9)]" 
+                          : "text-[rgba(74,144,226,0.9)]"
+                      }`}>
+                        {currentModelInUse}
+                      </span>{" "}
+                      analysis...
+                      {modelFallbackOccurred && (
+                        <span className="block text-xs text-[rgba(255,165,0,0.8)] mt-1">
+                          ⚠️ Primary model unavailable, using fallback
+                        </span>
+                      )}
                     </p>
                   </div>
 
-                  {/* Tech stack */}
+                  {/* LLM Model Indicator */}
                   <div className="space-y-2 md:space-y-3">
                     <h3 className="text-base md:text-lg font-semibold text-[#fff]">
-                      Tech Stack
+                      AI Analysis Engine
                     </h3>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                      {work.tech.map((tech, techIndex) => (
-                        <span
-                          key={techIndex}
-                          className="bg-[rgba(0,0,0,.5)] text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-[rgba(255,255,255,0.2)] backdrop-blur-sm"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Features */}
-                  <div className="space-y-2 md:space-y-3">
-                    <h3 className="text-base md:text-lg font-semibold text-[#fff]">
-                      Main Features
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      {work.features.map((feature, featureIndex) => (
-                        <div
-                          key={featureIndex}
-                          className="flex items-center gap-2 text-[rgba(255,255,255,0.8)]"
-                        >
-                          <div className="w-2 h-2 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full flex-shrink-0" />
-                          <span className="text-xs md:text-sm">{feature}</span>
+                    <div className="px-4 py-2 bg-gradient-to-r from-[rgba(74,144,226,0.15)] to-[rgba(103,178,111,0.15)] rounded-lg border border-[rgba(74,144,226,0.2)] backdrop-blur-sm">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.9)]">
+                          <div className={`w-2 h-2 rounded-full animate-pulse transition-colors duration-500 ${
+                            modelFallbackOccurred 
+                              ? "bg-gradient-to-r from-[#FF8C00] to-[#FFB347]"
+                              : "bg-gradient-to-r from-[#4A90E2] to-[#67B26F]"
+                          }`}></div>
+                          <span className="font-medium">
+                            {modelFallbackOccurred ? "Fallback to" : "Powered by"}
+                          </span>
+                          <span className={`font-bold bg-clip-text text-transparent transition-all duration-500 ${
+                            modelFallbackOccurred
+                              ? "bg-gradient-to-r from-[#FF8C00] to-[#FFB347]"
+                              : "bg-gradient-to-r from-[#4A90E2] to-[#67B26F]"
+                          }`}>
+                            {currentModelInUse}
+                          </span>
+                          {modelFallbackOccurred && (
+                            <span className="text-xs text-[rgba(255,165,0,0.7)] ml-1">
+                              (Backup)
+                            </span>
+                          )}
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </div>
 
-                  {!work.title.includes("austin") ? (
-                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
-                      {/* 查看详情按钮 */}
-                      <button
-                        onClick={() => openDrawer(work)}
-                        className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-emerald-500 hover:border-emerald-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
-                      >
-                        <SvgIcon
-                          name="docs"
-                          width={16}
-                          height={16}
-                          color="#fff"
-                          className="md:w-[18px] md:h-[18px]"
-                        />
-                        <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
-                          View Details
-                        </span>
-                        <span className="text-xs font-bold bg-gradient-to-r from-[#93c5fd] to-[#60a5fa] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
-                          Show Details
-                        </span>
-                      </button>
-
-                      {/* Original project link button */}
-                      {!work.title.includes("austin") && work.link !== "#" && (
-                        <>
-                          <button
-                            onClick={() => window.open(work.link, "_blank")}
-                            className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-black hover:border-black text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
-                          >
-                            <SvgIcon
-                              name="github"
-                              width={16}
-                              height={16}
-                              color="#fff"
-                              className="md:w-[18px] md:h-[18px]"
-                            />
-                            <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
-                              View Project
-                            </span>
-                            <span className="text-xs font-bold bg-gradient-to-r from-[#d1d5db] to-[#9ca3af] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
-                              Visit Github
-                            </span>
-                          </button>
-                        </>
-                      )}
-
-                      {!work.title.includes("austin") && work.download_url && (
-                        <>
-                          <button
-                            onClick={() =>
-                              window.open(work.download_url, "_blank")
-                            }
-                            className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-orange-500 hover:border-orange-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
-                          >
-                            <SvgIcon
-                              name="down"
-                              width={16}
-                              height={16}
-                              color="#fff"
-                              className="md:w-[18px] md:h-[18px]"
-                            />
-                            <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
-                              Demo
-                            </span>
-                            <span className="text-xs font-bold bg-gradient-to-r from-[#fdba74] to-[#f97316] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
-                              Live
-                            </span>
-                          </button>
-                        </>
-                      )}
+                  {/* Progress indicators */}
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-3 text-xs text-[rgba(255,255,255,0.7)]">
+                      <div className="flex items-center gap-2 bg-[rgba(0,0,0,0.3)] px-3 py-2 rounded-full">
+                        <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
+                        <span>GitHub API</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-[rgba(0,0,0,0.3)] px-3 py-2 rounded-full">
+                        <div
+                          className="w-2 h-2 bg-gradient-to-r from-[#67B26F] to-[#4A90E2] rounded-full animate-pulse"
+                          style={{ animationDelay: "0.5s" }}
+                        ></div>
+                        <span>README Processing</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-[rgba(0,0,0,0.3)] px-3 py-2 rounded-full">
+                        <div
+                          className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"
+                          style={{ animationDelay: "1s" }}
+                        ></div>
+                        <span>Tech Stack Analysis</span>
+                      </div>
                     </div>
-                  ) : (
-                    ""
-                  )}
+                  </div>
                 </div>
 
-                {/* Project image */}
-                <div
-                  className={`relative order-first lg:order-none flex items-center justify-center ${
-                    index % 2 === 1 ? "lg:order-1" : ""
-                  }`}
-                  style={{
-                    height: textHeights[index]
-                      ? `${textHeights[index]}px`
-                      : "auto",
-                    minHeight: textHeights[index]
-                      ? `${textHeights[index]}px`
-                      : "16rem",
-                  }}
-                >
+                {/* Loading visual/spinner */}
+                <div className="flex items-center justify-center">
+                  <div className="relative">
+                    {/* Main spinner */}
+                    <div className="w-32 h-32 border-4 border-transparent border-t-[#4A90E2] animate-spin rounded-full"></div>
+                    {/* Inner spinner */}
+                    <div
+                      className="absolute inset-4 w-24 h-24 border-4 border-transparent border-b-[#67B26F] animate-spin rounded-full"
+                      style={{
+                        animationDirection: "reverse",
+                        animationDuration: "1.5s",
+                      }}
+                    ></div>
+                    {/* Center dot */}
+                    <div className="absolute inset-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Project showcase area */}
+          {!isLoading &&
+            works.map((work, index) => (
+              <section
+                key={index}
+                className="h-screen flex items-center justify-center px-4 md:px-8"
+                style={{ scrollSnapAlign: "start" }}
+              >
+                <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-start overflow-hidden">
+                  {/* Project information */}
                   <div
-                    className="relative w-full rounded-[12px] overflow-hidden shadow-lg group cursor-pointer bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.15)] p-[16px]"
-                    onClick={() => openImageModal(work)}
+                    data-text-section={index}
+                    className={`space-y-4 md:space-y-6 flex flex-col justify-center min-w-0 ${
+                      index % 2 === 1 ? "lg:order-2 lg:-ml-6" : ""
+                    }`}
+                  >
+                    <div className="space-y-3 md:space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs md:text-sm text-[rgba(255,255,255,0.6)] font-medium">
+                          Project {index + 1} / {works.length}
+                        </div>
+                        {/* GitHub project indicator */}
+                        {work.source === "github" && (
+                          <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.6)]">
+                            <SvgIcon
+                              name="github"
+                              width={14}
+                              height={14}
+                              color="#4A90E2"
+                            />
+                            <span>GitHub Project</span>
+                          </div>
+                        )}
+                      </div>
+                      <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#fff] text-shadow-sm">
+                        {work.title.split(" ").map((word, wordIndex) => (
+                          <span key={wordIndex}>
+                            {wordIndex === 0 ? (
+                              <span className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent">
+                                {word}
+                              </span>
+                            ) : (
+                              word
+                            )}
+                            {wordIndex < work.title.split(" ").length - 1
+                              ? " "
+                              : ""}
+                          </span>
+                        ))}
+                      </h1>
+
+                      {/* GitHub stats for GitHub projects */}
+                      {work.source === "github" && (
+                        <div className="flex items-center gap-4 text-xs md:text-sm">
+                          <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                            <span>⭐</span>
+                            <span>{work.stars}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                            <span>🔗</span>
+                            <span>{work.forks}</span>
+                          </div>
+                          {/* Show all languages if available, otherwise show primary language */}
+                          {work.allLanguages && work.allLanguages.length > 0 ? (
+                            <div className="flex items-center gap-2 text-[rgba(255,255,255,0.7)]">
+                              {work.allLanguages
+                                .slice(0, 3)
+                                .map((lang, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-1"
+                                  >
+                                    <div
+                                      className="w-3 h-3 rounded-full"
+                                      style={{
+                                        backgroundColor:
+                                          work.allLanguageColors?.[lang] ||
+                                          "#858585",
+                                      }}
+                                    />
+                                    <span>{lang}</span>
+                                  </div>
+                                ))}
+                              {work.allLanguages.length > 3 && (
+                                <span>+{work.allLanguages.length - 3}</span>
+                              )}
+                            </div>
+                          ) : (
+                            work.language && (
+                              <div className="flex items-center gap-1 text-[rgba(255,255,255,0.7)]">
+                                <div
+                                  className="w-3 h-3 rounded-full"
+                                  style={{
+                                    backgroundColor: work.languageColor,
+                                  }}
+                                />
+                                <span>{work.language}</span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+
+                      <p className="text-sm md:text-lg text-[rgba(255,255,255,0.8)] leading-relaxed line-clamp-3 md:line-clamp-4">
+                        {work.description}
+                      </p>
+                    </div>
+
+                    {/* Tech stack */}
+                    <div className="space-y-2 md:space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-base md:text-lg font-semibold text-[#fff]">
+                          Tech Stack
+                        </h3>
+                        {/* Tech stack source indicator */}
+                        {work.techStackSource &&
+                          work.techStackSource !== "manual" && (
+                            <div className="flex items-center gap-1 text-xs text-[rgba(255,255,255,0.6)]">
+                              <div className="w-2 h-2 bg-gradient-to-r from-[#4A90E2] to-[#67B26F] rounded-full"></div>
+                              <span>
+                                {work.techStackSource === "extracted"
+                                  ? "AI Enhanced"
+                                  : work.techStackSource === "mixed"
+                                  ? "Mixed Sources"
+                                  : ""}
+                              </span>
+                            </div>
+                          )}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {getMainTechnologies(work).map((tech, techIndex) => {
+                            // Check if this tech was extracted by LLM
+                            const isExtracted =
+                              work.extractedTechStack?.includes(tech) &&
+                              work.techStackSource !== "manual";
+
+                            return (
+                              <div key={techIndex} className="flex items-center">
+                                <TechIcon
+                                  techName={tech}
+                                  size="md"
+                                  isExtracted={isExtracted}
+                                  extractedModel={work.extractedModel}
+                                />
+                                {techIndex < getMainTechnologies(work).length - 1 && (
+                                  <div className="mx-1.5 w-0.5 h-0.5 bg-[rgba(255,255,255,0.3)] rounded-full flex-shrink-0"></div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Show extraction info for GitHub projects */}
+                      {work.source === "github" &&
+                        work.extractedTechCount &&
+                        work.extractedTechCount > 0 && (
+                          <div className="text-xs mt-1">
+                            <button
+                              onClick={() => {
+                                setSelectedTechStackWork(work);
+                                setIsTechStackPopupOpen(true);
+                              }}
+                              className="text-[rgba(255,255,255,0.8)] hover:text-[rgba(255,255,255,1)] transition-colors duration-200 cursor-pointer group flex items-center gap-1"
+                            >
+                              <span className="bg-gradient-to-r from-[#4A90E2] to-[#67B26F] bg-clip-text text-transparent font-bold">
+                                {work.extractedTechCount}
+                              </span>
+                              <span>tech stacks extracted from README using</span>
+                              <span className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] bg-clip-text text-transparent font-bold">
+                                {work.extractedModel || 'AI'}
+                              </span>
+                              <span className="text-[10px] opacity-70 group-hover:opacity-100 transition-opacity duration-200">🔍</span>
+                            </button>
+                          </div>
+                        )}
+                    </div>
+
+
+                    {!work.title.includes("austin") ? (
+                      <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
+                        {/* 查看详情按钮 */}
+                        <button
+                          onClick={() => openDrawer(work)}
+                          className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-emerald-500 hover:border-emerald-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
+                        >
+                          <SvgIcon
+                            name="docs"
+                            width={16}
+                            height={16}
+                            color="#fff"
+                            className="md:w-[18px] md:h-[18px]"
+                          />
+                          <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                            View Details
+                          </span>
+                          <span className="text-xs font-bold bg-gradient-to-r from-[#93c5fd] to-[#60a5fa] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                            Show Details
+                          </span>
+                        </button>
+
+                        {/* Original project link button */}
+                        {!work.title.includes("austin") &&
+                          work.link !== "#" && (
+                            <>
+                              <button
+                                onClick={() => window.open(work.link, "_blank")}
+                                className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-black hover:border-black text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
+                              >
+                                <SvgIcon
+                                  name="github"
+                                  width={16}
+                                  height={16}
+                                  color="#fff"
+                                  className="md:w-[18px] md:h-[18px]"
+                                />
+                                <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                                  View Project
+                                </span>
+                                <span className="text-xs font-bold bg-gradient-to-r from-[#d1d5db] to-[#9ca3af] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                                  Visit Github
+                                </span>
+                              </button>
+                            </>
+                          )}
+
+                        {!work.title.includes("austin") &&
+                          work.download_url && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  window.open(work.download_url, "_blank")
+                                }
+                                className="bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:bg-orange-500 hover:border-orange-500 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group"
+                              >
+                                <SvgIcon
+                                  name="down"
+                                  width={16}
+                                  height={16}
+                                  color="#fff"
+                                  className="md:w-[18px] md:h-[18px]"
+                                />
+                                <span className="text-xs font-bold bg-gradient-to-r from-[#f9fafb] to-[#e5e7eb] bg-clip-text text-transparent group-hover:hidden drop-shadow-sm">
+                                  Demo
+                                </span>
+                                <span className="text-xs font-bold bg-gradient-to-r from-[#fdba74] to-[#f97316] bg-clip-text text-transparent hidden group-hover:block drop-shadow-sm">
+                                  Live
+                                </span>
+                              </button>
+                            </>
+                          )}
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+
+                  {/* Project image */}
+                  <div
+                    className={`relative order-first lg:order-none flex items-center justify-center ${
+                      index % 2 === 1 ? "lg:order-1" : ""
+                    }`}
                     style={{
                       height: textHeights[index]
+                        ? `${textHeights[index]}px`
+                        : "auto",
+                      minHeight: textHeights[index]
                         ? `${textHeights[index]}px`
                         : "16rem",
                     }}
                   >
-                    <GitHubProjectImage work={work} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
-                  </div>
+                    <div
+                      className="relative w-full rounded-[12px] overflow-hidden shadow-lg group cursor-pointer bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.15)] p-[16px]"
+                      onClick={() => openImageModal(work)}
+                      style={{
+                        height: textHeights[index]
+                          ? `${textHeights[index]}px`
+                          : "16rem",
+                      }}
+                    >
+                      <GitHubProjectImage work={work} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-50 transition-opacity duration-700 cursor-pointer" />
+                    </div>
 
-                  {/* Decorative elements */}
-                  <div className="absolute -top-2 md:-top-4 -right-2 md:-right-4 w-16 md:w-24 h-16 md:h-24 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full opacity-20 blur-xl" />
-                  <div className="absolute -bottom-2 md:-bottom-4 -left-2 md:-left-4 w-20 md:w-32 h-20 md:h-32 bg-gradient-to-br from-[#3d85a9] to-[#1b2c55] rounded-full opacity-20 blur-xl" />
+                    {/* Decorative elements */}
+                    <div className="absolute -top-2 md:-top-4 -right-2 md:-right-4 w-16 md:w-24 h-16 md:h-24 bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] rounded-full opacity-20 blur-xl" />
+                    <div className="absolute -bottom-2 md:-bottom-4 -left-2 md:-left-4 w-20 md:w-32 h-20 md:h-32 bg-gradient-to-br from-[#3d85a9] to-[#1b2c55] rounded-full opacity-20 blur-xl" />
+                  </div>
                 </div>
-              </div>
-            </section>
-          ))}
+              </section>
+            ))}
 
           {/* Contact page */}
           <section
