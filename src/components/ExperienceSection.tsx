@@ -1,4 +1,5 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef } from "react";
+import Link from "next/link";
 import SvgIcon from "@/components/SvgIcon";
 import { experienceData } from "@/data/experience";
 
@@ -12,16 +13,22 @@ const ExperienceSection = forwardRef<HTMLDivElement>((_, ref) => {
       style={{ boxSizing: "border-box" }}
     >
       <div className="p-[12px] pb-0 flex-shrink-0">
-        <div className="mb-[8px]">
-          <h3 className="text-[18px] font-semibold mb-[1px] flex items-center gap-2">
-            <SvgIcon
-              name="work"
-              width={16}
-              height={16}
-              color="#fff"
-            />
+        <div className="mb-[8px] flex items-center justify-between gap-3">
+          <h3 className="text-[18px] font-semibold mb-[1px] flex items-center gap-2 flex-shrink-0">
+            <SvgIcon name="work" width={16} height={16} color="#fff" />
             Experience
           </h3>
+          <Link
+            href="/blog"
+            className="text-[0.6625rem] mt-1 font-semibold bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-cyan-400 bg-[length:300%_300%] bg-clip-text text-transparent animate-pulse hover:animate-none transition-all duration-200 flex items-center gap-1 uppercase tracking-wide whitespace-nowrap flex-shrink-0 ml-2"
+            style={{
+              textShadow:
+                "0 0 5px rgba(0, 255, 255, 0.5), 0 0 10px rgba(255, 0, 255, 0.3)",
+              animation: "cyberpunk-glow 2s ease-in-out infinite",
+            }}
+          >
+            More Details
+          </Link>
         </div>
       </div>
       <div className="relative flex flex-col flex-1 overflow-y-auto custom-scrollbar px-[12px] pb-[12px] min-h-0">
@@ -71,6 +78,6 @@ const ExperienceSection = forwardRef<HTMLDivElement>((_, ref) => {
   );
 });
 
-ExperienceSection.displayName = 'ExperienceSection';
+ExperienceSection.displayName = "ExperienceSection";
 
 export default ExperienceSection;
