@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from 'react-dom';
 import CustomTechIcons from "./CustomTechIcons";
+import { getTechIcon } from '@/utils/techIconMapping';
 
 interface TechIcon {
   name: string;
@@ -15,7 +17,11 @@ interface TechIcon {
 const TechStack: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [containerHeight, setContainerHeight] = useState<number | null>(null);
+  const [usageCounts, setUsageCounts] = useState<Record<string, number>>({});
+  const [hoveredTech, setHoveredTech] = useState<string | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
   const gridRef = useRef<HTMLDivElement>(null);
+  const techRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const techStack: TechIcon[] = [
     // Frontend
@@ -281,6 +287,41 @@ const TechStack: React.FC = () => {
     ? techStack.filter((tech) => tech.category === selectedCategory)
     : techStack;
 
+  // Fetch usage counts for all tech stacks
+  useEffect(() => {
+    const fetchUsageCounts = async () => {
+      try {
+        const response = await fetch('/api/tech-usage-stats');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data) {
+            const counts: Record<string, number> = {};
+
+            // Create mapping for all tech items
+            techStack.forEach(tech => {
+              const techIconData = getTechIcon(tech.name);
+              const standardName = techIconData?.displayName || tech.displayName;
+
+              const techStat = data.data.stats.find((stat: { techName: string; totalProjects: number }) =>
+                stat.techName.toLowerCase() === tech.name.toLowerCase() ||
+                stat.techName.toLowerCase() === standardName.toLowerCase() ||
+                stat.techName.toLowerCase() === tech.displayName.toLowerCase()
+              );
+
+              counts[tech.name] = techStat ? techStat.totalProjects : 0;
+            });
+
+            setUsageCounts(counts);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to fetch usage counts for tech stack:', error);
+      }
+    };
+
+    fetchUsageCounts();
+  }, []);
+
   useEffect(() => {
     if (gridRef.current && containerHeight === null) {
       const height = gridRef.current.offsetHeight;
@@ -301,6 +342,23 @@ const TechStack: React.FC = () => {
     if (selectedCategory) {
       setSelectedCategory(null);
     }
+  };
+
+  // Handle mouse events for tooltip positioning
+  const handleTechMouseEnter = (techName: string) => {
+    const techElement = techRefs.current[techName];
+    if (!techElement) return;
+
+    const rect = techElement.getBoundingClientRect();
+    setTooltipPosition({
+      top: rect.top - 10,
+      left: rect.left + rect.width / 2,
+    });
+    setHoveredTech(techName);
+  };
+
+  const handleTechMouseLeave = () => {
+    setHoveredTech(null);
   };
 
   const getCategoryColor = (category: string) => {
@@ -344,11 +402,42 @@ const TechStack: React.FC = () => {
     return colors[category as keyof typeof colors] || "rgba(128,128,128,0.3)";
   };
 
+  // Tooltip component rendered via portal
+  const TooltipPortal = () => {
+    if (!hoveredTech || typeof window === 'undefined') return null;
+
+    const tech = techStack.find(t => t.name === hoveredTech);
+    if (!tech) return null;
+
+    const usageCount = usageCounts[hoveredTech] || 0;
+
+    return createPortal(
+      <div
+        className="fixed px-2 py-1 bg-[rgba(0,0,0,0.9)] text-white text-xs rounded-md whitespace-nowrap pointer-events-none border border-[rgba(255,255,255,0.1)] transform -translate-x-1/2 -translate-y-full"
+        style={{
+          top: tooltipPosition.top,
+          left: tooltipPosition.left,
+          zIndex: 99999,
+        }}
+      >
+        {tech.displayName}
+        {usageCount > 0 && (
+          <div className="text-[10px] opacity-75 mt-1">
+            Used in {usageCount} project{usageCount !== 1 ? 's' : ''}
+          </div>
+        )}
+      </div>,
+      document.body
+    );
+  };
+
   return (
-    <div
-      className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] shadow-lg p-[16px]"
-      onClick={handleContainerClick}
-    >
+    <>
+      <TooltipPortal />
+      <div
+        className="bg-[rgba(0,0,0,.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-[0.75rem] text-[#fff] text-[0.875rem] shadow-lg p-[16px]"
+        onClick={handleContainerClick}
+      >
       {/* Header */}
       <div className="flex items-center gap-[0.5rem] mb-[1rem]">
         <i className="devicon-devicon-plain text-white text-[1rem]"></i>
@@ -396,7 +485,7 @@ const TechStack: React.FC = () => {
           const isMainTech =
             Boolean(tech.isMainTech) ||
             Boolean(selectedCategory && tech.category === selectedCategory);
-          const isSecTech = Boolean(tech.isSecTech);
+          const usageCount = usageCounts[tech.name] || 0;
 
           // Helper function to convert hex color to rgba with opacity
           const hexToRgba = (hex: string, opacity: number) => {
@@ -406,10 +495,25 @@ const TechStack: React.FC = () => {
             return `rgba(${r}, ${g}, ${b}, ${opacity})`;
           };
 
+          // Calculate opacity based on usage count (0 = 0.3, 1+ = 0.5-1.0)
+          const getUsageBasedOpacity = (count: number) => {
+            if (count === 0) return 0.3; // Very low opacity for unused
+            if (count === 1) return 0.5; // Low opacity for rarely used
+            if (count <= 3) return 0.7; // Medium opacity for moderately used
+            if (count <= 5) return 0.85; // High opacity for frequently used
+            return 1.0; // Full opacity for heavily used
+          };
+
+          const usageOpacity = getUsageBasedOpacity(usageCount);
+          const finalOpacity = isMainTech ? Math.max(usageOpacity, 0.8) : usageOpacity;
+
           return (
             <div
               key={tech.name}
+              ref={(el) => { techRefs.current[tech.name] = el; }}
               className="group relative flex flex-col items-center justify-center cursor-pointer"
+              onMouseEnter={() => handleTechMouseEnter(tech.name)}
+              onMouseLeave={handleTechMouseLeave}
             >
               {tech.isCustomIcon ? (
                 <CustomTechIcons
@@ -418,61 +522,30 @@ const TechStack: React.FC = () => {
                   }
                   size="1.75rem"
                   hoverColor={tech.hoverColor}
-                  initialColor={
-                    isMainTech
-                      ? tech.hoverColor
-                      : isSecTech
-                      ? hexToRgba(tech.hoverColor, 0.5)
-                      : undefined
-                  }
+                  initialColor={hexToRgba(tech.hoverColor, finalOpacity)}
                 />
               ) : (
                 <i
                   className={`${
                     tech.className
-                  } text-[1.75rem] md:text-[2.25rem] transition-colors duration-300 group-hover:scale-110 filter drop-shadow-sm ${
-                    isMainTech || isSecTech ? "" : "text-gray-600"
-                  }`}
-                  style={
-                    isMainTech
-                      ? ({
-                          color: tech.hoverColor,
-                        } as React.CSSProperties)
-                      : isSecTech
-                      ? ({
-                          color: hexToRgba(tech.hoverColor, 0.5),
-                        } as React.CSSProperties)
-                      : ({
-                          color: "#6B7280",
-                        } as React.CSSProperties)
-                  }
+                  } text-[1.75rem] md:text-[2.25rem] transition-colors duration-300 group-hover:scale-110 filter drop-shadow-sm`}
+                  style={{
+                    color: hexToRgba(tech.hoverColor, finalOpacity)
+                  } as React.CSSProperties}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = tech.hoverColor;
                   }}
                   onMouseLeave={(e) => {
-                    if (isMainTech) {
-                      e.currentTarget.style.color = tech.hoverColor;
-                    } else if (isSecTech) {
-                      e.currentTarget.style.color = hexToRgba(
-                        tech.hoverColor,
-                        0.5
-                      );
-                    } else {
-                      e.currentTarget.style.color = "#6B7280";
-                    }
+                    e.currentTarget.style.color = hexToRgba(tech.hoverColor, finalOpacity);
                   }}
                 ></i>
               )}
-              {/* Tooltip */}
-              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 px-3 py-1.5 bg-[rgba(0,0,0,0.9)] text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-20 pointer-events-none border border-[rgba(255,255,255,0.1)]">
-                {tech.displayName}
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-[rgba(0,0,0,0.9)]"></div>
-              </div>
             </div>
           );
         })}
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

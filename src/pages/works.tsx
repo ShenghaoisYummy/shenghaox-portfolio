@@ -258,6 +258,7 @@ export default function Works() {
   // Tech stack popup state
   const [isTechStackPopupOpen, setIsTechStackPopupOpen] = useState(false);
   const [selectedTechStackWork, setSelectedTechStackWork] = useState<ProjectDisplayItem | null>(null);
+
   
   // Contact modal state - same as ProfileHeader
   const [showEmailInfo, setShowEmailInfo] = useState(false);
@@ -565,6 +566,8 @@ export default function Works() {
   const handleLinkedInClick = () => {
     window.open("https://www.linkedin.com/in/austin-xu-272586160/", "_blank");
   };
+
+
 
   return (
     <>
@@ -920,6 +923,7 @@ export default function Works() {
         </div>
       )}
 
+
       {/* Tech Stack Popup Modal */}
       {isTechStackPopupOpen && selectedTechStackWork && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -1046,6 +1050,7 @@ export default function Works() {
                 GitHub ({githubProjects.length})
               </span>
             </button>
+
 
             {/* Loading indicator for GitHub projects */}
             {loadingGithub && (
