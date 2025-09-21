@@ -513,3 +513,12 @@ body {
     filter: brightness(1.2) drop-shadow(0 0 8px rgba(0, 255, 255, 0.7)) drop-shadow(0 0 15px rgba(255, 0, 255, 0.5));
   }
 }
+
+.cyberpunk-glow-animation {
+  animation: cyberpunk-glow 2.5s infinite;
+}
+
+.cyberpunk-glow-animation:hover {
+  animation: none;
+  filter: brightness(1.25) drop-shadow(0 0 10px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 20px rgba(255, 0, 255, 0.6));
+}
