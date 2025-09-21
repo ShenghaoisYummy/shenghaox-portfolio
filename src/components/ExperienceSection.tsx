@@ -20,11 +20,11 @@ const ExperienceSection = forwardRef<HTMLDivElement>((_, ref) => {
           </h3>
           <Link
             href="/blog"
-            className="text-[0.6625rem] mt-1 font-semibold bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-cyan-400 bg-[length:300%_300%] bg-clip-text text-transparent animate-pulse hover:animate-none transition-all duration-200 flex items-center gap-1 uppercase tracking-wide whitespace-nowrap flex-shrink-0 ml-2"
+            className="text-[0.6625rem] mt-1 pl-1 font-semibold bg-gradient-to-r from-cyan-600 via-fuchsia-600 to-cyan-400 bg-[length:300%_300%] bg-clip-text text-transparent animate-pulse hover:animate-none transition-all duration-300 flex items-center gap-1 uppercase tracking-wide whitespace-nowrap flex-shrink-0 ml-2"
             style={{
               textShadow:
-                "0 0 5px rgba(0, 255, 255, 0.5), 0 0 10px rgba(255, 0, 255, 0.3)",
-              animation: "cyberpunk-glow 2s ease-in-out infinite",
+                "0 0 1px rgba(0, 255, 255, 0.5), 0 0 1px rgba(255, 0, 255, 0.3)",
+              animation: "cyberpunk-glow 2.5s infinite",
             }}
           >
             More Details
