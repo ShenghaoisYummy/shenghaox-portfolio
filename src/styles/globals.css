@@ -501,3 +501,15 @@ body {
   animation: breathe 4s ease-in-out infinite;
   will-change: transform, opacity;
 }
+
+/* Cyberpunk text glow animation */
+@keyframes cyberpunk-glow {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: brightness(1) drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)) drop-shadow(0 0 10px rgba(255, 0, 255, 0.3));
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.2) drop-shadow(0 0 8px rgba(0, 255, 255, 0.7)) drop-shadow(0 0 15px rgba(255, 0, 255, 0.5));
+  }
+}

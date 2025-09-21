@@ -230,7 +230,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           <div className="flex mt-[0.8rem] gap-[0.3125rem] justify-center md:justify-start flex-wrap">
             {/* GitHub */}
             <div
-              className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-gray-400 hover:text-white hover:border-gray-400 flex items-center justify-center"
+              className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-[#202429] hover:text-white hover:border-[#202429] flex items-center justify-center"
               onClick={onGithubClick}
             >
               <SvgIcon name="github" width={16} height={16} color="#fff" />
@@ -238,7 +238,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
             {/* LinkedIn */}
             <div
-              className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-blue-600 hover:text-white hover:border-blue-600 flex items-center justify-center"
+              className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] flex items-center justify-center"
               onClick={onLinkedinClick}
             >
               <SvgIcon name="linkedin" width={16} height={16} color="#fff" />
@@ -246,7 +246,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
             {/* X (Twitter) */}
             <div
-              className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-blue-400 hover:text-white hover:border-blue-400 flex items-center justify-center"
+              className="cursor-pointer transition-all duration-300 rounded-full p-2 w-8 h-8 bg-[rgba(0,0,0,.4)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] hover:shadow-lg hover:scale-105 hover:bg-[#0F1419] hover:text-white hover:border-[#0F1419] flex items-center justify-center"
               onClick={onXClick}
             >
               <SvgIcon name="x" width={16} height={16} color="#fff" />
