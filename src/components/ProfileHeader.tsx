@@ -197,7 +197,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   return (
                     <span
                       key={wordIndex}
-                      className="bg-gradient-to-br from-[#1b2c55] to-[#3d85a9] bg-clip-text text-transparent"
+                      className="bg-gradient-to-br from-[#1a4fcb] to-[#206d94] bg-clip-text text-transparent"
                     >
                       {word}
                     </span>

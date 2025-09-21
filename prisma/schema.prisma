@@ -57,6 +57,19 @@ model Message {
   roomId    String
   room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-  
+
   @@map("messages")
+}
+
+// Tech stack usage statistics table
+model TechUsage {
+  id                  String   @id @default(cuid())
+  techName           String   @unique                        // Technology name
+  totalProjects      Int      @default(0)                   // Total project count
+  manualProjects     Int      @default(0)                   // Manual project count
+  aiExtractedProjects Int     @default(0)                   // AI extracted project count
+  lastCalculated     DateTime @default(now())               // Last calculation time
+  updatedAt          DateTime @updatedAt                    // Update time
+
+  @@map("tech_usage")
 }
