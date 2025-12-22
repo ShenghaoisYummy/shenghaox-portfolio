@@ -659,7 +659,7 @@ export default function ChatPage() {
             {/* Mobile navigation buttons */}
             <div className="flex md:hidden items-center ">
               <Link
-                href="/blog"
+                href="https://personal-blog-jade-five.vercel.app/"
                 className={`p-2 ${themeClasses.hoverBg} rounded`}
               >
                 <SvgIcon
@@ -810,7 +810,7 @@ export default function ChatPage() {
         {/* Navigation buttons - Desktop */}
         <div className="hidden md:flex fixed top-4 left-4 z-10 gap-2">
           <Link
-            href="/blog"
+            href="https://personal-blog-jade-five.vercel.app/"
             className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-2 text-white backdrop-blur-sm"
           >
             <SvgIcon name="left" width={16} height={16} color="#fff" />

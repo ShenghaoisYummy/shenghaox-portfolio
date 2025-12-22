@@ -1,10 +1,14 @@
 import React, { forwardRef } from "react";
-import Link from "next/link";
 import SvgIcon from "@/components/SvgIcon";
-import { experienceData } from "@/data/experience";
+import { experienceData, ExperienceItem } from "@/data/experience";
 
-const ExperienceSection = forwardRef<HTMLDivElement>((_, ref) => {
-  const express = experienceData;
+interface ExperienceSectionProps {
+  onViewDetails: (experiences: ExperienceItem[]) => void;
+}
+
+const ExperienceSection = forwardRef<HTMLDivElement, ExperienceSectionProps>(
+  ({ onViewDetails }, ref) => {
+    const express = experienceData;
 
   return (
     <div
@@ -18,16 +22,16 @@ const ExperienceSection = forwardRef<HTMLDivElement>((_, ref) => {
             <SvgIcon name="work" width={16} height={16} color="#fff" />
             Experience
           </h3>
-          <Link
-            href="/blog"
+          <button
+            onClick={() => onViewDetails(express)}
             className="text-[0.6625rem] mt-1 pl-1 font-semibold bg-gradient-to-r from-cyan-600 via-fuchsia-600 to-cyan-400 bg-[length:300%_300%] bg-clip-text text-transparent animate-pulse hover:animate-none hover:scale-105 cursor-pointer transition-all duration-300 flex items-center gap-1 uppercase tracking-wide whitespace-nowrap flex-shrink-0 ml-2 cyberpunk-glow-animation"
             style={{
               textShadow:
                 "0 0 1px rgba(0, 255, 255, 0.5), 0 0 1px rgba(255, 0, 255, 0.3)",
             }}
           >
-            More Details
-          </Link>
+            Details
+          </button>
         </div>
       </div>
       <div className="relative flex flex-col flex-1 overflow-y-auto custom-scrollbar px-[12px] pb-[12px] min-h-0">
@@ -63,7 +67,7 @@ const ExperienceSection = forwardRef<HTMLDivElement>((_, ref) => {
               <div className="text-[0.6875rem] md:text-[0.75rem] text-[#60a5fa] mb-[0.25rem] font-bold italic drop-shadow-md">
                 {item.position}
               </div>
-              <div className="text-[0.625rem] md:text-[0.6875rem] text-[rgba(255,255,255,0.9)] mb-[0.25rem] drop-shadow-sm">
+              <div className="text-[0.625rem] md:text-[0.6875rem] text-[rgba(255,255,255,0.9)] mb-[0.25rem] drop-shadow-sm font-bold">
                 {item.date}
               </div>
               <div className="text-[0.6875rem] md:text-[0.75rem] text-[rgba(255,255,255,0.95)] leading-relaxed drop-shadow-sm">
@@ -75,7 +79,8 @@ const ExperienceSection = forwardRef<HTMLDivElement>((_, ref) => {
       </div>
     </div>
   );
-});
+  }
+);
 
 ExperienceSection.displayName = "ExperienceSection";
 

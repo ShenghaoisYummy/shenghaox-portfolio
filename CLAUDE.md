@@ -15,10 +15,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm generate` - Generate Prisma client (auto-runs on install)
 - Database seed: `npx prisma db seed` (uses tsx to run prisma/seed.ts)
 
-### Content Management
-- `pnpm count` - Generate blog post statistics (runs scripts/generate-count.js)
-- `pnpm watch-blogs` - Watch blog files for changes during development
-
 ## Architecture Overview
 
 ### Core Stack
@@ -30,14 +26,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Project Structure
 ```
 src/
-├── pages/           # Next.js Pages Router (index, works, blog, chat, _app, _document)
+├── pages/           # Next.js Pages Router (index, works, chat, _app, _document)
 ├── components/      # React components (modals, interactive elements, UI components)
 ├── services/        # Business logic (GitHub API, LLM tech extraction)
 ├── utils/           # Helper functions and utilities
 ├── hooks/           # Custom React hooks
 ├── contexts/        # React Context providers
-├── data/            # Static configuration data
-└── blogs/           # Markdown blog posts
+└── data/            # Static configuration data
 ```
 
 ### Key Features Architecture
@@ -66,12 +61,6 @@ src/
 - `VideoModal.tsx` - Video player with overlay controls
 - `CommentModal.tsx` - Real-time commenting interface
 
-#### Blog System
-- File-based markdown system in `src/blogs/`
-- Gray Matter for frontmatter parsing
-- React Syntax Highlighter for code blocks
-- Automatic metadata generation and statistics
-
 ### Database Schema (Prisma)
 - **Comments**: Threaded commenting system with parent/child relationships
 - **Reactions**: Five types of emoji reactions (like, cheer, celebrate, appreciate, smile)
@@ -90,12 +79,11 @@ Required environment variables:
 - Optimized for Vercel deployment
 - Turbopack for fast development builds
 - Automatic Prisma client generation on build
-- Static generation for blog and portfolio pages
+- Static generation for portfolio pages
 - Remote image optimization for GitHub content
 
 ### Development Notes
 - React Strict Mode is disabled (`reactStrictMode: false`)
 - Uses pnpm as package manager
-- Supports hot reloading with file watchers for blog content
 - TypeScript strict mode enabled throughout
 - ESLint configured with Next.js rules

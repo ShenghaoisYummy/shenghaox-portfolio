@@ -7,6 +7,8 @@ import VideoModal from "@/components/VideoModal";
 import ProfileHeader from "@/components/ProfileHeader";
 import NavigationSection from "@/components/NavigationSection";
 import ExperienceSection from "@/components/ExperienceSection";
+import ExperienceDrawer from "@/components/ExperienceDrawer";
+import { ExperienceItem } from "@/data/experience";
 import { useState, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
@@ -48,6 +50,13 @@ export default function Home() {
     danmakuText: "",
     enableDanmaku: true,
   });
+  const [experienceDrawer, setExperienceDrawer] = useState<{
+    isOpen: boolean;
+    experiences: ExperienceItem[];
+  }>({
+    isOpen: false,
+    experiences: [],
+  });
 
   // Refs for height synchronization
   const githubHeatmapRef = useRef<HTMLDivElement>(null);
@@ -82,6 +91,20 @@ export default function Home() {
 
   const handleTiktokClick = () => {
     window.open("https://tiktok.com/@yourhandle", "_blank");
+  };
+
+  const openExperienceDrawer = (experiences: ExperienceItem[]) => {
+    setExperienceDrawer({
+      isOpen: true,
+      experiences: experiences,
+    });
+  };
+
+  const closeExperienceDrawer = () => {
+    setExperienceDrawer({
+      isOpen: false,
+      experiences: [],
+    });
   };
 
   return (
@@ -122,6 +145,12 @@ export default function Home() {
           enableDanmaku={videoModal.enableDanmaku}
         />
 
+        <ExperienceDrawer
+          isOpen={experienceDrawer.isOpen}
+          onClose={closeExperienceDrawer}
+          experiences={experienceDrawer.experiences}
+        />
+
         {/* Main content area */}
         <div
           className={`${geistSans.className} ${geistMono.className} min-h-screen font-[family-name:var(--font-geist-sans)] flex justify-center items-center px-4 md:px-8 w-full`}
@@ -141,7 +170,10 @@ export default function Home() {
               <div className="order-2 lg:order-1 flex flex-col gap-[0.5rem] md:gap-[0.625rem]">
                 <NavigationSection ref={navigationRef} />
 
-                <ExperienceSection ref={experienceRef} />
+                <ExperienceSection
+                  ref={experienceRef}
+                  onViewDetails={openExperienceDrawer}
+                />
               </div>
               {/* Right/bottom area */}
               <div className="flex flex-col gap-[0.5rem] md:gap-[0.75rem] order-1 lg:order-2">
