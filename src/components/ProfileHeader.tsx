@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useTheme } from "@/contexts/ThemeContext";
 import SvgIcon from "@/components/SvgIcon";
 import { useTypewriter } from "@/hooks/useTypewriter";
+import { Mail, Phone, X } from "lucide-react";
 
 interface ProfileHeaderProps {
   onGithubClick: () => void;
@@ -102,7 +103,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             Contact Information
           </div>
           <div className="mb-2 flex items-center gap-2">
-            <span>📧</span>
+            <Mail size={16} className="flex-shrink-0" />
             <span className="truncate">hsupisces@hotmail.com</span>
           </div>
           <div className="text-gray-300 mb-3 text-xs">
@@ -114,15 +115,17 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 window.open("mailto:hsupisces@hotmail.com", "_blank");
                 setShowEmailInfo(false);
               }}
-              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-xs transition-colors flex-1 flex items-center justify-center gap-2"
             >
-              Send Email
+              <Mail size={14} />
+              <span>Send Email</span>
             </button>
             <button
               onClick={() => setShowEmailInfo(false)}
-              className="bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+              className="bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded text-xs transition-colors flex-1 flex items-center justify-center gap-2"
             >
-              Close
+              <X size={14} />
+              <span>Close</span>
             </button>
           </div>
         </div>
@@ -142,7 +145,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             Phone Information
           </div>
           <div className="mb-2 flex items-center gap-2">
-            <span>📱</span>
+            <Phone size={16} className="flex-shrink-0" />
             <span>+61 491 648 468</span>
           </div>
           <div className="text-gray-300 mb-3 text-xs">
@@ -154,15 +157,17 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 window.open("tel:+61491648468", "_blank");
                 setShowPhoneInfo(false);
               }}
-              className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+              className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs transition-colors flex-1 flex items-center justify-center gap-2"
             >
-              Call Now
+              <Phone size={14} />
+              <span>Call Now</span>
             </button>
             <button
               onClick={() => setShowPhoneInfo(false)}
-              className="bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded text-xs transition-colors flex-1"
+              className="bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded text-xs transition-colors flex-1 flex items-center justify-center gap-2"
             >
-              Close
+              <X size={14} />
+              <span>Close</span>
             </button>
           </div>
         </div>

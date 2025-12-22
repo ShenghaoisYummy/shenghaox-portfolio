@@ -1596,7 +1596,7 @@ export default function Works() {
         </div>
 
         <Link
-          href="/blog"
+          href="https://personal-blog-jade-five.vercel.app/"
           className="fixed bottom-4 md:bottom-8 right-4 md:right-8 z-10"
         >
           <button className="bg-[rgba(0,0,0,.5)] hover:bg-[rgba(0,0,0,.7)] rounded-[5px] p-[6px] md:p-[8px] cursor-pointer transition-all duration-200 flex items-center gap-1 md:gap-2 text-white backdrop-blur-sm">

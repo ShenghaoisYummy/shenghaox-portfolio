@@ -147,7 +147,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
       {!isChatPage && !isWorksPage && (
         <div className="fixed top-72 right-4 z-20 hidden md:block">
-          <div className="flex flex-col justify-start text-1xl items-center shadow-xl z-10 bg-black/20 dark:bg-[#191818] gap-2 p-2 rounded-2xl transition-transform duration-300 hover:scale-105">
+          <div className="flex flex-col justify-start text-1xl items-center shadow-xl bg-black/20 dark:bg-[#191818] gap-2 p-2 rounded-2xl transition-transform duration-300 hover:scale-105">
             <button
               onClick={() => handleReaction("like")}
               disabled={hasReacted.like}
