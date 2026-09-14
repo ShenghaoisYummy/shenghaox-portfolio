@@ -18,9 +18,27 @@ interface GitHubHeatmapProps {
   username: string;
 }
 
-// Cache key generation function
+// Cache key generation function.
+// The version suffix is bumped whenever the data source changes, so browsers
+// holding data from a previous source don't keep serving it for a whole day.
+const CACHE_VERSION = "v2";
+const LEGACY_CACHE_PREFIX = "github_contributions_";
 const getCacheKey = (username: string, year: number) =>
-  `github_contributions_${username}_${year}`;
+  `${LEGACY_CACHE_PREFIX}${CACHE_VERSION}_${username}_${year}`;
+
+// Drop caches written by an older data source
+const purgeLegacyCache = () => {
+  try {
+    const stale = Object.keys(localStorage).filter(
+      (key) =>
+        key.startsWith(LEGACY_CACHE_PREFIX) &&
+        !key.startsWith(`${LEGACY_CACHE_PREFIX}${CACHE_VERSION}_`)
+    );
+    stale.forEach((key) => localStorage.removeItem(key));
+  } catch (error) {
+    console.error("Failed to purge legacy cache:", error);
+  }
+};
 
 // Cache expiration time (24 hours)
 const CACHE_EXPIRY = 24 * 60 * 60 * 1000;
@@ -97,11 +115,14 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
     }
   };
 
-  // Use github-contributions-api to fetch contribution data
+  // Fetch contribution data from our own API route, which reads GitHub's
+  // GraphQL contributionsCollection server-side (third-party mirrors lag behind)
   const fetchContributions = async (username: string, year: number) => {
     try {
       const response = await fetch(
-        `https://github-contributions-api.jogruber.de/v4/${username}?y=${year}`
+        `/api/github-contributions?username=${encodeURIComponent(
+          username
+        )}&year=${year}`
       );
 
       if (!response.ok) {
@@ -125,6 +146,7 @@ const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ username }) => {
       try {
         setLoading(true);
         setError(null);
+        purgeLegacyCache();
 
         // Calculate date range to fetch (6 months for mobile, 12 months for desktop)
         const today = new Date();
